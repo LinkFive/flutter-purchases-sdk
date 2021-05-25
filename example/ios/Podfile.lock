@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - linkfive_purchases (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - linkfive_purchases (from `.symlinks/plugins/linkfive_purchases/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  linkfive_purchases:
+    :path: ".symlinks/plugins/linkfive_purchases/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  linkfive_purchases: ea14b1ca0ebf6653e34ba29d52a0bb788804d649
+
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+
+COCOAPODS: 1.10.0
