@@ -28,9 +28,9 @@ flutter:
     platforms:
       android:
         package: io.linkfive.linkfive_purchases
-        pluginClass: LinkfivePurchasesPlugin
+        pluginClass: LinkFivePurchasesPlugin
       ios:
-        pluginClass: LinkfivePurchasesPlugin
+        pluginClass: LinkFivePurchasesPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
