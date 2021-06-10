@@ -16,10 +16,15 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
 
   initLinkFive() async {
     LinkFivePurchases.init(
-        apiKey: "f790f42eb98bf27e41df0faa9120dd0238c32f7316d2a728e05242388d357612", fetchSubscription: true);
-    var linkFiveSubscription = LinkFivePurchases.linkFiveResponse();
-    linkFiveSubscription.listen((event) {
+        "f790f42eb98bf27e41df0faa9120dd0238c32f7316d2a728e05242388d357612", fetchSubscription: true);
+    print("do the listen thing");
+    var linkFiveResponse = LinkFivePurchases.linkFiveResponse();
+    linkFiveResponse.listen((event) {
       print("App got event $event");
+    });
+    var linkFiveSubscription = LinkFivePurchases.linkFiveSubscription();
+    linkFiveSubscription.listen((event) {
+      print("App got subscription $event");
     });
   }
 

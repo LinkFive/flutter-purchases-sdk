@@ -15,20 +15,38 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.linkfive.purchases.LinkFivePurchases
 import io.linkfive.purchases.util.Logger
 
-class LinkFivePurchasesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
-    EventChannel.StreamHandler {
+class LinkFivePurchasesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private lateinit var channelMethods: MethodChannel
-    private lateinit var channelEvent: EventChannel
+    private lateinit var channelEventResponse: EventChannel
+    private lateinit var channelEventSubscriptions: EventChannel
     private lateinit var activity: Activity
     private lateinit var context: Context
 
-    private val androidObserver = LinkFiveObserver()
+    private lateinit var linkFiveObserver: LinkFiveObserver
 
+    /**
+     * Initial Flutter call to attach the channels
+     */
+    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        context = flutterPluginBinding.applicationContext
+        linkFiveObserver = LinkFiveObserver()
+        Logger.d("ATTACHED")
+        Logger.d("ATTACHED2")
+        Logger.d("ATTACHED3")
+        Logger.d("ATTACHED4")
+
+        channelMethods = MethodChannel(flutterPluginBinding.binaryMessenger, "linkfive_methods")
+        channelMethods.setMethodCallHandler(this)
+
+        LinkFiveEventChannel.initChannel(flutterPluginBinding, linkFiveObserver)
+    }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
             "linkfive_init" -> {
+                linkFiveObserver.initGlobalScope()
+                Logger.d("qwerty")
                 val apiKey = call.argument<String>("apiKey")
                 val acknowledgeLocally = call.argument<Boolean>("acknowledgeLocally") ?: false
                 if (apiKey.isNullOrBlank()) {
@@ -53,21 +71,11 @@ class LinkFivePurchasesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             context = context,
             acknowledgeLocally = acknowledgeLocally
         )
-
-        // LinkFivePurchases.linkFiveSubscriptionLiveData().observe(activity, subscriptionDataObserver)
     }
 
     private fun onFetchSubscriptions(result: Result) {
         LinkFivePurchases.fetch(context)
         result.success("ok")
-    }
-
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channelMethods = MethodChannel(flutterPluginBinding.binaryMessenger, "linkfive_methods")
-        channelMethods.setMethodCallHandler(this)
-        channelEvent = EventChannel(flutterPluginBinding.binaryMessenger, "linkfive_events")
-        channelEvent.setStreamHandler(this)
-        context = flutterPluginBinding.applicationContext
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -88,15 +96,5 @@ class LinkFivePurchasesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
 
     override fun onDetachedFromActivity() {
         // TODO("Not yet implemented")
-    }
-
-    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-        Logger.d("LISTEN")
-        androidObserver.responseEventChannel = events
-    }
-
-    override fun onCancel(arguments: Any?) {
-        Logger.d("CANCEL")
-        // androidObserver.responseEventChannel = null
     }
 }

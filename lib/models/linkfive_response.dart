@@ -7,8 +7,8 @@ class LinkFiveResponseData {
 
   LinkFiveResponseData.fromJson(Map<Object?, Object?> json)
       : platform = json["platform"] as String,
-        attributes = json["attributes"] as String,
-        subscriptionList = (json["subscriptionList"] as List).map((e) => LinkFiveResponseDataSubscription(e)).toList()
+        attributes = json["attributes"] as String?,
+        subscriptionList = (json["subscriptionList"] as List).map((e) => LinkFiveResponseDataSubscription.fromJson(e)).toList()
   ;
 }
 
