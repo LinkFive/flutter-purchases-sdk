@@ -25,26 +25,15 @@ class LinkFiveObserver {
             LinkFivePurchases.linkFiveSubscriptionResponseFlow().collect { data ->
                 Logger.d("FLOW: got data Response: $data")
 
-                val skuDetails = mapOf(
-                    "sku" to "qwe",
-                    "subscriptionPeriod" to "P3M",
-                    "price" to "1,99 €",
-                    "introductoryPrice" to null,
-                    "introductoryPricePeriod" to null,
-                    "title" to "Title",
-                    "description" to "description",
-                    "freeTrialPeriod" to "P7D",
-                    "type" to "SUB",
-                )
-                val linkFiveSkuData = mapOf(
-                    "skuDetails" to skuDetails
-                )
-
-                val linkFiveSubscriptionData = mapOf(
-                    "linkFiveSkuData" to listOf(linkFiveSkuData)
-                )
-
-                responseEventChannel?.success(linkFiveSubscriptionData)
+                if(data != null){
+                    val parsedData = mapOf(
+                        "platform" to data.platform,
+                        "subscriptionList" to data.subscriptionList.map { responseData ->
+                            mapOf("sku" to responseData.sku)
+                        }.toList()
+                    )
+                    responseEventChannel?.success(parsedData)
+                }
             }
         }
         globalScopeSubFlowJob = GlobalScope.launch {
@@ -65,3 +54,24 @@ class LinkFiveObserver {
         globalScopeActiveFlowJob.cancel()
     }
 }
+/*
+
+                val skuDetails = mapOf(
+                    "sku" to "qwe",
+                    "subscriptionPeriod" to "P3M",
+                    "price" to "1,99 €",
+                    "introductoryPrice" to null,
+                    "introductoryPricePeriod" to null,
+                    "title" to "Title",
+                    "description" to "description",
+                    "freeTrialPeriod" to "P7D",
+                    "type" to "SUB",
+                )
+                val linkFiveSkuData = mapOf(
+                    "skuDetails" to skuDetails
+                )
+
+                val linkFiveSubscriptionData = mapOf(
+                    "linkFiveSkuData" to listOf(linkFiveSkuData)
+                )
+ */

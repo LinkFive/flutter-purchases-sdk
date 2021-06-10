@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:linkfive_purchases/linkfive_subscription.dart';
+import 'package:linkfive_purchases/models/linkfive_response.dart';
+import 'package:linkfive_purchases/models/linkfive_subscription.dart';
 
 class LinkFivePurchases {
   static const MethodChannel _channel = const MethodChannel('linkfive_methods');
@@ -22,10 +23,10 @@ class LinkFivePurchases {
     await _channel.invokeMethod('linkfive_fetch');
   }
 
-  static Stream<LinkFiveSubscriptionData> linkFiveSubscription() {
-    var controller = StreamController<LinkFiveSubscriptionData>();
+  static Stream<LinkFiveResponseData> linkFiveResponse() {
+    var controller = StreamController<LinkFiveResponseData>();
     _channelEvent.receiveBroadcastStream().listen((event) {
-      controller.add(LinkFiveSubscriptionData.fromJson(event));
+      controller.add(LinkFiveResponseData.fromJson(event));
     });
 
     return controller.stream;

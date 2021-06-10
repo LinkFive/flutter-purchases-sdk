@@ -7,8 +7,6 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
-
-
   @override
   void initState() {
     super.initState();
@@ -16,13 +14,10 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
     initLinkFive();
   }
 
-
   initLinkFive() async {
     LinkFivePurchases.init(
-        apiKey:
-        "f790f42eb98bf27e41df0faa9120dd0238c32f7316d2a728e05242388d357612",
-        fetchSubscription: true);
-    var linkFiveSubscription = LinkFivePurchases.linkFiveSubscription();
+        apiKey: "f790f42eb98bf27e41df0faa9120dd0238c32f7316d2a728e05242388d357612", fetchSubscription: true);
+    var linkFiveSubscription = LinkFivePurchases.linkFiveResponse();
     linkFiveSubscription.listen((event) {
       print("App got event $event");
     });

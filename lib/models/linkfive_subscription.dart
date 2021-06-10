@@ -8,10 +8,10 @@ class LinkFiveSubscriptionData {
   LinkFiveSubscriptionData(this.linkFiveSkuData, this.attributes, this.error);
 
   LinkFiveSubscriptionData.fromJson(Map<Object?, Object?> json)
-      : linkFiveSkuData = (json["linkFiveSkuData"] as List).map((e) =>
-      LinkFiveSkuData.fromJson(e)).toList(),
-        attributes = json["attributes"] as String?,
-        error = json["error"] as String?;
+      : attributes = json["attributes"] as String?,
+        error = json["error"] as String?,
+        linkFiveSkuData = (json["linkFiveSkuData"] as List).map((e) => LinkFiveSkuData.fromJson(e)).toList()
+  ;
 }
 
 class LinkFiveSkuData {
@@ -19,8 +19,8 @@ class LinkFiveSkuData {
 
   LinkFiveSkuData(this.skuDetails);
 
-  LinkFiveSkuData.fromJson(Map<Object?, Object?> json) :
-        skuDetails = SkuDetails.fromJson(json["skuDetails"] as Map<Object?, Object?>);
+  LinkFiveSkuData.fromJson(Map<Object?, Object?> json)
+      : skuDetails = SkuDetails.fromJson(json["skuDetails"] as Map<Object?, Object?>);
 }
 
 class SkuDetails {
@@ -34,9 +34,8 @@ class SkuDetails {
   final String freeTrialPeriod;
   final String type;
 
-  SkuDetails(this.sku, this.subscriptionPeriod, this.price,
-      this.introductoryPrice, this.introductoryPricePeriod, this.title,
-      this.description, this.freeTrialPeriod, this.type);
+  SkuDetails(this.sku, this.subscriptionPeriod, this.price, this.introductoryPrice, this.introductoryPricePeriod,
+      this.title, this.description, this.freeTrialPeriod, this.type);
 
   SkuDetails.fromJson(Map<Object?, Object?> json)
       : sku = json["sku"]! as String,
@@ -48,5 +47,4 @@ class SkuDetails {
         description = json["description"]! as String,
         freeTrialPeriod = json["freeTrialPeriod"]! as String,
         type = json["type"]! as String;
-
 }
