@@ -46,4 +46,4 @@ app.*.map.json
 /android/app/release
 
 # API Kkey
-assets/apikey.json
+/assets/apikey.json
