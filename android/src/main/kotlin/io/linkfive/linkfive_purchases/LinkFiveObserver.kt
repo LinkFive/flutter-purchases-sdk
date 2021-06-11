@@ -18,6 +18,7 @@ class LinkFiveObserver {
 
     var eventChannelResponse: EventChannel.EventSink? = null
     var eventChannelSubscription: EventChannel.EventSink? = null
+    var eventChannelActiveSubscription: EventChannel.EventSink? = null
 
     init {
         initGlobalScope()
@@ -65,11 +66,7 @@ class LinkFiveObserver {
                             )
                         }
                     )
-                    /**
-                     * {linkFiveSkuData=[[{skuDetails={sku=3monateblasubscri, subscriptionPeriod=P3M, price=0,99 €, introductoryPrice=, introductoryPricePeriod=, title=super awesome subscription (com.tnx.keller_app (unreviewed)), description=This is the description, freeTrialPeriod=P1W, type=subs}}, {skuDetails={sku=testsubscription2022, subscriptionPeriod=P6M, price=1,49 €, introductoryPrice=, introductoryPricePeriod=, title=test subscription 2022 (com.tnx.keller_app (unreviewed)), description=test, freeTrialPeriod=P1W, type=subs}}]]}
-                     */
 
-                    Logger.d(parsedData)
                     eventChannelSubscription?.success(parsedData)
                 }
             }
@@ -79,27 +76,30 @@ class LinkFiveObserver {
                 Logger.d("FLOW: got data Active: $data")
 
                 if (data != null) {
-                    data.linkFiveSkuData?.map {
+                    val parsedData = data.linkFivePurchaseData?.let { purchaseDetailList ->
+                        mapOf(
+                            "linkFivePurchaseData" to purchaseDetailList.map { purchaseDetail ->
+                                mapOf(
+                                    "familyName" to purchaseDetail.familyName,
+                                    "attributes" to purchaseDetail.attributes,
+                                    "purchase" to mapOf(
+                                        "skus" to purchaseDetail.purchase.skus,
+                                        "orderId" to purchaseDetail.purchase.orderId,
+                                        "isAcknowledged" to purchaseDetail.purchase.isAcknowledged,
+                                        "purchaseTime" to purchaseDetail.purchase.purchaseTime,
+                                        "purchaseToken" to purchaseDetail.purchase.purchaseToken,
+                                        "packageName" to purchaseDetail.purchase.packageName,
+                                        "isAutoRenewing" to purchaseDetail.purchase.isAutoRenewing,
+                                        "purchaseState" to purchaseDetail.purchase.purchaseState,
+                                        "signature" to purchaseDetail.purchase.signature,
+                                        "quantity" to purchaseDetail.purchase.quantity,
 
+                                        )
+                                )
+                            }.toList()
+                        )
                     }
-                    val skuDetails = mapOf(
-                        "sku" to "qwe",
-                        "subscriptionPeriod" to "P3M",
-                        "price" to "1,99 €",
-                        "introductoryPrice" to null,
-                        "introductoryPricePeriod" to null,
-                        "title" to "Title",
-                        "description" to "description",
-                        "freeTrialPeriod" to "P7D",
-                        "type" to "SUB",
-                    )
-                    val linkFiveSkuData = mapOf(
-                        "skuDetails" to skuDetails
-                    )
-
-                    val linkFiveSubscriptionData = mapOf(
-                        "linkFiveSkuData" to listOf(linkFiveSkuData)
-                    )
+                    eventChannelActiveSubscription?.success(parsedData)
                 }
 
 

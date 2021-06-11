@@ -13,13 +13,10 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.linkfive.purchases.LinkFivePurchases
-import io.linkfive.purchases.util.Logger
 
 class LinkFivePurchasesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private lateinit var channelMethods: MethodChannel
-    private lateinit var channelEventResponse: EventChannel
-    private lateinit var channelEventSubscriptions: EventChannel
     private lateinit var activity: Activity
     private lateinit var context: Context
 
@@ -31,10 +28,6 @@ class LinkFivePurchasesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
         linkFiveObserver = LinkFiveObserver()
-        Logger.d("ATTACHED")
-        Logger.d("ATTACHED2")
-        Logger.d("ATTACHED3")
-        Logger.d("ATTACHED4")
 
         channelMethods = MethodChannel(flutterPluginBinding.binaryMessenger, "linkfive_methods")
         channelMethods.setMethodCallHandler(this)
@@ -46,7 +39,6 @@ class LinkFivePurchasesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
         when (call.method) {
             "linkfive_init" -> {
                 linkFiveObserver.initGlobalScope()
-                Logger.d("qwerty")
                 val apiKey = call.argument<String>("apiKey")
                 val acknowledgeLocally = call.argument<Boolean>("acknowledgeLocally") ?: false
                 if (apiKey.isNullOrBlank()) {

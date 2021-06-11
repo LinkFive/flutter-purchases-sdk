@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:linkfive_purchases/models/linkfive_subscription.dart';
 
@@ -14,11 +15,17 @@ class LinkFivePurchases {
   // Native channel to receive Subscription Data like prices etc.
   static const EventChannel _channelEventSubscription = const EventChannel("linkfive_events_subscription");
 
+  // Native channel to receive Active Subscription Data
+  static const EventChannel _channelEventActiveSubscription = const EventChannel("linkfive_events_active_subscription");
+
   // Stream to flutter of Raw Response
   static StreamController<LinkFiveResponseData>? _streamControllerResponse = null;
 
   // Stream to flutter of Subscription data
   static StreamController<LinkFiveSubscriptionData>? _streamControllerSubscriptions = null;
+
+  // Stream to flutter of Active Subscription data
+  static StreamController<LinkFiveActiveSubscriptionData>? _streamControllerActiveSubscriptions = null;
 
   /// initialize the SDK
   ///
@@ -41,6 +48,10 @@ class LinkFivePurchases {
     _channelEventSubscription.receiveBroadcastStream().listen((event) {
       _streamControllerSubscriptions?.add(LinkFiveSubscriptionData.fromJson(event));
     });
+    _channelEventActiveSubscription.receiveBroadcastStream().listen((event) {
+      print(event);
+      _streamControllerActiveSubscriptions?.add(LinkFiveActiveSubscriptionData.fromJson(event));
+    });
   }
 
   // Fetches the available subscriptions from LinkFive and from the store
@@ -56,5 +67,10 @@ class LinkFivePurchases {
   static Stream<LinkFiveSubscriptionData> linkFiveSubscription() {
     _streamControllerSubscriptions = StreamController<LinkFiveSubscriptionData>();
     return _streamControllerSubscriptions!.stream;
+  }
+
+  static Stream<LinkFiveActiveSubscriptionData> linkFiveActiveSubscription() {
+    _streamControllerActiveSubscriptions = StreamController<LinkFiveActiveSubscriptionData>();
+    return _streamControllerActiveSubscriptions!.stream;
   }
 }
