@@ -1,15 +1,59 @@
-# linkfive_purchases
-
-LinkFive Purchases flutter sdk
+# LinkFive Purchases flutter sdk
 
 ## Getting Started
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+Initialize the SDK
+```dart
+LinkFivePurchases.init("LinkFive Api Key");
+```
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+fetch all available subscripton:
+```dart
+LinkFivePurchases.fetchSubscription();
+```
 
+You can also initialize the sdk and fetch all subscription in one call
+```dart
+LinkFivePurchases.init(keys.linkFiveApiKey, fetchSubscription: true);
+```
+
+
+### Available Subscription Data
+
+LinkFive uses a stream to pass data to your application. You can either just use the stream or use a StreamBuilder
+
+```dart
+StreamBuilder(
+  stream: LinkFivePurchases.linkFiveSubscription(),
+  builder: (BuildContext context, AsyncSnapshot<LinkFiveSubscriptionData> snapshot) {
+    if (snapshot.hasData) {
+      var subscriptionData = snapshot.data;
+      if(subscriptionData != null) {
+        // do something
+      }
+    }
+    return Center(child: Text('Loading...'));
+  },
+```
+
+### Purchase a Subscription
+Just call purchase including the skuDetails
+```dart
+LinkFivePurchases.purchase(skuDetails: linkFiveSkuData.skuDetails);
+```
+
+### Get Active Subscription Data
+You will receive the data through the active subscription stream. You can either just use the stream or use a StreamBuilder
+```dart
+StreamBuilder(
+  stream: LinkFivePurchases.linkFiveActiveSubscription(),
+  builder: (BuildContext context, AsyncSnapshot<LinkFiveActiveSubscriptionData> snapshot) {
+    if (snapshot.hasData) {
+      var subscriptionData = snapshot.data;
+      if (subscriptionData != null) {
+        // do something
+      }
+    }
+    return Center(child: Text('Loading...'));
+  },
+```
