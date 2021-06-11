@@ -56,7 +56,17 @@ class LinkFivePurchases {
 
   // Fetches the available subscriptions from LinkFive and from the store
   static fetchSubscription() async {
-    await _channel.invokeMethod('linkfive_fetch');
+    await _channel.invokeMethod('linkfive_fetch', <String, dynamic>{
+      'apiKey': "apiKey",
+      'acknowledgeLocally': "acknowledgeLocally",
+    });
+  }
+
+  static purchase({required SkuDetails skuDetails}) async {
+    await _channel.invokeMethod("linkfive_purchase", <String, dynamic>{
+      'sku': skuDetails.sku,
+      'type': skuDetails.type,
+    });
   }
 
   static Stream<LinkFiveResponseData> linkFiveResponse() {

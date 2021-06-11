@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/models/linkfive_subscription.dart';
 
 class SubscriptionButton extends StatelessWidget {
@@ -8,7 +9,7 @@ class SubscriptionButton extends StatelessWidget {
   SubscriptionButton({required this.linkFiveSkuData});
 
   onSubscriptionPressed() {
-    print("press");
+    LinkFivePurchases.purchase(skuDetails: linkFiveSkuData.skuDetails);
   }
 
   String getSubscriptionPeriod() {

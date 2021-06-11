@@ -3,16 +3,17 @@ package io.linkfive.linkfive_purchases
 import android.app.Activity
 import android.content.Context
 import androidx.annotation.NonNull
+import com.android.billingclient.api.SkuDetails
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
-import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.linkfive.purchases.LinkFivePurchases
+import io.linkfive.purchases.util.Logger
 
 class LinkFivePurchasesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
@@ -53,6 +54,7 @@ class LinkFivePurchasesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
                 result.success("ok")
             }
             "linkfive_fetch" -> onFetchSubscriptions(result)
+            "linkfive_purchase" -> onPurchase(call, result)
             else -> result.notImplemented()
         }
     }
@@ -68,6 +70,15 @@ class LinkFivePurchasesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
     private fun onFetchSubscriptions(result: Result) {
         LinkFivePurchases.fetch(context)
         result.success("ok")
+    }
+
+    private fun onPurchase(call: MethodCall, result: Result) {
+        val sku = call.argument<String>("sku")
+        val type = call.argument<String>("type")
+        Logger.d("Purchase got")
+        Logger.d("got $sku $type")
+        val skuDetails = SkuDetails("{\"productId\":\"${sku}\",\"sku\":\"${sku}\",\"type\":\"${type}\"}")
+        LinkFivePurchases.purchase(skuDetails = skuDetails, activity)
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
