@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
+import 'package:linkfive_purchases_example/key/keyLoader.dart';
 import 'package:linkfive_purchases_example/subscriptions/SubscriptionPage.dart';
 
 class RootPage extends StatefulWidget {
@@ -11,12 +12,12 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-
     initLinkFive();
   }
 
   initLinkFive() async {
-    LinkFivePurchases.init("f790f42eb98bf27e41df0faa9120dd0238c32f7316d2a728e05242388d357612", fetchSubscription: true);
+    var keys = await KeyLoader().load(context);
+    LinkFivePurchases.init(keys.linkFiveApiKey, fetchSubscription: true);
     /*print("do the listen thing");
     var linkFiveResponse = LinkFivePurchases.linkFiveResponse();
     linkFiveResponse.listen((event) {
