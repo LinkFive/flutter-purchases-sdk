@@ -54,7 +54,7 @@ class LinkFivePurchases {
     });
   }
 
-  // Fetches the available subscriptions from LinkFive and from the store
+  /// Fetches the available subscriptions
   static fetchSubscription() async {
     await _channel.invokeMethod('linkfive_fetch', <String, dynamic>{
       'apiKey': "apiKey",
@@ -62,6 +62,7 @@ class LinkFivePurchases {
     });
   }
 
+  /// Purchase the product
   static purchase({required SkuDetails skuDetails}) async {
     await _channel.invokeMethod("linkfive_purchase", <String, dynamic>{
       'sku': skuDetails.sku,
@@ -69,16 +70,22 @@ class LinkFivePurchases {
     });
   }
 
+  /// LinkFive Response Stream
+  /// This includes the playout raw data
   static Stream<LinkFiveResponseData> linkFiveResponse() {
     _streamControllerResponse = StreamController<LinkFiveResponseData>();
     return _streamControllerResponse!.stream;
   }
 
+  /// Available Subscription Stream
+  /// This includes store data and attributes
   static Stream<LinkFiveSubscriptionData> linkFiveSubscription() {
     _streamControllerSubscriptions = StreamController<LinkFiveSubscriptionData>();
     return _streamControllerSubscriptions!.stream;
   }
 
+  /// Active Subscription Stream
+  /// When a users purchases a product, the stream contains purchase data
   static Stream<LinkFiveActiveSubscriptionData> linkFiveActiveSubscription() {
     _streamControllerActiveSubscriptions = StreamController<LinkFiveActiveSubscriptionData>();
     return _streamControllerActiveSubscriptions!.stream;
