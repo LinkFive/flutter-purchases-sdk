@@ -30,7 +30,7 @@ flutter:
         package: io.linkfive.linkfive_purchases
         pluginClass: LinkFivePurchasesPlugin
       ios:
-        pluginClass: LinkFivePurchasesPlugin
+        pluginClass: LinkfivePurchasesPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
