@@ -66,14 +66,14 @@ public class SwiftLinkfivePurchasesPlugin: NSObject, FlutterPlugin {
             fetch()
             result("ok")
         case Methods.purchase:
-            guard let sku = arguments["sku"] as? String, let type = arguments["type"] as? String else {
+            guard let sku = arguments["sku"] as? String else {
                 result(FlutterError.init(code: "BAD_ARGS",
-                                         message: "sku / type missing)" ,
+                                         message: "sku missing)" ,
                                          details: nil))
                 return
             }
 
-            purchase(sku: sku, type: type)
+            purchase(sku: sku)
         case Methods.restore:
             break
         default:
@@ -104,8 +104,17 @@ public class SwiftLinkfivePurchasesPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    private func purchase(sku: String, type: String) {
-
+    private func purchase(sku: String) {
+        LinkFivePurchases.shared.purchase(productId: sku) { result in
+            switch result {
+            case .success(let success):
+                // TODO:
+                print(success)
+            case .failure(let error):
+                // TODO:
+                print(error)
+            }
+        }
     }
 }
 
