@@ -18,14 +18,20 @@ class LinkFivePurchases {
   // Native channel to receive Active Subscription Data
   static const EventChannel _channelEventActiveSubscription = const EventChannel("linkfive_events_active_subscription");
 
+
+  // last Responses used to provide to the next stream
+  static LinkFiveResponseData? _lastLinkFiveResponseData = null;
+  static LinkFiveSubscriptionData? _lastLinkFiveSubscriptionData = null;
+  static LinkFiveActiveSubscriptionData? _lastLinkFiveActiveSubscriptionData = null;
+
   // Stream to flutter of Raw Response
-  static StreamController<LinkFiveResponseData>? _streamControllerResponse = null;
+  static StreamController<LinkFiveResponseData?>? _streamControllerResponse = null;
 
   // Stream to flutter of Subscription data
-  static StreamController<LinkFiveSubscriptionData>? _streamControllerSubscriptions = null;
+  static StreamController<LinkFiveSubscriptionData?>? _streamControllerSubscriptions = null;
 
   // Stream to flutter of Active Subscription data
-  static StreamController<LinkFiveActiveSubscriptionData>? _streamControllerActiveSubscriptions = null;
+  static StreamController<LinkFiveActiveSubscriptionData?>? _streamControllerActiveSubscriptions = null;
 
   /// initialize the SDK
   ///
@@ -42,15 +48,16 @@ class LinkFivePurchases {
     }
     print("INIT SDK");
     _channelEventResponse.receiveBroadcastStream().listen((event) {
-      print("try to send to $_streamControllerResponse");
-      _streamControllerResponse?.add(LinkFiveResponseData.fromJson(event));
+      _lastLinkFiveResponseData = LinkFiveResponseData.fromJson(event);
+      _streamControllerResponse?.add(_lastLinkFiveResponseData);
     });
     _channelEventSubscription.receiveBroadcastStream().listen((event) {
-      _streamControllerSubscriptions?.add(LinkFiveSubscriptionData.fromJson(event));
+      _lastLinkFiveSubscriptionData = LinkFiveSubscriptionData.fromJson(event);
+      _streamControllerSubscriptions?.add(_lastLinkFiveSubscriptionData);
     });
     _channelEventActiveSubscription.receiveBroadcastStream().listen((event) {
-      print(event);
-      _streamControllerActiveSubscriptions?.add(LinkFiveActiveSubscriptionData.fromJson(event));
+      _lastLinkFiveActiveSubscriptionData = LinkFiveActiveSubscriptionData.fromJson(event);
+      _streamControllerActiveSubscriptions?.add(_lastLinkFiveActiveSubscriptionData);
     });
   }
 
@@ -72,22 +79,25 @@ class LinkFivePurchases {
 
   /// LinkFive Response Stream
   /// This includes the playout raw data
-  static Stream<LinkFiveResponseData> linkFiveResponse() {
+  static Stream<LinkFiveResponseData?> linkFiveResponse() {
     _streamControllerResponse = StreamController<LinkFiveResponseData>();
+    _streamControllerResponse!.add(_lastLinkFiveResponseData);
     return _streamControllerResponse!.stream;
   }
 
   /// Available Subscription Stream
   /// This includes store data and attributes
-  static Stream<LinkFiveSubscriptionData> linkFiveSubscription() {
+  static Stream<LinkFiveSubscriptionData?> linkFiveSubscription() {
     _streamControllerSubscriptions = StreamController<LinkFiveSubscriptionData>();
+    _streamControllerSubscriptions!.add(_lastLinkFiveSubscriptionData);
     return _streamControllerSubscriptions!.stream;
   }
 
   /// Active Subscription Stream
   /// When a users purchases a product, the stream contains purchase data
-  static Stream<LinkFiveActiveSubscriptionData> linkFiveActiveSubscription() {
+  static Stream<LinkFiveActiveSubscriptionData?> linkFiveActiveSubscription() {
     _streamControllerActiveSubscriptions = StreamController<LinkFiveActiveSubscriptionData>();
+    _streamControllerActiveSubscriptions!.add(_lastLinkFiveActiveSubscriptionData);
     return _streamControllerActiveSubscriptions!.stream;
   }
 }
