@@ -20,9 +20,9 @@ class _SubscriptionOfferingState extends State<SubscriptionOffering> with Widget
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(8),
-      child: StreamBuilder(
+      child: StreamBuilder<LinkFiveSubscriptionData?>(
         stream: LinkFivePurchases.linkFiveSubscription(),
-        builder: (BuildContext context, AsyncSnapshot<LinkFiveSubscriptionData> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<LinkFiveSubscriptionData?> snapshot) {
           if (snapshot.hasData) {
             var subscriptionData = snapshot.data;
             if(subscriptionData != null) {

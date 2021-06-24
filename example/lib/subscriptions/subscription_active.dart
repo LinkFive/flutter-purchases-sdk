@@ -29,9 +29,9 @@ class _SubscriptionActiveState extends State<SubscriptionActive> with WidgetsBin
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.all(8),
-        child: StreamBuilder(
+        child: StreamBuilder<LinkFiveActiveSubscriptionData?>(
           stream: LinkFivePurchases.linkFiveActiveSubscription(),
-          builder: (BuildContext context, AsyncSnapshot<LinkFiveActiveSubscriptionData> snapshot) {
+          builder: (BuildContext context, snapshot) {
             if (snapshot.hasData) {
               var subscriptionData = snapshot.data;
               if (subscriptionData != null) {

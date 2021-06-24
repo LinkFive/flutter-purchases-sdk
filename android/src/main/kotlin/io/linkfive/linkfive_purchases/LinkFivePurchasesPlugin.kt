@@ -74,11 +74,12 @@ class LinkFivePurchasesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
 
     private fun onPurchase(call: MethodCall, result: Result) {
         val sku = call.argument<String>("sku")
-        val type = call.argument<String>("type")
-        Logger.d("Purchase got")
-        Logger.d("got $sku $type")
-        val skuDetails = SkuDetails("{\"productId\":\"${sku}\",\"sku\":\"${sku}\",\"type\":\"${type}\"}")
-        LinkFivePurchases.purchase(skuDetails = skuDetails, activity)
+        Logger.d("Purchase with sku: $sku")
+        if(sku != null) {
+            LinkFivePurchases.purchase(sku = sku, activity)
+        } else {
+            Logger.e("SKU is null")
+        }
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {

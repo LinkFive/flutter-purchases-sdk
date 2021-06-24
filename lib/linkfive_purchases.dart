@@ -71,6 +71,7 @@ class LinkFivePurchases {
 
   /// Purchase the product
   static purchase({required SkuDetails skuDetails}) async {
+    print("purchase with ${skuDetails.sku}");
     await _channel.invokeMethod("linkfive_purchase", <String, dynamic>{
       'sku': skuDetails.sku,
       'type': skuDetails.type,
@@ -81,7 +82,9 @@ class LinkFivePurchases {
   /// This includes the playout raw data
   static Stream<LinkFiveResponseData?> linkFiveResponse() {
     _streamControllerResponse = StreamController<LinkFiveResponseData>();
-    _streamControllerResponse!.add(_lastLinkFiveResponseData);
+    if(_lastLinkFiveResponseData != null) {
+      _streamControllerResponse!.add(_lastLinkFiveResponseData);
+    }
     return _streamControllerResponse!.stream;
   }
 
@@ -89,7 +92,9 @@ class LinkFivePurchases {
   /// This includes store data and attributes
   static Stream<LinkFiveSubscriptionData?> linkFiveSubscription() {
     _streamControllerSubscriptions = StreamController<LinkFiveSubscriptionData>();
-    _streamControllerSubscriptions!.add(_lastLinkFiveSubscriptionData);
+    if(_lastLinkFiveSubscriptionData != null) {
+      _streamControllerSubscriptions!.add(_lastLinkFiveSubscriptionData);
+    }
     return _streamControllerSubscriptions!.stream;
   }
 
@@ -97,7 +102,9 @@ class LinkFivePurchases {
   /// When a users purchases a product, the stream contains purchase data
   static Stream<LinkFiveActiveSubscriptionData?> linkFiveActiveSubscription() {
     _streamControllerActiveSubscriptions = StreamController<LinkFiveActiveSubscriptionData>();
-    _streamControllerActiveSubscriptions!.add(_lastLinkFiveActiveSubscriptionData);
+    if(_lastLinkFiveActiveSubscriptionData != null) {
+      _streamControllerActiveSubscriptions!.add(_lastLinkFiveActiveSubscriptionData);
+    }
     return _streamControllerActiveSubscriptions!.stream;
   }
 }
