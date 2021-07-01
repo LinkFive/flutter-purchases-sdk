@@ -1,49 +1,19 @@
 
+import 'package:in_app_purchase/in_app_purchase.dart';
+
 class LinkFiveSubscriptionData {
-  final List<LinkFiveSkuData> linkFiveSkuData;
+  final List<LinkFiveProductDetails> linkFiveSkuData;
   final String? attributes;
   final String? error;
 
   LinkFiveSubscriptionData(this.linkFiveSkuData, this.attributes, this.error);
 
-  LinkFiveSubscriptionData.fromJson(Map<Object?, Object?> json)
-      : attributes = json["attributes"] as String?,
-        error = json["error"] as String?,
-        linkFiveSkuData = (json["linkFiveSkuData"] as List).map((e) => LinkFiveSkuData.fromJson(e)).toList()
-  ;
 }
 
-class LinkFiveSkuData {
-  final SkuDetails skuDetails;
+class LinkFiveProductDetails {
+  final ProductDetails productDetails;
 
-  LinkFiveSkuData(this.skuDetails);
+  LinkFiveProductDetails(this.productDetails);
 
-  LinkFiveSkuData.fromJson(Map<Object?, Object?> json)
-      : skuDetails = SkuDetails.fromJson(json["skuDetails"] as Map<Object?, Object?>);
 }
 
-class SkuDetails {
-  final String sku;
-  final String subscriptionPeriod;
-  final String price;
-  final String? introductoryPrice;
-  final String? introductoryPricePeriod;
-  final String title;
-  final String description;
-  final String freeTrialPeriod;
-  final String type;
-
-  SkuDetails(this.sku, this.subscriptionPeriod, this.price, this.introductoryPrice, this.introductoryPricePeriod,
-      this.title, this.description, this.freeTrialPeriod, this.type);
-
-  SkuDetails.fromJson(Map<Object?, Object?> json)
-      : sku = json["sku"]! as String,
-        subscriptionPeriod = json["subscriptionPeriod"]! as String,
-        price = json["price"]! as String,
-        introductoryPrice = json["introductoryPrice"] as String?,
-        introductoryPricePeriod = json["introductoryPricePeriod"] as String?,
-        title = json["title"]! as String,
-        description = json["description"]! as String,
-        freeTrialPeriod = json["freeTrialPeriod"]! as String,
-        type = json["type"]! as String;
-}

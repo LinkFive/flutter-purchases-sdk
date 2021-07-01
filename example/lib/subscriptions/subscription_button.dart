@@ -2,18 +2,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/models/linkfive_subscription.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 
 class SubscriptionButton extends StatelessWidget {
-  final LinkFiveSkuData linkFiveSkuData;
+  final LinkFiveProductDetails linkFiveProductDetails;
 
-  SubscriptionButton({required this.linkFiveSkuData});
+  SubscriptionButton({required this.linkFiveProductDetails});
 
   onSubscriptionPressed() {
-    LinkFivePurchases.purchase(skuDetails: linkFiveSkuData.skuDetails);
+    LinkFivePurchases.purchase(linkFiveProductDetails.productDetails);
   }
 
   String getSubscriptionPeriod() {
-    switch (linkFiveSkuData.skuDetails.subscriptionPeriod) {
+    if (linkFiveProductDetails.productDetails is GooglePlayProductDetails) {
+      return getSubscriptionPeriodGoogle(linkFiveProductDetails.productDetails as GooglePlayProductDetails);
+    }
+    return "-";
+  }
+
+  String getSubscriptionPeriodGoogle(GooglePlayProductDetails productDetails) {
+    switch (productDetails.skuDetails.subscriptionPeriod) {
       case "P1M":
         return "1 Month";
       case "P3M":
@@ -35,7 +43,7 @@ class SubscriptionButton extends StatelessWidget {
         padding: EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: [Text(getSubscriptionPeriod()), Text(linkFiveSkuData.skuDetails.price)],
+          children: [Text(getSubscriptionPeriod()), Text(linkFiveProductDetails.productDetails.price)],
         ),
       ),
     );

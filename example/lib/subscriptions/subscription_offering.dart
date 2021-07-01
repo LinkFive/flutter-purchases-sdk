@@ -13,7 +13,7 @@ class _SubscriptionOfferingState extends State<SubscriptionOffering> with Widget
 
 
   buildSubscriptionButtons(LinkFiveSubscriptionData subscriptionData) {
-    return subscriptionData.linkFiveSkuData.map((data) => SubscriptionButton(linkFiveSkuData: data)).toList();
+    return subscriptionData.linkFiveSkuData.map((data) => SubscriptionButton(linkFiveProductDetails: data)).toList();
   }
 
   @override
@@ -21,8 +21,8 @@ class _SubscriptionOfferingState extends State<SubscriptionOffering> with Widget
     return Container(
       padding: EdgeInsets.all(8),
       child: StreamBuilder<LinkFiveSubscriptionData?>(
-        stream: LinkFivePurchases.linkFiveSubscription(),
-        builder: (BuildContext context, AsyncSnapshot<LinkFiveSubscriptionData?> snapshot) {
+        stream: LinkFivePurchases.listenOnSubscriptionData(),
+        builder: (context, snapshot) {
           if (snapshot.hasData) {
             var subscriptionData = snapshot.data;
             if(subscriptionData != null) {

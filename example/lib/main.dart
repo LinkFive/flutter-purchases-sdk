@@ -1,28 +1,34 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
 import 'package:linkfive_purchases_example/root/root_page.dart';
+
+class IAPConnection {
+  static InAppPurchase? _instance;
+  static set instance(InAppPurchase value) {
+    _instance = value;
+  }
+
+  static InAppPurchase get instance {
+    _instance ??= InAppPurchase.instance;
+    return _instance!;
+  }
+}
+
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: RootPage()
+      title: 'Dash Clicker',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: RootPage(),
     );
   }
 }

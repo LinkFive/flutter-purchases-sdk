@@ -10,6 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  in_app_purchase: ^1.0.6
+  http: ^0.13.3
+  package_info: ^2.0.2
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
@@ -30,7 +34,7 @@ flutter:
         package: io.linkfive.linkfive_purchases
         pluginClass: LinkFivePurchasesPlugin
       ios:
-        pluginClass: LinkFivePurchasesPlugin
+        pluginClass: LinkfivePurchasesPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

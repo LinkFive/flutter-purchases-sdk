@@ -9,16 +9,16 @@ class SubscriptionActive extends StatefulWidget {
 
 class _SubscriptionActiveState extends State<SubscriptionActive> with WidgetsBindingObserver {
   buildSubscriptions(LinkFiveActiveSubscriptionData subscriptionData) {
-    return subscriptionData.linkFivePurchaseData
+    return subscriptionData.subscriptionList
         .map((data) => Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Id: ${data.purchase.orderId}"),
-                  Text("    Token: ${data.purchase.purchaseToken.substring(0, 10)}..."),
-                  Text("    Purchased: ${DateTime.fromMillisecondsSinceEpoch(data.purchase.purchaseTime)}"),
+                  Text("Id: ${data.purchaseDetails?.productID}"),
+                  Text("    Token: ${data.purchaseDetails?.purchaseID}"),
+                  Text("    Purchased: ${data.purchaseDetails?.transactionDate}"),
                   Text("    familyName: ${data.familyName}"),
-                  Text("    skus: ${data.purchase.skus}")
+                  Text("    skus: ${data.sku}")
                 ],
               ),
             ))
@@ -30,7 +30,7 @@ class _SubscriptionActiveState extends State<SubscriptionActive> with WidgetsBin
     return Container(
         padding: EdgeInsets.all(8),
         child: StreamBuilder<LinkFiveActiveSubscriptionData?>(
-          stream: LinkFivePurchases.linkFiveActiveSubscription(),
+          stream: LinkFivePurchases.listenOnActiveSubscriptionData(),
           builder: (BuildContext context, snapshot) {
             if (snapshot.hasData) {
               var subscriptionData = snapshot.data;
