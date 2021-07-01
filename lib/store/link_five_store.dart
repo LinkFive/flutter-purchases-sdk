@@ -119,6 +119,7 @@ class LinkFiveStore {
   _cleanAllStreams() {
     _cleanStream(_streamControllerResponse);
     _cleanStream(_streamControllerSubscriptions);
+    _cleanStream(_streamControllerActiveSubscriptions);
   }
 
   _cleanStream(List<StreamController> streamControllerList) {

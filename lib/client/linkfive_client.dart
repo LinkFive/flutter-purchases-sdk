@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -8,9 +7,9 @@ import 'package:in_app_purchase_platform_interface/src/types/purchase_details.da
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:package_info/package_info.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 
 class LinkFiveClient {
-
   final String stagingUrl = "api.staging.linkfive.io";
   final String prodUrl = "api.linkfive.io";
 
@@ -18,7 +17,7 @@ class LinkFiveClient {
 
   Future<LinkFiveResponseData> fetchLinkFiveResponse(String apiKey) async {
     var path = "api/v1/subscriptions";
-    var uri = Uri.https(hostUrl,path);
+    var uri = Uri.https(hostUrl, path);
     var response = await http.get(uri, headers: {
       "authorization": "Bearer $apiKey",
       "X-Platform": _getPlatform(),
@@ -33,16 +32,42 @@ class LinkFiveClient {
     return linkFiveResponseData;
   }
 
-  sendPurchaseToServer(PurchaseDetails purchaseDetails){
+  sendPurchaseToServer(String apiKey, PurchaseDetails purchaseDetails) {
     print(purchaseDetails);
+    if (purchaseDetails is GooglePlayPurchaseDetails) {
+      _sendGooglePlayPurchaseToServer(apiKey, purchaseDetails);
+    }
   }
 
-  Future<LinkFiveActiveSubscriptionData> fetchSubscriptionDetails(String apiKey, List<PurchaseDetails> purchasedProducts, ) async {
-    var path = "api/v1/subscription/sku";
-    final queryParams = {
-      "sku": purchasedProducts.map((e) => e.productID).toList()
+  _sendGooglePlayPurchaseToServer(String apiKey, GooglePlayPurchaseDetails googlePlayPurchaseDetails) async {
+    var path = "api/v1/purchases/google/verify";
+    var uri = Uri.https(hostUrl, path);
+
+    final body = {
+      "packageName": googlePlayPurchaseDetails.billingClientPurchase.packageName,
+      "purchaseToken": googlePlayPurchaseDetails.billingClientPurchase.purchaseToken,
+      "orderId": googlePlayPurchaseDetails.billingClientPurchase.orderId,
+      "purchaseTime": googlePlayPurchaseDetails.billingClientPurchase.purchaseTime,
+      "sku": googlePlayPurchaseDetails.billingClientPurchase.sku,
     };
-    var uri = Uri.https(hostUrl,path,queryParams);
+
+    var response = await http.post(uri, body: jsonEncode(body), headers: {
+      "Content-Type": "application/json",
+      "authorization": "Bearer $apiKey",
+      "X-Platform": _getPlatform(),
+      "X-Country": _getCountryCode(),
+      "X-App-Version": await _getAppVersion(),
+    });
+    print(response.body);
+  }
+
+  Future<LinkFiveActiveSubscriptionData> fetchSubscriptionDetails(
+    String apiKey,
+    List<PurchaseDetails> purchasedProducts,
+  ) async {
+    var path = "api/v1/subscription/sku";
+    final queryParams = {"sku": purchasedProducts.map((e) => e.productID).toList()};
+    var uri = Uri.https(hostUrl, path, queryParams);
 
     var response = await http.get(uri, headers: {
       "authorization": "Bearer $apiKey",
@@ -71,5 +96,10 @@ class LinkFiveClient {
   Future<String> _getAppVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     return packageInfo.version;
+  }
+
+  Future<String> _getPackageName() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo.packageName;
   }
 }

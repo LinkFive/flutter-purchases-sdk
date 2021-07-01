@@ -83,7 +83,7 @@ class LinkFivePurchases {
             purchaseDetails.status == PurchaseStatus.restored) {
 
           // send to server
-          client.sendPurchaseToServer(purchaseDetails);
+          client.sendPurchaseToServer(apiKey, purchaseDetails);
 
           // todo validate
           bool valid = true; // await _verifyPurchase(purchaseDetails);
@@ -133,6 +133,11 @@ class LinkFivePurchases {
     print("load active subs");
     var purchasedProducts = await billingClient.loadPurchasedProducts();
     store.onNewPurchasedProducts(purchasedProducts);
+    if(purchasedProducts == null || purchasedProducts.isEmpty){
+      print("no purchases found");
+      return;
+    }
+    print("purchased: $purchasedProducts");
     var linkFiveActiveSubscriptionData = await client.fetchSubscriptionDetails(this.apiKey, purchasedProducts);
     store.onNewLinkFiveActiveSubDetails(linkFiveActiveSubscriptionData);
   }
