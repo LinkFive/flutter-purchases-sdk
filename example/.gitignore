@@ -47,3 +47,4 @@ app.*.map.json
 
 # API Kkey
 /assets/apikey.json
+.fvm/flutter_sdk
