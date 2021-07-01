@@ -18,8 +18,8 @@ class LinkFivePurchases {
 
   LinkFivePurchases._();
 
-  static init(String apiKey) async {
-    await _instance._initialize(apiKey);
+  static init(String apiKey, {acknowledgeLocally = false}) async {
+    await _instance._initialize(apiKey, acknowledgeLocally: acknowledgeLocally);
   }
 
   static fetchSubscriptions() {
