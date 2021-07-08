@@ -51,15 +51,19 @@ class LinkFiveClient {
     }
   }
 
-  _sendGooglePlayPurchaseToServer(String apiKey, GooglePlayPurchaseDetails googlePlayPurchaseDetails) async {
+  _sendGooglePlayPurchaseToServer(String apiKey,
+      GooglePlayPurchaseDetails googlePlayPurchaseDetails) async {
     var path = "api/v1/purchases/google/verify";
     var uri = Uri.https(hostUrl, path);
 
     final body = {
-      "packageName": googlePlayPurchaseDetails.billingClientPurchase.packageName,
-      "purchaseToken": googlePlayPurchaseDetails.billingClientPurchase.purchaseToken,
+      "packageName":
+          googlePlayPurchaseDetails.billingClientPurchase.packageName,
+      "purchaseToken":
+          googlePlayPurchaseDetails.billingClientPurchase.purchaseToken,
       "orderId": googlePlayPurchaseDetails.billingClientPurchase.orderId,
-      "purchaseTime": googlePlayPurchaseDetails.billingClientPurchase.purchaseTime,
+      "purchaseTime":
+          googlePlayPurchaseDetails.billingClientPurchase.purchaseTime,
       "sku": googlePlayPurchaseDetails.billingClientPurchase.sku,
     };
 
@@ -78,7 +82,9 @@ class LinkFiveClient {
     List<PurchaseDetails> purchasedProducts,
   ) async {
     var path = "api/v1/subscription/sku";
-    final queryParams = {"sku": purchasedProducts.map((e) => e.productID).toList()};
+    final queryParams = {
+      "sku": purchasedProducts.map((e) => e.productID).toList()
+    };
     var uri = Uri.https(hostUrl, path, queryParams);
 
     var response = await http.get(uri, headers: {
@@ -88,7 +94,8 @@ class LinkFiveClient {
       "X-App-Version": await _getAppVersion()
     });
     LinkFiveLogger.d(response.body);
-    return LinkFiveActiveSubscriptionData.fromJson(jsonDecode(response.body)["data"]);
+    return LinkFiveActiveSubscriptionData.fromJson(
+        jsonDecode(response.body)["data"]);
   }
 
   String _getPlatform() {

@@ -6,6 +6,7 @@ import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:linkfive_purchases/logger/linkfive_logger.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 
 class LinkFiveBillingClient {
   init() {
@@ -27,6 +28,7 @@ class LinkFiveBillingClient {
     LinkFiveLogger.d("wait for connection");
     // wait for connecting
     final bool available = await InAppPurchase.instance.isAvailable();
+
     if (!available) {
       // The store cannot be reached or accessed. Update the UI accordingly.
       LinkFiveLogger.e("Store not reachable");
@@ -57,11 +59,15 @@ class LinkFiveBillingClient {
   Future<List<PurchaseDetails>> loadPurchasedProducts() async {
     await _checkStoreReachable();
     if (Platform.isAndroid) {
-      var androidExtension = InAppPurchase.instance
+      final androidExtension = InAppPurchase.instance
           .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
-      var pastPurchasesQuery = await androidExtension.queryPastPurchases();
+
+      final pastPurchasesQuery = await androidExtension.queryPastPurchases();
       return pastPurchasesQuery.pastPurchases;
-    } else if (Platform.isIOS) {}
+    } else if (Platform.isIOS) {
+      final receipt = await SKReceiptManager.retrieveReceiptData();
+      print(receipt);
+    }
     return List.empty();
   }
 }
