@@ -18,7 +18,6 @@ class LinkFivePurchases {
 
   static init(
     String apiKey, {
-    String? appleSharedSecret,
     bool acknowledgeLocally = false,
     LinkFiveLogLevel logLevel = LinkFiveLogLevel.DEBUG,
     LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION,
@@ -57,26 +56,17 @@ class LinkFivePurchases {
 
   StreamSubscription<List<PurchaseDetails>>? _subscription;
 
-  String apiKey = "";
-  String? appleSharedSecret;
   bool acknowledgeLocally = false;
 
   _initialize(String apiKey,
-      {String? appleSharedSecret,
-      bool acknowledgeLocally = false,
+      {bool acknowledgeLocally = false,
       LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION}) async {
-    this.apiKey = apiKey;
     this.acknowledgeLocally = acknowledgeLocally;
-    this.appleSharedSecret = appleSharedSecret;
-    client.init(env);
+    client.init(env, apiKey);
 
     LinkFiveLogger.d("init LinkFive");
 
-    if (appleSharedSecret == null) {
-      LinkFiveLogger.d("appleSharedSecret is missing!");
-    }
-
-    billingClient.init();
+    billingClient.init(client);
 
     _listenPurchaseUpdates();
     _loadActiveSubs();
@@ -107,7 +97,7 @@ class LinkFivePurchases {
         } else if (purchaseDetails.status == PurchaseStatus.purchased ||
             purchaseDetails.status == PurchaseStatus.restored) {
           // send to server
-          client.sendPurchaseToServer(apiKey, purchaseDetails);
+          client.sendPurchaseToServer(purchaseDetails);
 
           // todo validate
           bool valid = true; // await _verifyPurchase(purchaseDetails);
@@ -128,7 +118,7 @@ class LinkFivePurchases {
 
   _fetchSubscriptions() async {
     LinkFiveLogger.d("fetch subscriptions");
-    var linkFiveResponse = await client.fetchLinkFiveResponse(apiKey);
+    var linkFiveResponse = await client.fetchLinkFiveResponse();
     store.onNewResponseData(linkFiveResponse);
 
     var platformSubscriptions =
@@ -149,7 +139,7 @@ class LinkFivePurchases {
     }
     LinkFiveLogger.d("purchased: $purchasedProducts");
     var linkFiveActiveSubscriptionData =
-        await client.fetchSubscriptionDetails(this.apiKey, purchasedProducts);
+        await client.fetchSubscriptionDetails(purchasedProducts);
     store.onNewLinkFiveActiveSubDetails(linkFiveActiveSubscriptionData);
   }
 
@@ -157,7 +147,7 @@ class LinkFivePurchases {
     store.onNewPurchasedProducts([purchaseDetails], reset: false);
 
     var linkFiveActiveSubscriptionData =
-        await client.fetchSubscriptionDetails(this.apiKey, [purchaseDetails]);
+        await client.fetchSubscriptionDetails([purchaseDetails]);
     store.onNewLinkFiveActiveSubDetails(linkFiveActiveSubscriptionData,
         reset: false);
   }

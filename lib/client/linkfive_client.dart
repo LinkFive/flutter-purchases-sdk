@@ -17,9 +17,20 @@ class LinkFiveClient {
   LinkFiveEnvironment environment = LinkFiveEnvironment.PRODUCTION;
 
   String hostUrl = "api.staging.linkfive.io";
+  late String _apiKey;
 
-  init(LinkFiveEnvironment env) {
+  Future<Map<String, String>> get _headers async {
+    return {
+      "authorization": "Bearer $_apiKey",
+      "X-Platform": _getPlatform(),
+      "X-Country": _getCountryCode(),
+      "X-App-Version": await _getAppVersion()
+    };
+  }
+
+  init(LinkFiveEnvironment env, String apiKey) {
     environment = env;
+    _apiKey = apiKey;
     if (env == LinkFiveEnvironment.STAGING) {
       hostUrl = stagingUrl;
     } else {
@@ -27,15 +38,11 @@ class LinkFiveClient {
     }
   }
 
-  Future<LinkFiveResponseData> fetchLinkFiveResponse(String apiKey) async {
+  Future<LinkFiveResponseData> fetchLinkFiveResponse() async {
     var path = "api/v1/subscriptions";
     var uri = Uri.https(hostUrl, path);
-    var response = await http.get(uri, headers: {
-      "authorization": "Bearer $apiKey",
-      "X-Platform": _getPlatform(),
-      "X-Country": _getCountryCode(),
-      "X-App-Version": await _getAppVersion()
-    });
+
+    var response = await http.get(uri, headers: await _headers);
     LinkFiveLogger.d('Response status: ${response.statusCode}');
     LinkFiveLogger.d('Response body: ${response.body}');
     var mapBody = jsonDecode(response.body);
@@ -44,14 +51,14 @@ class LinkFiveClient {
     return linkFiveResponseData;
   }
 
-  sendPurchaseToServer(String apiKey, PurchaseDetails purchaseDetails) {
+  sendPurchaseToServer(PurchaseDetails purchaseDetails) {
     LinkFiveLogger.d(purchaseDetails);
     if (purchaseDetails is GooglePlayPurchaseDetails) {
-      _sendGooglePlayPurchaseToServer(apiKey, purchaseDetails);
+      _sendGooglePlayPurchaseToServer(purchaseDetails);
     }
   }
 
-  _sendGooglePlayPurchaseToServer(String apiKey,
+  _sendGooglePlayPurchaseToServer(
       GooglePlayPurchaseDetails googlePlayPurchaseDetails) async {
     var path = "api/v1/purchases/google/verify";
     var uri = Uri.https(hostUrl, path);
@@ -67,18 +74,12 @@ class LinkFiveClient {
       "sku": googlePlayPurchaseDetails.billingClientPurchase.sku,
     };
 
-    var response = await http.post(uri, body: jsonEncode(body), headers: {
-      "Content-Type": "application/json",
-      "authorization": "Bearer $apiKey",
-      "X-Platform": _getPlatform(),
-      "X-Country": _getCountryCode(),
-      "X-App-Version": await _getAppVersion(),
-    });
+    var response =
+        await http.post(uri, body: jsonEncode(body), headers: await _headers);
     LinkFiveLogger.d(response.body);
   }
 
   Future<LinkFiveActiveSubscriptionData> fetchSubscriptionDetails(
-    String apiKey,
     List<PurchaseDetails> purchasedProducts,
   ) async {
     var path = "api/v1/subscription/sku";
@@ -87,12 +88,7 @@ class LinkFiveClient {
     };
     var uri = Uri.https(hostUrl, path, queryParams);
 
-    var response = await http.get(uri, headers: {
-      "authorization": "Bearer $apiKey",
-      "X-Platform": _getPlatform(),
-      "X-Country": _getCountryCode(),
-      "X-App-Version": await _getAppVersion()
-    });
+    var response = await http.get(uri, headers: await _headers);
     LinkFiveLogger.d(response.body);
     return LinkFiveActiveSubscriptionData.fromJson(
         jsonDecode(response.body)["data"]);
