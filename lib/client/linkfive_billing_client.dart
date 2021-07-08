@@ -14,7 +14,8 @@ class LinkFiveBillingClient {
     }
   }
 
-  Future<List<ProductDetails>?> getPlatformSubscriptions(LinkFiveResponseData linkFiveResponse) async {
+  Future<List<ProductDetails>?> getPlatformSubscriptions(
+      LinkFiveResponseData linkFiveResponse) async {
     if (await _checkStoreReachable()) {
       return await _loadProducts(linkFiveResponse.subscriptionList);
     }
@@ -35,28 +36,32 @@ class LinkFiveBillingClient {
     return true;
   }
 
-  Future<List<ProductDetails>> _loadProducts(List<LinkFiveResponseDataSubscription> subscriptionList) async {
+  Future<List<ProductDetails>> _loadProducts(
+      List<LinkFiveResponseDataSubscription> subscriptionList) async {
     LinkFiveLogger.d("load products from store");
     Set<String> _kIds = subscriptionList.map((e) => e.sku).toSet();
-    final ProductDetailsResponse response = await InAppPurchase.instance.queryProductDetails(_kIds);
+    final ProductDetailsResponse response =
+        await InAppPurchase.instance.queryProductDetails(_kIds);
 
     if (response.notFoundIDs.isNotEmpty) {
       // Handle the error.
       LinkFiveLogger.e("ID NOT FOUND");
     }
     if (response.error != null) {
-      LinkFiveLogger.e("Purchase Error ${response.error?.code}, ${response.error?.message}");
+      LinkFiveLogger.e(
+          "Purchase Error ${response.error?.code}, ${response.error?.message}");
     }
     return response.productDetails;
   }
 
   Future<List<PurchaseDetails>> loadPurchasedProducts() async {
     await _checkStoreReachable();
-    if(Platform.isAndroid){
-      var androidExtension = InAppPurchase.instance.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+    if (Platform.isAndroid) {
+      var androidExtension = InAppPurchase.instance
+          .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
       var pastPurchasesQuery = await androidExtension.queryPastPurchases();
       return pastPurchasesQuery.pastPurchases;
-    }
+    } else if (Platform.isIOS) {}
     return List.empty();
   }
 }
