@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:in_app_purchase_platform_interface/src/types/purchase_details.dart';
+import 'package:linkfive_purchases/logger/linkfive_logger.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:package_info/package_info.dart';
@@ -13,7 +14,18 @@ class LinkFiveClient {
   final String stagingUrl = "api.staging.linkfive.io";
   final String prodUrl = "api.linkfive.io";
 
+  LinkFiveEnvironment environment = LinkFiveEnvironment.PRODUCTION;
+
   String hostUrl = "api.staging.linkfive.io";
+
+  init(LinkFiveEnvironment env) {
+    environment = env;
+    if (env == LinkFiveEnvironment.STAGING) {
+      hostUrl = stagingUrl;
+    } else {
+      hostUrl = prodUrl;
+    }
+  }
 
   Future<LinkFiveResponseData> fetchLinkFiveResponse(String apiKey) async {
     var path = "api/v1/subscriptions";
@@ -24,8 +36,8 @@ class LinkFiveClient {
       "X-Country": _getCountryCode(),
       "X-App-Version": await _getAppVersion()
     });
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+    LinkFiveLogger.d('Response status: ${response.statusCode}');
+    LinkFiveLogger.d('Response body: ${response.body}');
     var mapBody = jsonDecode(response.body);
     var data = mapBody["data"];
     var linkFiveResponseData = LinkFiveResponseData.fromJson(data);
@@ -33,7 +45,7 @@ class LinkFiveClient {
   }
 
   sendPurchaseToServer(String apiKey, PurchaseDetails purchaseDetails) {
-    print(purchaseDetails);
+    LinkFiveLogger.d(purchaseDetails);
     if (purchaseDetails is GooglePlayPurchaseDetails) {
       _sendGooglePlayPurchaseToServer(apiKey, purchaseDetails);
     }
@@ -58,7 +70,7 @@ class LinkFiveClient {
       "X-Country": _getCountryCode(),
       "X-App-Version": await _getAppVersion(),
     });
-    print(response.body);
+    LinkFiveLogger.d(response.body);
   }
 
   Future<LinkFiveActiveSubscriptionData> fetchSubscriptionDetails(
@@ -75,7 +87,7 @@ class LinkFiveClient {
       "X-Country": _getCountryCode(),
       "X-App-Version": await _getAppVersion()
     });
-    print(response.body);
+    LinkFiveLogger.d(response.body);
     return LinkFiveActiveSubscriptionData.fromJson(jsonDecode(response.body)["data"]);
   }
 
@@ -103,3 +115,5 @@ class LinkFiveClient {
     return packageInfo.packageName;
   }
 }
+
+enum LinkFiveEnvironment { STAGING, PRODUCTION }

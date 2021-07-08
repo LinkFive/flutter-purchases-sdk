@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:in_app_purchase_platform_interface/src/types/product_details.dart';
 import 'package:in_app_purchase_platform_interface/src/types/purchase_details.dart';
+import 'package:linkfive_purchases/logger/linkfive_logger.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:linkfive_purchases/models/linkfive_subscription.dart';
@@ -27,7 +28,7 @@ class LinkFiveStore {
     var controller = StreamController<LinkFiveResponseData?>();
     _streamControllerResponse.add(controller);
     if (latestLinkFiveResponse != null) {
-      print("push response data after create");
+      LinkFiveLogger.d("push response data after create");
       controller.add(latestLinkFiveResponse);
     }
     return controller.stream;
@@ -37,7 +38,7 @@ class LinkFiveStore {
     var controller = StreamController<LinkFiveSubscriptionData?>();
     _streamControllerSubscriptions.add(controller);
     if (latestProductDetailList != null) {
-      print("push sub data after create");
+      LinkFiveLogger.d("push sub data after create");
       controller.add(latestLinkFiveSubscriptionData);
     }
     return controller.stream;
@@ -47,17 +48,17 @@ class LinkFiveStore {
     var controller = StreamController<LinkFiveActiveSubscriptionData?>();
     _streamControllerActiveSubscriptions.add(controller);
     if (latestLinkFiveActiveSubscriptionData != null) {
-      print("push sub data after create");
+      LinkFiveLogger.d("push sub data after create");
       controller.add(latestLinkFiveActiveSubscriptionData);
     }
     return controller.stream;
   }
 
   onNewResponseData(LinkFiveResponseData data) {
-    print("new response $data");
+    LinkFiveLogger.d("new response $data");
     _cleanAllStreams();
     _streamControllerResponse.forEach((element) {
-      print("push response data to $element");
+      LinkFiveLogger.d("push response data to $element");
       element.add(data);
     });
   }
@@ -72,7 +73,7 @@ class LinkFiveStore {
     _cleanAllStreams();
 
     _streamControllerSubscriptions.forEach((element) {
-      print("push sub data to $element");
+      LinkFiveLogger.d("push sub data to $element");
       element.add(latestLinkFiveSubscriptionData);
     });
   }
@@ -104,14 +105,14 @@ class LinkFiveStore {
             .firstWhere((lfPurchaseData) => lfPurchaseData.sku == purchaseDetails.productID);
         linkFivePurchaseData?.purchaseDetails = purchaseDetails;
       } catch (e) {
-        print("element not found $e");
+        LinkFiveLogger.e("element not found $e");
       }
     });
 
     // notify observer
     _cleanAllStreams();
     _streamControllerActiveSubscriptions.forEach((element) {
-      print("push active sub data to $element");
+      LinkFiveLogger.d("push active sub data to $element");
       element.add(latestLinkFiveActiveSubscriptionData);
     });
   }
