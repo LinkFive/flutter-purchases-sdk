@@ -8,8 +8,13 @@ import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 
+import 'linkfive_client.dart';
+
 class LinkFiveBillingClient {
-  init() {
+  late LinkFiveClient _apiClient;
+
+  init(LinkFiveClient apiClient) {
+    this._apiClient = apiClient;
     if (defaultTargetPlatform == TargetPlatform.android) {
       InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
     }
