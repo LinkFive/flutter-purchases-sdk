@@ -50,6 +50,7 @@ class LinkFiveStore {
   }
 
   onNewResponseData(LinkFiveResponseData data) {
+    latestLinkFiveResponse = data;
     LinkFiveLogger.d("new response $data");
     _cleanAllStreams();
     _streamControllerResponse.forEach((element) {
