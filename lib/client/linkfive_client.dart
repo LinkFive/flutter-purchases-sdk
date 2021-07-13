@@ -7,6 +7,8 @@ import 'package:in_app_purchase_platform_interface/src/types/purchase_details.da
 import 'package:linkfive_purchases/logger/linkfive_logger.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
+import 'package:linkfive_purchases/store/link_five_store.dart';
+import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 import 'package:package_info/package_info.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 
@@ -27,14 +29,17 @@ class LinkFiveClient {
     }
   }
 
-  Future<LinkFiveResponseData> fetchLinkFiveResponse(String apiKey) async {
+  Future<LinkFiveResponseData> fetchLinkFiveResponse(LinkFiveAppDataStore appDataStore) async {
     var path = "api/v1/subscriptions";
     var uri = Uri.https(hostUrl, path);
     var response = await http.get(uri, headers: {
-      "authorization": "Bearer $apiKey",
+      "authorization": "Bearer ${appDataStore.apiKey}",
       "X-Platform": _getPlatform(),
       "X-Country": _getCountryCode(),
-      "X-App-Version": await _getAppVersion()
+      "X-App-Version": await _getAppVersion(),
+      "X-User-Id": appDataStore.userId ?? "",
+      "X-Utm-Source": appDataStore.utmSource ?? "",
+      "X-Environment": appDataStore.environment ?? ""
     });
     LinkFiveLogger.d('Response status: ${response.statusCode}');
     LinkFiveLogger.d('Response body: ${response.body}');
