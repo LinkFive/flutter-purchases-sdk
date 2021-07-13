@@ -1,7 +1,6 @@
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 import 'package:linkfive_purchases/models/SubscriptionPeriod.dart';
 
 class LinkFiveSubscriptionData {
@@ -19,13 +18,16 @@ class LinkFiveProductDetails {
 
   SubscriptionPeriod? getSubscriptionPeriod() {
     if (productDetails is GooglePlayProductDetails) {
-      GooglePlayProductDetails googleDetails = productDetails as GooglePlayProductDetails;
-      return SubscriptionPeriodUtil.fromGoogle(googleDetails.skuDetails.subscriptionPeriod);
+      GooglePlayProductDetails googleDetails =
+          productDetails as GooglePlayProductDetails;
+      return SubscriptionPeriodUtil.fromGoogle(
+          googleDetails.skuDetails.subscriptionPeriod);
     }
     if (productDetails is AppStoreProductDetails) {
-      AppStoreProductDetails iosDetails = productDetails as AppStoreProductDetails;
-      var unit = iosDetails.skProduct.subscriptionPeriod?.unit;
-      return SubscriptionPeriodUtil.fromAppStore(iosDetails.skProduct.subscriptionPeriod);
+      AppStoreProductDetails iosDetails =
+          productDetails as AppStoreProductDetails;
+      return SubscriptionPeriodUtil.fromAppStore(
+          iosDetails.skProduct.subscriptionPeriod);
     }
     return null;
   }

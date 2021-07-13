@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'package:collection/collection.dart';
 
 import 'package:in_app_purchase_platform_interface/src/types/product_details.dart';
-import 'package:in_app_purchase_platform_interface/src/types/purchase_details.dart';
 import 'package:linkfive_purchases/logger/linkfive_logger.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
@@ -12,17 +12,15 @@ class LinkFiveStore {
   List<ProductDetails>? latestProductDetailList;
   LinkFiveSubscriptionData? latestLinkFiveSubscriptionData;
 
-  // raw purchase from platform
-  List<PurchaseDetails>? latestPurchasedProducts;
-
-  // LinkFive data combined with purchase
-  LinkFivePurchaseData? latestLinkFivePurchaseData;
   LinkFiveActiveSubscriptionData? latestLinkFiveActiveSubscriptionData;
 
   // Stream to flutter of Raw Response
-  static List<StreamController<LinkFiveResponseData?>> _streamControllerResponse = [];
-  static List<StreamController<LinkFiveSubscriptionData?>> _streamControllerSubscriptions = [];
-  static List<StreamController<LinkFiveActiveSubscriptionData?>> _streamControllerActiveSubscriptions = [];
+  static List<StreamController<LinkFiveResponseData?>>
+      _streamControllerResponse = [];
+  static List<StreamController<LinkFiveSubscriptionData?>>
+      _streamControllerSubscriptions = [];
+  static List<StreamController<LinkFiveActiveSubscriptionData?>>
+      _streamControllerActiveSubscriptions = [];
 
   Stream<LinkFiveResponseData?> listenOnResponseData() {
     var controller = StreamController<LinkFiveResponseData?>();
@@ -78,36 +76,29 @@ class LinkFiveStore {
     });
   }
 
-  onNewPurchasedProducts(List<PurchaseDetails> purchasedProducts, {bool reset = true}) {
-    if (reset || latestPurchasedProducts == null) {
-      latestPurchasedProducts = purchasedProducts;
-    } else {
-      purchasedProducts.forEach((element) {
-        latestPurchasedProducts!.add(element);
-      });
-
-    }
-  }
-
-  onNewLinkFiveActiveSubDetails(LinkFiveActiveSubscriptionData linkFiveActiveSubscriptionData, {bool reset = true}) {
+  onNewLinkFiveActiveSubDetails(
+      LinkFiveActiveSubscriptionData linkFiveActiveSubscriptionData,
+      {bool reset = true}) {
     if (reset || latestLinkFiveActiveSubscriptionData == null) {
       latestLinkFiveActiveSubscriptionData = linkFiveActiveSubscriptionData;
     } else {
       linkFiveActiveSubscriptionData.subscriptionList.forEach((element) {
-        latestLinkFiveActiveSubscriptionData!.subscriptionList.add(element);
+        final hasSameVerifiedReceipt = latestLinkFiveActiveSubscriptionData!
+                .subscriptionList
+                .firstWhereOrNull((oldElement) =>
+                    oldElement.verifiedReceipt?.purchaseId ==
+                        element.verifiedReceipt?.purchaseId &&
+                    oldElement.verifiedReceipt?.transactionDate ==
+                        element.verifiedReceipt?.transactionDate &&
+                    oldElement.verifiedReceipt?.validUntilDate ==
+                        element.verifiedReceipt?.validUntilDate) !=
+            null;
+
+        if (!hasSameVerifiedReceipt) {
+          latestLinkFiveActiveSubscriptionData!.subscriptionList.add(element);
+        }
       });
     }
-
-    // find the purchase
-    latestPurchasedProducts?.forEach((purchaseDetails) {
-      try {
-        var linkFivePurchaseData = latestLinkFiveActiveSubscriptionData?.subscriptionList
-            .firstWhere((lfPurchaseData) => lfPurchaseData.sku == purchaseDetails.productID);
-        linkFivePurchaseData?.purchaseDetails = purchaseDetails;
-      } catch (e) {
-        LinkFiveLogger.e("element not found $e");
-      }
-    });
 
     // notify observer
     _cleanAllStreams();

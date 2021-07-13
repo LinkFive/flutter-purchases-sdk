@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases_example/subscriptions/subscription_active.dart';
@@ -10,8 +9,8 @@ class SubscriptionPage extends StatefulWidget {
   State<StatefulWidget> createState() => new _SubscriptionPageState();
 }
 
-class _SubscriptionPageState extends State<SubscriptionPage> with WidgetsBindingObserver {
-
+class _SubscriptionPageState extends State<SubscriptionPage>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -20,14 +19,18 @@ class _SubscriptionPageState extends State<SubscriptionPage> with WidgetsBinding
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-    child: Column(
-      children: [
-        SubscriptionResponse(),
-        SubscriptionOffering(),
-        SubscriptionActive()
-      ],
-    ),
+      child: Column(
+        children: [
+          SubscriptionResponse(),
+          SubscriptionOffering(),
+          SubscriptionActive(),
+          ElevatedButton(
+              onPressed: () async {
+                await LinkFivePurchases.restore();
+              },
+              child: const Text('restore'))
+        ],
+      ),
     );
   }
-  
 }

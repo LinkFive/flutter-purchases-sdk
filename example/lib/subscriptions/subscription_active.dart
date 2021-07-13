@@ -7,18 +7,23 @@ class SubscriptionActive extends StatefulWidget {
   State<StatefulWidget> createState() => new _SubscriptionActiveState();
 }
 
-class _SubscriptionActiveState extends State<SubscriptionActive> with WidgetsBindingObserver {
+class _SubscriptionActiveState extends State<SubscriptionActive>
+    with WidgetsBindingObserver {
   buildSubscriptions(LinkFiveActiveSubscriptionData subscriptionData) {
     return subscriptionData.subscriptionList
         .map((data) => Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Id: ${data.purchaseDetails?.productID}"),
-                  Text("    Token: ${data.purchaseDetails?.purchaseID}"),
-                  Text("    Purchased: ${data.purchaseDetails?.transactionDate}"),
+                  Text("Id: ${data.verifiedReceipt?.sku}"),
+                  Text("    PurchaseID: ${data.verifiedReceipt?.purchaseId}"),
+                  Text(
+                      "    Purchased: ${data.verifiedReceipt?.transactionDate}"),
+                  Text(
+                      "    Valid until: ${data.verifiedReceipt?.validUntilDate}"),
                   Text("    familyName: ${data.familyName}"),
-                  Text("    skus: ${data.sku}")
+                  Text("    skus: ${data.sku}"),
+                  Text("    isExpired: ${data.verifiedReceipt?.isExpired}")
                 ],
               ),
             ))
@@ -40,7 +45,8 @@ class _SubscriptionActiveState extends State<SubscriptionActive> with WidgetsBin
                   alignment: Alignment.topLeft,
                   child: Column(
                     children: [
-                      Text("Active Subscriptions:", style: Theme.of(context).textTheme.headline6),
+                      Text("Active Subscriptions:",
+                          style: Theme.of(context).textTheme.headline6),
                       ...buildSubscriptions(subscriptionData)
                     ],
                     mainAxisAlignment: MainAxisAlignment.start,
