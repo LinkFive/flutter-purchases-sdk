@@ -7,38 +7,42 @@ class LinkFiveLogger {
     _logLevel = logLevel;
   }
 
-  static t(dynamic? msg){
-    if(_logLevel.level() <= 0){
-      print("LinkFive: ${msg?.toString()}");
-    }
-  }
-  static d(dynamic? msg){
-    if(_logLevel.level() <= 1){
-      print("LinkFive: ${msg?.toString()}");
-    }
-  }
-  static i(dynamic? msg){
-    if(_logLevel.level() <= 2){
-      print("LinkFive: ${msg?.toString()}");
-    }
-  }
-  static w(dynamic? msg){
-    if(_logLevel.level() <= 3){
-      print("LinkFive: ${msg?.toString()}");
-    }
-  }
-  static e(dynamic? msg){
-    if(_logLevel.level() <= 4){
+  static t(dynamic msg) {
+    if (_logLevel.level() <= 0) {
       print("LinkFive: ${msg?.toString()}");
     }
   }
 
+  static d(dynamic msg) {
+    if (_logLevel.level() <= 1) {
+      print("LinkFive: ${msg?.toString()}");
+    }
+  }
+
+  static i(dynamic msg) {
+    if (_logLevel.level() <= 2) {
+      print("LinkFive: ${msg?.toString()}");
+    }
+  }
+
+  static w(dynamic msg) {
+    if (_logLevel.level() <= 3) {
+      print("LinkFive: ${msg?.toString()}");
+    }
+  }
+
+  static e(dynamic msg) {
+    if (_logLevel.level() <= 4) {
+      print("LinkFive: ${msg?.toString()}");
+    }
+  }
 }
 
 enum LinkFiveLogLevel { TRACE, DEBUG, INFO, WARN, ERROR }
+
 extension LinkFiveLogLevelExtension on LinkFiveLogLevel {
-  level(){
-    switch(this){
+  level() {
+    switch (this) {
       case LinkFiveLogLevel.TRACE:
         return 0;
       case LinkFiveLogLevel.DEBUG:

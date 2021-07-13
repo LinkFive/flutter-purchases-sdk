@@ -7,6 +7,7 @@ import 'package:linkfive_purchases/logger/linkfive_logger.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
 
 import 'linkfive_client.dart';
 
@@ -22,14 +23,14 @@ class LinkFiveBillingClient {
 
   Future<List<ProductDetails>?> getPlatformSubscriptions(
       LinkFiveResponseData linkFiveResponse) async {
-    if (await _checkStoreReachable()) {
+    if (await _isStoreReachable) {
       return await _loadProducts(linkFiveResponse.subscriptionList);
     }
     LinkFiveLogger.d("No Products to return Store is proabably not reachable");
     return null;
   }
 
-  _checkStoreReachable() async {
+  Future<bool> get _isStoreReachable async {
     LinkFiveLogger.d("wait for connection");
     // wait for connecting
     final bool available = await InAppPurchase.instance.isAvailable();
@@ -61,18 +62,44 @@ class LinkFiveBillingClient {
     return response.productDetails;
   }
 
-  Future<List<PurchaseDetails>> loadPurchasedProducts() async {
-    await _checkStoreReachable();
-    if (Platform.isAndroid) {
+  Future<List<LinkFiveVerifiedReceipt>> get verifiedReceipts async {
+    final isAvailable = await _isStoreReachable;
+
+    if (!isAvailable) {
+      return List.empty();
+    }
+
+    if (Platform.isIOS) {
+      try {
+        final receiptData = await SKReceiptManager.retrieveReceiptData();
+        final verifiedReceipt =
+            await _apiClient.verifyAppleReceipt(receiptData);
+
+        if (verifiedReceipt.isExpired) {
+          return List.empty();
+        }
+
+        return [verifiedReceipt];
+      } catch (error) {
+        LinkFiveLogger.e("An error occured: $error");
+        return List.empty();
+      }
+    } else if (Platform.isAndroid) {
       final androidExtension = InAppPurchase.instance
           .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
 
-      final pastPurchasesQuery = await androidExtension.queryPastPurchases();
-      return pastPurchasesQuery.pastPurchases;
-    } else if (Platform.isIOS) {
-      final receipt = await SKReceiptManager.retrieveReceiptData();
-      print(receipt);
+      final pastPurchases =
+          (await androidExtension.queryPastPurchases()).pastPurchases;
+
+      // TODO: Verify receipts to get for example the expiration date!
+      final verifiedReceipts = pastPurchases
+          .map(
+              (element) => LinkFiveVerifiedReceipt.fromPurchaseDetails(element))
+          .toList();
+
+      return verifiedReceipts;
     }
+
     return List.empty();
   }
 }

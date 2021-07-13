@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
@@ -8,10 +7,9 @@ import 'package:in_app_purchase_platform_interface/src/types/purchase_details.da
 import 'package:linkfive_purchases/logger/linkfive_logger.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
+import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
 import 'package:package_info/package_info.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 
 class LinkFiveClient {
   final String stagingUrl = "api.staging.linkfive.io";
@@ -41,13 +39,9 @@ class LinkFiveClient {
     return packageInfo.version;
   }
 
-  Future<String> get _packageName async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    return packageInfo.packageName;
-  }
-
   Future<Map<String, String>> get _headers async {
     return {
+      "Content-Type": "application/json",
       "authorization": "Bearer $_apiKey",
       "X-Platform": _platform,
       "X-Country": _countryCode,
@@ -81,21 +75,24 @@ class LinkFiveClient {
     LinkFiveLogger.d(purchaseDetails);
     if (purchaseDetails is GooglePlayPurchaseDetails) {
       _sendGooglePlayPurchaseToServer(purchaseDetails);
-    } else if (purchaseDetails is AppStorePurchaseDetails) {
-      // TODO: What to do?
-      SKPaymentTransactionWrapper skProduct =
-          (purchaseDetails as AppStorePurchaseDetails).skPaymentTransaction;
-
-      print(skProduct.transactionState);
     }
   }
 
+  Future<LinkFiveVerifiedReceipt> verifyAppleReceipt(String receipt) async {
+    final uri = _makeUri("api/v1/purchases/apple/verify");
+    final body = {"receipt": receipt};
+
+    final response =
+        await http.post(uri, body: jsonEncode(body), headers: await _headers);
+    LinkFiveLogger.d(response.body);
+
+    return LinkFiveVerifiedReceipt.fromJson(jsonDecode(response.body)["data"]);
+  }
+
   Future<LinkFiveActiveSubscriptionData> fetchSubscriptionDetails(
-    List<PurchaseDetails> purchasedProducts,
+    List<String> productIds,
   ) async {
-    final queryParams = {
-      "sku": purchasedProducts.map((e) => e.productID).toList()
-    };
+    final queryParams = {"sku": productIds};
     final uri = _makeUri("api/v1/subscription/sku", queryParams: queryParams);
 
     final response = await http.get(uri, headers: await _headers);
@@ -122,10 +119,6 @@ class LinkFiveClient {
     final response =
         await http.post(uri, body: jsonEncode(body), headers: await _headers);
     LinkFiveLogger.d(response.body);
-  }
-
-  _verifyAppleReceipt() {
-    final uri = _makeUri("api/v1/purchases/ios/verify");
   }
 
   Uri _makeUri(String path, {Map<String, List<String>>? queryParams}) {
