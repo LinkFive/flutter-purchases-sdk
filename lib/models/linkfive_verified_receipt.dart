@@ -44,5 +44,5 @@ class LinkFiveVerifiedReceipt {
       };
 
   static fromJsonList(Map<String, dynamic> json) =>
-      (json["purchases"] as List).map((e) => LinkFiveVerifiedReceipt.fromJson(e));
+      (json["purchases"] as List).map((e) => LinkFiveVerifiedReceipt.fromJson(e)).toList();
 }
