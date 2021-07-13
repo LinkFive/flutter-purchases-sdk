@@ -12,6 +12,7 @@ import 'package:linkfive_purchases/models/linkfive_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
 import 'package:linkfive_purchases/store/link_five_store.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
+import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 
 class LinkFivePurchases {
   // Singleton
@@ -21,13 +22,11 @@ class LinkFivePurchases {
 
   static init(
     String apiKey, {
-    bool acknowledgeLocally = false,
     LinkFiveLogLevel logLevel = LinkFiveLogLevel.DEBUG,
     LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION,
   }) async {
     LinkFiveLogger.setLogLevel(logLevel);
-    await _instance._initialize(apiKey,
-        acknowledgeLocally: acknowledgeLocally, env: env);
+    await _instance._initialize(apiKey, env: env);
   }
 
   static fetchSubscriptions() {
@@ -40,36 +39,40 @@ class LinkFivePurchases {
 
   static purchase(ProductDetails productDetails) async {
     final purchaseParam = PurchaseParam(productDetails: productDetails);
-    var showBuySuccess = await InAppPurchase.instance
-        .buyNonConsumable(purchaseParam: purchaseParam);
+    var showBuySuccess = await InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
 
     LinkFiveLogger.d("Show Buy Intent success: $showBuySuccess");
   }
 
-  static Stream<LinkFiveResponseData?> listenOnResponseData() =>
-      _instance.store.listenOnResponseData();
+  static Stream<LinkFiveResponseData?> listenOnResponseData() => _instance.store.listenOnResponseData();
 
-  static Stream<LinkFiveSubscriptionData?> listenOnSubscriptionData() =>
-      _instance.store.listenOnSubscriptionData();
+  static Stream<LinkFiveSubscriptionData?> listenOnSubscriptionData() => _instance.store.listenOnSubscriptionData();
 
-  static Stream<LinkFiveActiveSubscriptionData?>
-      listenOnActiveSubscriptionData() =>
-          _instance.store.listenOnActiveSubscriptionData();
+  static Stream<LinkFiveActiveSubscriptionData?> listenOnActiveSubscriptionData() =>
+      _instance.store.listenOnActiveSubscriptionData();
+
+  static setUTMSource(String? utmSource){
+    _instance.appDataStore.utmSource = utmSource;
+  }
+  static setEnvironment(String? environment){
+    _instance.appDataStore.environment = environment;
+  }
+  static setUserId(String? userId){
+    _instance.appDataStore.userId = userId;
+  }
 
   // members
   LinkFiveClient client = LinkFiveClient();
   LinkFiveBillingClient billingClient = LinkFiveBillingClient();
   LinkFiveStore store = LinkFiveStore();
+  LinkFiveAppDataStore appDataStore = LinkFiveAppDataStore();
 
   StreamSubscription<List<PurchaseDetails>>? _subscription;
 
-  bool acknowledgeLocally = false;
-
   _initialize(String apiKey,
-      {bool acknowledgeLocally = false,
-      LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION}) async {
-    this.acknowledgeLocally = acknowledgeLocally;
-    client.init(env, apiKey);
+      {LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION}) async {
+    appDataStore.apiKey = apiKey;
+    client.init(env, appDataStore);
 
     LinkFiveLogger.d("init LinkFive");
 
@@ -80,8 +83,7 @@ class LinkFivePurchases {
   }
 
   void _listenPurchaseUpdates() {
-    final Stream<List<PurchaseDetails>> purchaseUpdated =
-        InAppPurchase.instance.purchaseStream;
+    final Stream<List<PurchaseDetails>> purchaseUpdated = InAppPurchase.instance.purchaseStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
     }, onDone: () {
@@ -115,11 +117,13 @@ class LinkFivePurchases {
 
   _handlePurchasedPurchaseDetails(PurchaseDetails purchaseDetails) async {
     if (purchaseDetails.pendingCompletePurchase) {
+      // always on ios. android can be done locally or on server
       await InAppPurchase.instance.completePurchase(purchaseDetails);
     }
 
     if (Platform.isAndroid) {
-      await client.sendPurchaseToServer(purchaseDetails);
+      // await client.sendPurchaseToServer(purchaseDetails);
+      await _loadActiveSubs();
     } else if (Platform.isIOS) {
       await _loadActiveSubs();
     }
@@ -130,37 +134,20 @@ class LinkFivePurchases {
     var linkFiveResponse = await client.fetchLinkFiveResponse();
     store.onNewResponseData(linkFiveResponse);
 
-    var platformSubscriptions =
-        await billingClient.getPlatformSubscriptions(linkFiveResponse);
+    var platformSubscriptions = await billingClient.getPlatformSubscriptions(linkFiveResponse);
     if (platformSubscriptions != null) {
       store.onNewPlatformSubscriptions(platformSubscriptions);
     }
   }
 
+  ///
+  /// LOAD ACTIVE SUBS
+  ///
   _loadActiveSubs() async {
     LinkFiveLogger.d("load active subs");
-    final verifiedReceipts = await billingClient.verifiedReceipts;
+    final verifiedReceiptsList = await billingClient.verifiedReceipts;
 
-    if (verifiedReceipts.isEmpty) {
-      return;
-    }
-
-    verifiedReceipts.forEach((verifiedReceipt) async {
-      await _onVerifiedReceipt(verifiedReceipt);
-    });
-  }
-
-  _onVerifiedReceipt(LinkFiveVerifiedReceipt verifiedReceipt) async {
-    final productIds = [verifiedReceipt.sku];
-    final linkFiveActiveSubscriptionData =
-        await client.fetchSubscriptionDetails(productIds);
-
-    final subscription = linkFiveActiveSubscriptionData.subscriptionList
-        .firstWhereOrNull((element) => element.sku == verifiedReceipt.sku);
-
-    subscription?.verifiedReceipt = verifiedReceipt;
-
-    store.onNewLinkFiveActiveSubDetails(linkFiveActiveSubscriptionData,
-        reset: false);
+    // update listeners
+    store.onNewLinkFiveActiveSubDetails(LinkFiveActiveSubscriptionData(verifiedReceiptsList));
   }
 }

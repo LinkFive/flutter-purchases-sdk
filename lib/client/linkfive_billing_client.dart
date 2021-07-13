@@ -21,8 +21,7 @@ class LinkFiveBillingClient {
     }
   }
 
-  Future<List<ProductDetails>?> getPlatformSubscriptions(
-      LinkFiveResponseData linkFiveResponse) async {
+  Future<List<ProductDetails>?> getPlatformSubscriptions(LinkFiveResponseData linkFiveResponse) async {
     if (await _isStoreReachable) {
       return await _loadProducts(linkFiveResponse.subscriptionList);
     }
@@ -44,36 +43,36 @@ class LinkFiveBillingClient {
     return true;
   }
 
-  Future<List<ProductDetails>> _loadProducts(
-      List<LinkFiveResponseDataSubscription> subscriptionList) async {
+  Future<List<ProductDetails>> _loadProducts(List<LinkFiveResponseDataSubscription> subscriptionList) async {
     LinkFiveLogger.d("load products from store");
     Set<String> _kIds = subscriptionList.map((e) => e.sku).toSet();
-    final ProductDetailsResponse response =
-        await InAppPurchase.instance.queryProductDetails(_kIds);
+    final ProductDetailsResponse response = await InAppPurchase.instance.queryProductDetails(_kIds);
 
     if (response.notFoundIDs.isNotEmpty) {
       // Handle the error.
       LinkFiveLogger.e("ID NOT FOUND");
     }
     if (response.error != null) {
-      LinkFiveLogger.e(
-          "Purchase Error ${response.error?.code}, ${response.error?.message}");
+      LinkFiveLogger.e("Purchase Error ${response.error?.code}, ${response.error?.message}");
     }
     return response.productDetails;
   }
 
+  ///
+  /// Fetches the active receipts and sends them to LinkFive
+  ///
   Future<List<LinkFiveVerifiedReceipt>> get verifiedReceipts async {
     final isAvailable = await _isStoreReachable;
 
     if (!isAvailable) {
+      LinkFiveLogger.e("Store not reachable. Are you using an Emulator/Simulator?)");
       return List.empty();
     }
 
     if (Platform.isIOS) {
       try {
         final receiptData = await SKReceiptManager.retrieveReceiptData();
-        final verifiedReceipt =
-            await _apiClient.verifyAppleReceipt(receiptData);
+        final verifiedReceipt = await _apiClient.verifyAppleReceipt(receiptData);
 
         if (verifiedReceipt.isExpired) {
           return List.empty();
@@ -85,19 +84,19 @@ class LinkFiveBillingClient {
         return List.empty();
       }
     } else if (Platform.isAndroid) {
-      final androidExtension = InAppPurchase.instance
-          .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+      // get android purchases
+      final androidExtension = InAppPurchase.instance.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+      final pastPurchases = (await androidExtension.queryPastPurchases()).pastPurchases;
 
-      final pastPurchases =
-          (await androidExtension.queryPastPurchases()).pastPurchases;
+      if(pastPurchases.isEmpty){
+        return List.empty();
+      }
 
-      // TODO: Verify receipts to get for example the expiration date!
-      final verifiedReceipts = pastPurchases
-          .map(
-              (element) => LinkFiveVerifiedReceipt.fromPurchaseDetails(element))
-          .toList();
+      // verify a list of purchases
+      final verifiedReceiptList = await _apiClient.verifyGoogleReceipt(pastPurchases);
 
-      return verifiedReceipts;
+      // filter expired subscriptions
+      return verifiedReceiptList.where((element) => !element.isExpired).toList();
     }
 
     return List.empty();

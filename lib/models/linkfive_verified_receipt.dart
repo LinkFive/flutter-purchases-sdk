@@ -1,52 +1,48 @@
-import 'package:in_app_purchase/in_app_purchase.dart';
-
 class LinkFiveVerifiedReceipt {
-  LinkFiveVerifiedReceipt({
-    required this.sku,
-    this.purchaseId,
-    required this.transactionDate,
-    this.validUntilDate,
-    required this.status,
-    this.isTrial,
-    required this.isExpired,
-  });
+  LinkFiveVerifiedReceipt(
+      {required this.sku,
+      this.purchaseId,
+      required this.transactionDate,
+      this.validUntilDate,
+      this.isTrial,
+      required this.isExpired,
+      this.familyName,
+      this.attributes,
+      this.period});
 
   String sku;
   String? purchaseId;
   DateTime transactionDate;
   DateTime? validUntilDate;
-  int status;
   bool? isTrial;
   bool isExpired;
+  String? familyName;
+  String? attributes;
+  String? period;
 
-  /// Makes a [LinkFiveVerifiedReceipt] from [PurchaseDetails].
-  factory LinkFiveVerifiedReceipt.fromPurchaseDetails(
-          PurchaseDetails details) =>
-      LinkFiveVerifiedReceipt(
-          isExpired: false,
-          sku: details.productID,
-          purchaseId: details.purchaseID,
-          transactionDate: DateTime.parse(details.transactionDate!),
-          status: details.status.index);
-
-  factory LinkFiveVerifiedReceipt.fromJson(Map<String, dynamic> json) =>
-      LinkFiveVerifiedReceipt(
-        sku: json["sku"],
-        purchaseId: json["purchaseId"],
-        transactionDate: DateTime.parse(json["transactionDate"]),
-        validUntilDate: DateTime.parse(json["validUntilDate"]),
-        status: json["status"],
-        isTrial: json["isTrial"],
-        isExpired: json["isExpired"],
-      );
+  factory LinkFiveVerifiedReceipt.fromJson(Map<String, dynamic> json) => LinkFiveVerifiedReceipt(
+      sku: json["sku"],
+      purchaseId: json["purchaseId"],
+      transactionDate: DateTime.parse(json["transactionDate"]),
+      validUntilDate: DateTime.parse(json["validUntilDate"]),
+      isTrial: json["isTrial"],
+      isExpired: json["isExpired"],
+      familyName: json["familyName"],
+      attributes: json["attributes"],
+      period: json["period"]);
 
   Map<String, dynamic> toJson() => {
         "sku": sku,
         "purchaseId": purchaseId,
         "transactionDate": transactionDate,
         "validUntilDate": validUntilDate,
-        "status": status,
         "isTrial": isTrial,
         "isExpired": isExpired,
+        "familyName": familyName,
+        "attributes": attributes,
+        "period": period,
       };
+
+  static fromJsonList(Map<String, dynamic> json) =>
+      (json["purchases"] as List).map((e) => LinkFiveVerifiedReceipt.fromJson(e));
 }

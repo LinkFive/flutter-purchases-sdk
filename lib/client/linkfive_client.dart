@@ -8,6 +8,7 @@ import 'package:linkfive_purchases/logger/linkfive_logger.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
+import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 import 'package:package_info/package_info.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 
@@ -18,7 +19,7 @@ class LinkFiveClient {
   LinkFiveEnvironment environment = LinkFiveEnvironment.PRODUCTION;
 
   String hostUrl = "api.staging.linkfive.io";
-  late String _apiKey;
+  late LinkFiveAppDataStore _appDataStore;
 
   String get _platform {
     if (Platform.isAndroid) {
@@ -42,16 +43,19 @@ class LinkFiveClient {
   Future<Map<String, String>> get _headers async {
     return {
       "Content-Type": "application/json",
-      "authorization": "Bearer $_apiKey",
+      "authorization": "Bearer ${_appDataStore.apiKey}",
       "X-Platform": _platform,
       "X-Country": _countryCode,
-      "X-App-Version": await _appVersion
+      "X-App-Version": await _appVersion,
+      "X-User-Id": _appDataStore.userId ?? "",
+      "X-Utm-Source": _appDataStore.utmSource ?? "",
+      "X-Environment": _appDataStore.environment ?? ""
     };
   }
 
-  init(LinkFiveEnvironment env, String apiKey) {
+  init(LinkFiveEnvironment env, LinkFiveAppDataStore appDataStore) {
     environment = env;
-    _apiKey = apiKey;
+    this._appDataStore = appDataStore;
     if (env == LinkFiveEnvironment.STAGING) {
       hostUrl = stagingUrl;
     } else {
@@ -71,54 +75,33 @@ class LinkFiveClient {
     return linkFiveResponseData;
   }
 
-  sendPurchaseToServer(PurchaseDetails purchaseDetails) {
-    LinkFiveLogger.d(purchaseDetails);
-    if (purchaseDetails is GooglePlayPurchaseDetails) {
-      _sendGooglePlayPurchaseToServer(purchaseDetails);
-    }
-  }
-
   Future<LinkFiveVerifiedReceipt> verifyAppleReceipt(String receipt) async {
     final uri = _makeUri("api/v1/purchases/apple/verify");
     final body = {"receipt": receipt};
 
-    final response =
-        await http.post(uri, body: jsonEncode(body), headers: await _headers);
+    final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
     LinkFiveLogger.d(response.body);
 
     return LinkFiveVerifiedReceipt.fromJson(jsonDecode(response.body)["data"]);
   }
 
-  Future<LinkFiveActiveSubscriptionData> fetchSubscriptionDetails(
-    List<String> productIds,
-  ) async {
-    final queryParams = {"sku": productIds};
-    final uri = _makeUri("api/v1/subscription/sku", queryParams: queryParams);
-
-    final response = await http.get(uri, headers: await _headers);
-    LinkFiveLogger.d(response.body);
-    return LinkFiveActiveSubscriptionData.fromJson(
-        jsonDecode(response.body)["data"]);
-  }
-
-  _sendGooglePlayPurchaseToServer(
-      GooglePlayPurchaseDetails googlePlayPurchaseDetails) async {
+  Future<List<LinkFiveVerifiedReceipt>> verifyGoogleReceipt(List<GooglePlayPurchaseDetails> purchaseDetailList) async {
     final uri = _makeUri("api/v1/purchases/google/verify");
 
     final body = {
-      "packageName":
-          googlePlayPurchaseDetails.billingClientPurchase.packageName,
-      "purchaseToken":
-          googlePlayPurchaseDetails.billingClientPurchase.purchaseToken,
-      "orderId": googlePlayPurchaseDetails.billingClientPurchase.orderId,
-      "purchaseTime":
-          googlePlayPurchaseDetails.billingClientPurchase.purchaseTime,
-      "sku": googlePlayPurchaseDetails.billingClientPurchase.sku,
+      "purchases": purchaseDetailList.map((purchaseDetails) => {
+        "packageName": purchaseDetails.billingClientPurchase.packageName,
+        "purchaseToken": purchaseDetails.billingClientPurchase.purchaseToken,
+        "orderId": purchaseDetails.billingClientPurchase.orderId,
+        "purchaseTime": purchaseDetails.billingClientPurchase.purchaseTime,
+        "sku": purchaseDetails.billingClientPurchase.sku,
+      }).toList()
     };
 
-    final response =
-        await http.post(uri, body: jsonEncode(body), headers: await _headers);
+    final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
     LinkFiveLogger.d(response.body);
+
+    return LinkFiveVerifiedReceipt.fromJsonList(jsonDecode(response.body)["data"]);
   }
 
   Uri _makeUri(String path, {Map<String, List<String>>? queryParams}) {

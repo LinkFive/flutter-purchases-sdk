@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkfive_purchases/client/linkfive_client.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases_example/key/keyLoader.dart';
 import 'package:linkfive_purchases_example/subscriptions/SubscriptionPage.dart';
@@ -17,8 +18,7 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
 
   initLinkFive() async {
     var keys = await KeyLoader().load(context);
-    // LinkFivePurchases.init(keys.linkFiveApiKey, fetchSubscription: true);
-    await LinkFivePurchases.init(keys.linkFiveApiKey);
+    await LinkFivePurchases.init(keys.linkFiveApiKey, env: LinkFiveEnvironment.STAGING);
     LinkFivePurchases.fetchSubscriptions();
   }
 

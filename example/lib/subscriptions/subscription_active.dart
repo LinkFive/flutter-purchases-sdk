@@ -15,15 +15,15 @@ class _SubscriptionActiveState extends State<SubscriptionActive>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Id: ${data.verifiedReceipt?.sku}"),
-                  Text("    PurchaseID: ${data.verifiedReceipt?.purchaseId}"),
+                  Text("Id: ${data.sku}"),
+                  Text("    PurchaseID: ${data.purchaseId}"),
                   Text(
-                      "    Purchased: ${data.verifiedReceipt?.transactionDate}"),
+                      "    Purchased: ${data.transactionDate}"),
                   Text(
-                      "    Valid until: ${data.verifiedReceipt?.validUntilDate}"),
+                      "    Valid until: ${data.validUntilDate}"),
                   Text("    familyName: ${data.familyName}"),
                   Text("    skus: ${data.sku}"),
-                  Text("    isExpired: ${data.verifiedReceipt?.isExpired}")
+                  Text("    isExpired: ${data.isExpired}")
                 ],
               ),
             ))
