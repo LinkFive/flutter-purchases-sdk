@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:collection/collection.dart';
+import 'package:flutter/services.dart';
 
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:linkfive_purchases/client/linkfive_client.dart';
@@ -13,6 +14,7 @@ import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
 import 'package:linkfive_purchases/store/link_five_store.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 
 class LinkFivePurchases {
   // Singleton
@@ -20,8 +22,7 @@ class LinkFivePurchases {
 
   LinkFivePurchases._();
 
-  static init(
-    String apiKey, {
+  static init(String apiKey, {
     LinkFiveLogLevel logLevel = LinkFiveLogLevel.DEBUG,
     LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION,
   }) async {
@@ -33,13 +34,38 @@ class LinkFivePurchases {
     _instance._fetchSubscriptions();
   }
 
-  static restore() async {
+  static void restore() async {
     await InAppPurchase.instance.restorePurchases();
   }
 
   static purchase(ProductDetails productDetails) async {
     final purchaseParam = PurchaseParam(productDetails: productDetails);
-    var showBuySuccess = await InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
+    var showBuySuccess = false;
+    try {
+      // try to buy it
+      LinkFiveLogger.d("try to purchase item 1/2");
+      showBuySuccess = await InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
+    } on PlatformException catch(e) {
+      LinkFiveLogger.e(e);
+      /// exception could be:
+      ///  Unhandled Exception: PlatformException(storekit_duplicate_product_object, There is a pending transaction for the same product identifier. Please either wait for it to be finished or finish it manually using `completePurchase` to avoid edge cases., {applicationUsername: null, requestData: null, quantity: 1, productIdentifier: quarterly_pro_2020_4, simulatesAskToBuyInSandbox: false}, null)
+
+      // https://github.com/flutter/flutter/issues/60763#issuecomment-769051089
+      // try to clear the transactions
+      LinkFiveLogger.d("Finish previous transactions");
+      var transactions = await SKPaymentQueueWrapper().transactions();
+      transactions.forEach((skPaymentTransactionWrapper) async {
+        await SKPaymentQueueWrapper().finishTransaction(skPaymentTransactionWrapper);
+      });
+
+      // try to restore
+
+      restore();
+
+      LinkFiveLogger.d("try to purchase item 2/2");
+      // try buy again
+      showBuySuccess = await InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
+    }
 
     LinkFiveLogger.d("Show Buy Intent success: $showBuySuccess");
   }
@@ -51,13 +77,15 @@ class LinkFivePurchases {
   static Stream<LinkFiveActiveSubscriptionData?> listenOnActiveSubscriptionData() =>
       _instance.store.listenOnActiveSubscriptionData();
 
-  static setUTMSource(String? utmSource){
+  static setUTMSource(String? utmSource) {
     _instance.appDataStore.utmSource = utmSource;
   }
-  static setEnvironment(String? environment){
+
+  static setEnvironment(String? environment) {
     _instance.appDataStore.environment = environment;
   }
-  static setUserId(String? userId){
+
+  static setUserId(String? userId) {
     _instance.appDataStore.userId = userId;
   }
 
@@ -112,15 +140,15 @@ class LinkFivePurchases {
         default:
           break;
       }
+
+      if (purchaseDetails.pendingCompletePurchase) {
+        // always on ios. android can be done locally or on server
+        await InAppPurchase.instance.completePurchase(purchaseDetails);
+      }
     });
   }
 
   _handlePurchasedPurchaseDetails(PurchaseDetails purchaseDetails) async {
-    if (purchaseDetails.pendingCompletePurchase) {
-      // always on ios. android can be done locally or on server
-      await InAppPurchase.instance.completePurchase(purchaseDetails);
-    }
-
     if (Platform.isAndroid) {
       // await client.sendPurchaseToServer(purchaseDetails);
       await _loadActiveSubs();
