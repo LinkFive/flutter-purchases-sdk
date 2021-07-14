@@ -22,7 +22,8 @@ class LinkFivePurchases {
 
   LinkFivePurchases._();
 
-  static init(String apiKey, {
+  static init(
+    String apiKey, {
     LinkFiveLogLevel logLevel = LinkFiveLogLevel.DEBUG,
     LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION,
   }) async {
@@ -45,26 +46,27 @@ class LinkFivePurchases {
       // try to buy it
       LinkFiveLogger.d("try to purchase item 1/2");
       showBuySuccess = await InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
-    } on PlatformException catch(e) {
+    } on PlatformException catch (e) {
       LinkFiveLogger.e(e);
-      /// exception could be:
-      ///  Unhandled Exception: PlatformException(storekit_duplicate_product_object, There is a pending transaction for the same product identifier. Please either wait for it to be finished or finish it manually using `completePurchase` to avoid edge cases., {applicationUsername: null, requestData: null, quantity: 1, productIdentifier: quarterly_pro_2020_4, simulatesAskToBuyInSandbox: false}, null)
+      if (Platform.isIOS) {
+        /// Exception could be:
+        /// Unhandled Exception: PlatformException(storekit_duplicate_product_object, There is a pending transaction for the same product identifier. Please either wait for it to be finished or finish it manually using `completePurchase` to avoid edge cases., {applicationUsername: null, requestData: null, quantity: 1, productIdentifier: quarterly_pro_2020_4, simulatesAskToBuyInSandbox: false}, null)
 
-      // https://github.com/flutter/flutter/issues/60763#issuecomment-769051089
-      // try to clear the transactions
-      LinkFiveLogger.d("Finish previous transactions");
-      var transactions = await SKPaymentQueueWrapper().transactions();
-      transactions.forEach((skPaymentTransactionWrapper) async {
-        await SKPaymentQueueWrapper().finishTransaction(skPaymentTransactionWrapper);
-      });
+        // https://github.com/flutter/flutter/issues/60763#issuecomment-769051089
+        // try to clear the transactions
+        LinkFiveLogger.d("Finish previous transactions");
+        var transactions = await SKPaymentQueueWrapper().transactions();
+        transactions.forEach((skPaymentTransactionWrapper) async {
+          await SKPaymentQueueWrapper().finishTransaction(skPaymentTransactionWrapper);
+        });
 
-      // try to restore
+        // try to restore
+        restore();
 
-      restore();
-
-      LinkFiveLogger.d("try to purchase item 2/2");
-      // try buy again
-      showBuySuccess = await InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
+        LinkFiveLogger.d("try to purchase item 2/2");
+        // try buy again
+        showBuySuccess = await InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
+      }
     }
 
     LinkFiveLogger.d("Show Buy Intent success: $showBuySuccess");
@@ -97,8 +99,7 @@ class LinkFivePurchases {
 
   StreamSubscription<List<PurchaseDetails>>? _subscription;
 
-  _initialize(String apiKey,
-      {LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION}) async {
+  _initialize(String apiKey, {LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION}) async {
     appDataStore.apiKey = apiKey;
     client.init(env, appDataStore);
 
@@ -150,7 +151,6 @@ class LinkFivePurchases {
 
   _handlePurchasedPurchaseDetails(PurchaseDetails purchaseDetails) async {
     if (Platform.isAndroid) {
-      // await client.sendPurchaseToServer(purchaseDetails);
       await _loadActiveSubs();
     } else if (Platform.isIOS) {
       await _loadActiveSubs();
