@@ -35,7 +35,7 @@ class LinkFivePurchases {
     _instance._fetchSubscriptions();
   }
 
-  static void restore() async {
+  static Future<void> restore() async {
     await InAppPurchase.instance.restorePurchases();
   }
 
@@ -61,7 +61,7 @@ class LinkFivePurchases {
         });
 
         // try to restore
-        restore();
+        await restore();
 
         LinkFiveLogger.d("try to purchase item 2/2");
         // try buy again
