@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
@@ -30,7 +31,15 @@ class LinkFiveBillingClient {
   }
 
   Future<bool> get _isStoreReachable async {
-    LinkFiveLogger.d("wait for connection");
+    LinkFiveLogger.d("Is Store Reachable?");
+    // check simulator
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if(Platform.isIOS){
+      var iosInfo = await deviceInfo.iosInfo;
+      if(!iosInfo.isPhysicalDevice){
+        return false;
+      }
+    }
     // wait for connecting
     final bool available = await InAppPurchase.instance.isAvailable();
 

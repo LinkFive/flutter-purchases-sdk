@@ -1,33 +1,46 @@
 PODS:
+  - device_info_plus (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
   - in_app_purchase_ios (0.0.1):
     - Flutter
   - linkfive_purchases (0.0.1):
     - Flutter
-  - package_info (0.0.1):
+    - LinkFivePurchases (= 0.0.2)
+  - LinkFivePurchases (0.0.2)
+  - package_info_plus (0.4.5):
     - Flutter
 
 DEPENDENCIES:
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - in_app_purchase_ios (from `.symlinks/plugins/in_app_purchase_ios/ios`)
   - linkfive_purchases (from `.symlinks/plugins/linkfive_purchases/ios`)
-  - package_info (from `.symlinks/plugins/package_info/ios`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+
+SPEC REPOS:
+  trunk:
+    - LinkFivePurchases
 
 EXTERNAL SOURCES:
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
   in_app_purchase_ios:
     :path: ".symlinks/plugins/in_app_purchase_ios/ios"
   linkfive_purchases:
     :path: ".symlinks/plugins/linkfive_purchases/ios"
-  package_info:
-    :path: ".symlinks/plugins/package_info/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
 
 SPEC CHECKSUMS:
+  device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
   in_app_purchase_ios: 18c65275991b8a28b2a47634a7797fb23d5d773e
-  linkfive_purchases: ea14b1ca0ebf6653e34ba29d52a0bb788804d649
-  package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
+  linkfive_purchases: 060e9dd8288e17fef963c1857511dcec7c4aaf3f
+  LinkFivePurchases: f09f4f0969f89f4f7b05fb7ea9e0475f1da9281d
+  package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
 
 PODFILE CHECKSUM: a75497545d4391e2d394c3668e20cfb1c2bbd4aa
 
