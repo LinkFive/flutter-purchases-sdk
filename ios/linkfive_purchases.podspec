@@ -15,8 +15,6 @@ LinkFive Purchases flutter sdk
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'LinkFivePurchases', '0.0.2'
-
 
   s.platform = :ios, '9.0'
 
