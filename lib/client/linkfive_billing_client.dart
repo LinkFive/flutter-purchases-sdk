@@ -34,9 +34,9 @@ class LinkFiveBillingClient {
     LinkFiveLogger.d("Is Store Reachable?");
     // check simulator
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    if(Platform.isIOS){
+    if (Platform.isIOS) {
       var iosInfo = await deviceInfo.iosInfo;
-      if(!iosInfo.isPhysicalDevice){
+      if (!iosInfo.isPhysicalDevice) {
         return false;
       }
     }
@@ -77,37 +77,28 @@ class LinkFiveBillingClient {
       LinkFiveLogger.e("Store not reachable. Are you using an Emulator/Simulator?)");
       return List.empty();
     }
+    List<LinkFiveVerifiedReceipt> linkFiveReceipts = List.empty();
 
     if (Platform.isIOS) {
       try {
         final receiptData = await SKReceiptManager.retrieveReceiptData();
-        final verifiedReceipt = await _apiClient.verifyAppleReceipt(receiptData);
+        linkFiveReceipts = await _apiClient.verifyAppleReceipt(receiptData);
 
-        if (verifiedReceipt.isExpired) {
-          return List.empty();
-        }
-
-        return [verifiedReceipt];
       } catch (error) {
-        LinkFiveLogger.e("An error occured: $error");
-        return List.empty();
+        LinkFiveLogger.d("ReceiptError. Maybe just no receipt?: $error");
       }
     } else if (Platform.isAndroid) {
       // get android purchases
       final androidExtension = InAppPurchase.instance.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
       final pastPurchases = (await androidExtension.queryPastPurchases()).pastPurchases;
 
-      if(pastPurchases.isEmpty){
-        return List.empty();
+      if (pastPurchases.isNotEmpty) {
+        // verify a list of purchases
+        linkFiveReceipts = await _apiClient.verifyGoogleReceipt(pastPurchases);
       }
-
-      // verify a list of purchases
-      final verifiedReceiptList = await _apiClient.verifyGoogleReceipt(pastPurchases);
-
-      // filter expired subscriptions
-      return verifiedReceiptList.where((element) => !element.isExpired).toList();
     }
 
-    return List.empty();
+    // filter expired subscriptions
+    return linkFiveReceipts.where((element) => !element.isExpired).toList();
   }
 }

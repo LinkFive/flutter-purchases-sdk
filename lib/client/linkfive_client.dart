@@ -74,14 +74,14 @@ class LinkFiveClient {
     return linkFiveResponseData;
   }
 
-  Future<LinkFiveVerifiedReceipt> verifyAppleReceipt(String receipt) async {
+  Future<List<LinkFiveVerifiedReceipt>> verifyAppleReceipt(String receipt) async {
     final uri = _makeUri("api/v1/purchases/apple/verify");
     final body = {"receipt": receipt};
 
     final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
     LinkFiveLogger.d(response.body);
 
-    return LinkFiveVerifiedReceipt.fromJson(jsonDecode(response.body)["data"]);
+    return LinkFiveVerifiedReceipt.fromJsonList(jsonDecode(response.body)["data"]);
   }
 
   Future<List<LinkFiveVerifiedReceipt>> verifyGoogleReceipt(List<GooglePlayPurchaseDetails> purchaseDetailList) async {

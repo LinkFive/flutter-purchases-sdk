@@ -43,6 +43,6 @@ class LinkFiveVerifiedReceipt {
         "period": period,
       };
 
-  static fromJsonList(Map<String, dynamic> json) =>
+  static List<LinkFiveVerifiedReceipt> fromJsonList(Map<String, dynamic> json) =>
       (json["purchases"] as List).map((e) => LinkFiveVerifiedReceipt.fromJson(e)).toList();
 }
