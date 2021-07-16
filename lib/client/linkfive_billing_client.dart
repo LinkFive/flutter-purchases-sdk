@@ -82,6 +82,7 @@ class LinkFiveBillingClient {
     if (Platform.isIOS) {
       try {
         final receiptData = await SKReceiptManager.retrieveReceiptData();
+        // print(receiptData);
         linkFiveReceipts = await _apiClient.verifyAppleReceipt(receiptData);
 
       } catch (error) {

@@ -135,6 +135,8 @@ class LinkFivePurchases {
           LinkFiveLogger.e("_handleError(purchaseDetails.error!)");
           break;
         case PurchaseStatus.purchased:
+          // if restored. this will be triggered many many times.
+          // maybe we need to handle it differently since we do a request for each transaction
         case PurchaseStatus.restored:
           _handlePurchasedPurchaseDetails(purchaseDetails);
           break;

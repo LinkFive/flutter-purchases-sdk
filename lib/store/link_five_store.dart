@@ -54,7 +54,7 @@ class LinkFiveStore {
     LinkFiveLogger.d("new response $data");
     _cleanAllStreams();
     _streamControllerResponse.forEach((element) {
-      LinkFiveLogger.d("push response data to $element");
+      LinkFiveLogger.d("push response data with skus: ${data.subscriptionList.map((e) => e.sku)}");
       element.add(data);
     });
   }
@@ -69,7 +69,8 @@ class LinkFiveStore {
     _cleanAllStreams();
 
     _streamControllerSubscriptions.forEach((element) {
-      LinkFiveLogger.d("push sub data to $element");
+      LinkFiveLogger.d(
+          "push sub data with ids ${latestLinkFiveSubscriptionData?.linkFiveSkuData.map((e) => e.productDetails.id)}");
       element.add(latestLinkFiveSubscriptionData);
     });
   }
@@ -80,7 +81,8 @@ class LinkFiveStore {
     // notify observer
     _cleanAllStreams();
     _streamControllerActiveSubscriptions.forEach((element) {
-      LinkFiveLogger.d("push active sub data to $element");
+      LinkFiveLogger.d(
+          "push active sub data with size ${latestLinkFiveActiveSubscriptionData?.subscriptionList.length ?? 0}");
       element.add(latestLinkFiveActiveSubscriptionData);
     });
   }
