@@ -6,8 +6,6 @@ PODS:
     - Flutter
   - linkfive_purchases (0.0.1):
     - Flutter
-    - LinkFivePurchases (= 0.0.2)
-  - LinkFivePurchases (0.0.2)
   - package_info_plus (0.4.5):
     - Flutter
 
@@ -17,10 +15,6 @@ DEPENDENCIES:
   - in_app_purchase_ios (from `.symlinks/plugins/in_app_purchase_ios/ios`)
   - linkfive_purchases (from `.symlinks/plugins/linkfive_purchases/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
-
-SPEC REPOS:
-  trunk:
-    - LinkFivePurchases
 
 EXTERNAL SOURCES:
   device_info_plus:
@@ -38,10 +32,9 @@ SPEC CHECKSUMS:
   device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
   in_app_purchase_ios: 18c65275991b8a28b2a47634a7797fb23d5d773e
-  linkfive_purchases: 060e9dd8288e17fef963c1857511dcec7c4aaf3f
-  LinkFivePurchases: f09f4f0969f89f4f7b05fb7ea9e0475f1da9281d
+  linkfive_purchases: 35148f178e45af4365be7c9ac378b4eb60a91559
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
 
 PODFILE CHECKSUM: a75497545d4391e2d394c3668e20cfb1c2bbd4aa
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.10.1
