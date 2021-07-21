@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
 import 'package:linkfive_purchases/logger/linkfive_logger.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
@@ -74,6 +75,29 @@ class LinkFiveClient {
     return linkFiveResponseData;
   }
 
+  Future<void> purchaseIos(AppStoreProductDetails productDetails, AppStorePurchaseDetails purchaseDetails) async {
+    final uri = _makeUri("api/v1/purchases/apple");
+
+    final transaction = purchaseDetails.skPaymentTransaction;
+
+    var transactionDate = DateTime.now();
+    if (purchaseDetails.transactionDate != null) {
+      transactionDate = DateTime.fromMillisecondsSinceEpoch(int.parse(purchaseDetails.transactionDate!));
+    }
+    final transactionId = transaction.transactionIdentifier ?? "";
+    final body = {
+      "sku": productDetails.id,
+      "currency": productDetails.currencyCode,
+      "country": productDetails.skProduct.priceLocale.countryCode,
+      "price": productDetails.rawPrice,
+      "purchaseDate": transactionDate.toIso8601String(),
+      "transactionId": transactionId,
+      "originalTransactionId": transaction.originalTransaction?.transactionIdentifier ?? transactionId
+    };
+
+    await http.post(uri, body: jsonEncode(body), headers: await _headers);
+  }
+
   Future<List<LinkFiveVerifiedReceipt>> verifyAppleReceipt(String receipt) async {
     final uri = _makeUri("api/v1/purchases/apple/verify");
     final body = {"receipt": receipt};
@@ -88,13 +112,15 @@ class LinkFiveClient {
     final uri = _makeUri("api/v1/purchases/google/verify");
 
     final body = {
-      "purchases": purchaseDetailList.map((purchaseDetails) => {
-        "packageName": purchaseDetails.billingClientPurchase.packageName,
-        "purchaseToken": purchaseDetails.billingClientPurchase.purchaseToken,
-        "orderId": purchaseDetails.billingClientPurchase.orderId,
-        "purchaseTime": purchaseDetails.billingClientPurchase.purchaseTime,
-        "sku": purchaseDetails.billingClientPurchase.sku,
-      }).toList()
+      "purchases": purchaseDetailList
+          .map((purchaseDetails) => {
+                "packageName": purchaseDetails.billingClientPurchase.packageName,
+                "purchaseToken": purchaseDetails.billingClientPurchase.purchaseToken,
+                "orderId": purchaseDetails.billingClientPurchase.orderId,
+                "purchaseTime": purchaseDetails.billingClientPurchase.purchaseTime,
+                "sku": purchaseDetails.billingClientPurchase.sku,
+              })
+          .toList()
     };
 
     final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);

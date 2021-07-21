@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
 import 'package:linkfive_purchases/client/linkfive_client.dart';
 import 'package:linkfive_purchases/client/linkfive_billing_client.dart';
 import 'package:linkfive_purchases/logger/linkfive_logger.dart';
@@ -42,6 +43,13 @@ class LinkFivePurchases {
   static purchase(ProductDetails productDetails) async {
     final purchaseParam = PurchaseParam(productDetails: productDetails);
     var showBuySuccess = false;
+
+    // For LinkFive Analytics purposes
+    if (Platform.isIOS == true) {
+      LinkFiveLogger.d("Save product details because of ios");
+      _productDetailsToPurchase = productDetails as AppStoreProductDetails;
+    }
+
     try {
       // try to buy it
       LinkFiveLogger.d("try to purchase item 1/2");
@@ -99,6 +107,8 @@ class LinkFivePurchases {
 
   StreamSubscription<List<PurchaseDetails>>? _subscription;
 
+  static AppStoreProductDetails? _productDetailsToPurchase;
+
   _initialize(String apiKey, {LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION}) async {
     appDataStore.apiKey = apiKey;
     client.init(env, appDataStore);
@@ -135,8 +145,14 @@ class LinkFivePurchases {
           LinkFiveLogger.e("_handleError(purchaseDetails.error!)");
           break;
         case PurchaseStatus.purchased:
-          // if restored. this will be triggered many many times.
-          // maybe we need to handle it differently since we do a request for each transaction
+          if (Platform.isIOS && _productDetailsToPurchase != null) {
+            final appstorePurchaseDetails = purchaseDetails as AppStorePurchaseDetails;
+            await client.purchaseIos(_productDetailsToPurchase!, appstorePurchaseDetails);
+            _productDetailsToPurchase = null;
+          }
+          break;
+        // if restored. this will be triggered many many times.
+        // maybe we need to handle it differently since we do a request for each transaction
         case PurchaseStatus.restored:
           _handlePurchasedPurchaseDetails(purchaseDetails);
           break;
