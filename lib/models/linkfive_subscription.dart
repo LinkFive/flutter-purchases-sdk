@@ -1,7 +1,7 @@
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
-import 'package:linkfive_purchases/models/SubscriptionPeriod.dart';
+import 'package:linkfive_purchases/models/subscription_period.dart';
 
 class LinkFiveSubscriptionData {
   final List<LinkFiveProductDetails> linkFiveSkuData;

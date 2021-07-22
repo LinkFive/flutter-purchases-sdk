@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -11,7 +10,6 @@ import 'package:linkfive_purchases/logger/linkfive_logger.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:linkfive_purchases/models/linkfive_subscription.dart';
-import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
 import 'package:linkfive_purchases/store/link_five_store.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';

@@ -9,23 +9,17 @@ LinkFivePurchases.init("LinkFive Api Key");
 
 fetch all available subscripton:
 ```dart
-LinkFivePurchases.fetchSubscription();
+LinkFivePurchases.fetchSubscriptions();
 ```
-
-You can also initialize the sdk and fetch all subscription in one call
-```dart
-LinkFivePurchases.init(keys.linkFiveApiKey, fetchSubscription: true);
-```
-
 
 ### Available Subscription Data
 
 LinkFive uses a stream to pass data to your application. You can either just use the stream or use a StreamBuilder
 
 ```dart
-StreamBuilder(
-  stream: LinkFivePurchases.linkFiveSubscription(),
-  builder: (BuildContext context, AsyncSnapshot<LinkFiveSubscriptionData> snapshot) {
+StreamBuilder<LinkFiveSubscriptionData?>(
+  stream: LinkFivePurchases.listenOnSubscriptionData(),
+  builder: (context, snapshot) {
     if (snapshot.hasData) {
       var subscriptionData = snapshot.data;
       if(subscriptionData != null) {
@@ -39,23 +33,28 @@ StreamBuilder(
 ### Purchase a Subscription
 Just call purchase including the skuDetails
 ```dart
-LinkFivePurchases.purchase(skuDetails: linkFiveSkuData.skuDetails);
+makePurchase(LinkFiveProductDetails linkFiveProductDetails) async {
+  await LinkFivePurchases.purchase(linkFiveProductDetails.productDetails);
+}
 ```
 
 ### Get Active Subscription Data
 You will receive the data through the active subscription stream. You can either just use the stream or use a StreamBuilder
 ```dart
-StreamBuilder(
-  stream: LinkFivePurchases.linkFiveActiveSubscription(),
-  builder: (BuildContext context, AsyncSnapshot<LinkFiveActiveSubscriptionData> snapshot) {
-    if (snapshot.hasData) {
-      var subscriptionData = snapshot.data;
-      if (subscriptionData != null) {
-        // do something
-      }
-    }
-    return Center(child: Text('Loading...'));
-  },
+LinkFivePurchases.listenOnActiveSubscriptionData().listen(_activeSubscriptionListener);
+
+///
+/// subscriptionData can be null
+///
+void _activeSubscriptionListener(LinkFiveActiveSubscriptionData? subscriptionData) async {
+  // active Subscription
+}
+```
+
+### Restore Purchases
+All restored subscriptions will be available through the activeSubscription listener
+```dart
+LinkFivePurchases.restore();
 ```
 
 ## Android Errors
