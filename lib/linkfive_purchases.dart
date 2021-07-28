@@ -148,6 +148,7 @@ class LinkFivePurchases {
             await client.purchaseIos(_productDetailsToPurchase!, appstorePurchaseDetails);
             _productDetailsToPurchase = null;
           }
+          _handlePurchasedPurchaseDetails(purchaseDetails);
           break;
         // if restored. this will be triggered many many times.
         // maybe we need to handle it differently since we do a request for each transaction
