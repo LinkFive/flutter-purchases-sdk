@@ -1,5 +1,14 @@
 # LinkFive Purchases flutter sdk
 
+Flutter sdk available on pub.dev:
+
+https://pub.dev/packages/linkfive_purchases
+
+Add the SDK to your flutter app:
+```
+ $ flutter pub add linkfive_purchases
+```
+
 ## Getting Started
 
 Initialize the SDK
