@@ -9,8 +9,7 @@ class SubscriptionPage extends StatefulWidget {
   State<StatefulWidget> createState() => new _SubscriptionPageState();
 }
 
-class _SubscriptionPageState extends State<SubscriptionPage>
-    with WidgetsBindingObserver {
+class _SubscriptionPageState extends State<SubscriptionPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -18,19 +17,35 @@ class _SubscriptionPageState extends State<SubscriptionPage>
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SubscriptionResponse(),
-          SubscriptionOffering(),
-          SubscriptionActive(),
-          ElevatedButton(
-              onPressed: () async {
-                await LinkFivePurchases.restore();
-              },
-              child: const Text('restore'))
-        ],
-      ),
-    );
+    return Container(
+        padding: EdgeInsets.all(8),
+        child: StreamBuilder<bool>(
+          stream: LinkFivePurchases.listenOnShouldShowPendingUI(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              bool shouldShowPendingUI = snapshot.data ?? false;
+
+              if (shouldShowPendingUI) {
+                return Center(child: CircularProgressIndicator());
+              } else {
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SubscriptionResponse(),
+                      SubscriptionOffering(),
+                      SubscriptionActive(),
+                      ElevatedButton(
+                          onPressed: () async {
+                            await LinkFivePurchases.restore();
+                          },
+                          child: const Text('restore'))
+                    ],
+                  ),
+                );
+              }
+            }
+            return Center(child: Text('Loading...'));
+          },
+        ));
   }
 }
