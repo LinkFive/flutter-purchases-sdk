@@ -85,6 +85,8 @@ class LinkFivePurchases {
   static Stream<LinkFiveActiveSubscriptionData?> listenOnActiveSubscriptionData() =>
       _instance.store.listenOnActiveSubscriptionData();
 
+  static Stream<bool> listenOnShouldShowPendingUI() => _instance.store.listenOnShouldShowPendingUI();
+
   static setUTMSource(String? utmSource) {
     _instance.appDataStore.utmSource = utmSource;
   }
@@ -137,12 +139,14 @@ class LinkFivePurchases {
     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
       switch (purchaseDetails.status) {
         case PurchaseStatus.pending:
-          LinkFiveLogger.d("_showPendingUI();");
+          _handleShowPendingUI(true);
           break;
         case PurchaseStatus.error:
+          _handleShowPendingUI(false);
           LinkFiveLogger.e("_handleError(purchaseDetails.error!)");
           break;
         case PurchaseStatus.purchased:
+          _handleShowPendingUI(false);
           if (Platform.isIOS && _productDetailsToPurchase != null) {
             final appstorePurchaseDetails = purchaseDetails as AppStorePurchaseDetails;
             await client.purchaseIos(_productDetailsToPurchase!, appstorePurchaseDetails);
@@ -153,9 +157,11 @@ class LinkFivePurchases {
         // if restored. this will be triggered many many times.
         // maybe we need to handle it differently since we do a request for each transaction
         case PurchaseStatus.restored:
+          _handleShowPendingUI(false);
           _handlePurchasedPurchaseDetails(purchaseDetails);
           break;
         default:
+          _handleShowPendingUI(false);
           break;
       }
 
@@ -164,6 +170,10 @@ class LinkFivePurchases {
         await InAppPurchase.instance.completePurchase(purchaseDetails);
       }
     });
+  }
+
+  _handleShowPendingUI(bool shouldShowPendingUi) {
+    store.onShouldShowPendingUI(shouldShowPendingUi);
   }
 
   _handlePurchasedPurchaseDetails(PurchaseDetails purchaseDetails) async {

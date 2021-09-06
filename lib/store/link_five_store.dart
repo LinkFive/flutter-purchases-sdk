@@ -13,11 +13,13 @@ class LinkFiveStore {
   LinkFiveSubscriptionData? latestLinkFiveSubscriptionData;
 
   LinkFiveActiveSubscriptionData? latestLinkFiveActiveSubscriptionData;
+  bool latestShouldShowPendingUI = false;
 
   // Stream to flutter of Raw Response
   static List<StreamController<LinkFiveResponseData?>> _streamControllerResponse = [];
   static List<StreamController<LinkFiveSubscriptionData?>> _streamControllerSubscriptions = [];
   static List<StreamController<LinkFiveActiveSubscriptionData?>> _streamControllerActiveSubscriptions = [];
+  static List<StreamController<bool>> _streamControllerShouldShowPendingUI = [];
 
   Stream<LinkFiveResponseData?> listenOnResponseData() {
     var controller = StreamController<LinkFiveResponseData?>();
@@ -47,6 +49,25 @@ class LinkFiveStore {
       controller.add(latestLinkFiveActiveSubscriptionData);
     }
     return controller.stream;
+  }
+
+  Stream<bool> listenOnShouldShowPendingUI() {
+    var controller = StreamController<bool>();
+    _streamControllerShouldShowPendingUI.add(controller);
+
+    controller.add(latestShouldShowPendingUI);
+    return controller.stream;
+  }
+
+  onShouldShowPendingUI(bool shouldShowPendingUI) {
+    latestShouldShowPendingUI = shouldShowPendingUI;
+    LinkFiveLogger.d("Should show pending ui $shouldShowPendingUI");
+
+    _cleanAllStreams();
+    _streamControllerShouldShowPendingUI.forEach((element) {
+      LinkFiveLogger.d("push Should show pending ui: $shouldShowPendingUI");
+      element.add(shouldShowPendingUI);
+    });
   }
 
   onNewResponseData(LinkFiveResponseData data) {
@@ -91,6 +112,7 @@ class LinkFiveStore {
     _cleanStream(_streamControllerResponse);
     _cleanStream(_streamControllerSubscriptions);
     _cleanStream(_streamControllerActiveSubscriptions);
+    _cleanStream(_streamControllerShouldShowPendingUI);
   }
 
   _cleanStream(List<StreamController> streamControllerList) {
