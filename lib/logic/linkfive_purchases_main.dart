@@ -74,11 +74,20 @@ class LinkFivePurchasesMain extends CallbackInterface {
   /// PURCHASE
   /// Make a purchase
   purchase(dynamic productDetails) async {
-    if(!(productDetails is ProductDetails)){
-      LinkFiveLogger.d("Only ProductDetails are supported");
+    ProductDetails? _productDetails;
+    if (productDetails is ProductDetails) {
+      _productDetails = productDetails;
+    }
+    if (productDetails is SubscriptionData) {
+      if (productDetails.productDetails != null && productDetails.productDetails is ProductDetails) {
+        _productDetails = productDetails.productDetails;
+      }
+    }
+    if(_productDetails == null){
+      LinkFiveLogger.d("No ProductDetails to purchase found");
       return;
     }
-    final ProductDetails _productDetails = productDetails as ProductDetails;
+
     final purchaseParam = PurchaseParam(productDetails: _productDetails);
     var showBuySuccess = false;
 
