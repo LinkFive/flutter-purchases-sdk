@@ -30,9 +30,8 @@ class SimplePayWallUIWidget extends StatelessWidget {
         appBarTitle: "Premium",
         title: "Go Premium",
         subTitle: "All features now",
-        durationTitle: {
-          SubscriptionPeriod.P3M: "Quarterlyy"
-        },
+        dealPercentage: {SubscriptionPeriod.P3M: 30},
+        durationTitle: {SubscriptionPeriod.P3M: "Quarterlyy"},
       );
     });
   }
@@ -48,6 +47,7 @@ class SimplePayWallUiElement extends StatelessWidget {
   final List<IconAndText>? bulletPoints;
   final Widget? campaignWidget;
   final String? restoreText;
+  final Map<SubscriptionPeriod, int>? dealPercentage;
   final Map<SubscriptionPeriod, String>? durationTitle;
   final Map<SubscriptionPeriod, String>? durationShort;
 
@@ -61,6 +61,7 @@ class SimplePayWallUiElement extends StatelessWidget {
       this.bulletPoints,
       this.campaignWidget,
       this.restoreText,
+      this.dealPercentage,
       this.durationTitle,
       this.durationShort});
 
@@ -70,11 +71,29 @@ class SimplePayWallUiElement extends StatelessWidget {
   //#region subscriptions getter
   List<LinkFiveProductDetails> get _skuData => linkFiveSubscriptionData?.linkFiveSkuData ?? [];
 
+  int getDeal(LinkFiveProductDetails linkFiveProductDetails){
+    switch (linkFiveProductDetails.getSubscriptionPeriod()) {
+      case SubscriptionPeriod.P1Y:
+        return dealPercentage?[SubscriptionPeriod.P1Y] ?? 0;
+      case SubscriptionPeriod.P6M:
+        return dealPercentage?[SubscriptionPeriod.P6M] ?? 0;
+      case SubscriptionPeriod.P3M:
+        return dealPercentage?[SubscriptionPeriod.P3M] ?? 0;
+      case SubscriptionPeriod.P1M:
+        return dealPercentage?[SubscriptionPeriod.P1M] ?? 0;
+      case SubscriptionPeriod.P1W:
+        return dealPercentage?[SubscriptionPeriod.P1W] ?? 0;
+      case null:
+        return 0;
+    }
+  }
+
   List<SubscriptionData> get _subscriptionDataList => _skuData
       .map((lfProductDetails) => SubscriptionData(
           durationTitle: getDurationTitle(lfProductDetails),
           durationShort: getDurationShort(lfProductDetails),
           price: lfProductDetails.productDetails.price,
+          dealPercentage: getDeal(lfProductDetails),
           productDetails: lfProductDetails.productDetails))
       .toList();
 
