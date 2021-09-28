@@ -4,8 +4,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
-import 'package:linkfive_purchases/logger/linkfive_logger.dart';
-import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
+import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
@@ -138,4 +137,3 @@ class LinkFiveClient {
   }
 }
 
-enum LinkFiveEnvironment { STAGING, PRODUCTION }

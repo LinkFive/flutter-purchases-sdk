@@ -9,8 +9,7 @@ class SubscriptionPage extends StatefulWidget {
   State<StatefulWidget> createState() => new _SubscriptionPageState();
 }
 
-class _SubscriptionPageState extends State<SubscriptionPage>
-    with WidgetsBindingObserver {
+class _SubscriptionPageState extends State<SubscriptionPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -21,9 +20,12 @@ class _SubscriptionPageState extends State<SubscriptionPage>
     return SingleChildScrollView(
       child: Column(
         children: [
-          SubscriptionResponse(),
-          SubscriptionOffering(),
-          SubscriptionActive(),
+          SubscriptionResponseStream(),
+          SubscriptionResponseProvider(),
+          SubscriptionOfferingStream(),
+          SubscriptionOfferingProvider(),
+          SubscriptionActiveStream(),
+          SubscriptionActiveProvider(),
           ElevatedButton(
               onPressed: () async {
                 await LinkFivePurchases.restore();

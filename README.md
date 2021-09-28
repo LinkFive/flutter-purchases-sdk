@@ -16,7 +16,7 @@ Initialize the SDK
 LinkFivePurchases.init("LinkFive Api Key");
 ```
 
-fetch all available subscripton:
+fetch all available subscriptions:
 ```dart
 LinkFivePurchases.fetchSubscriptions();
 ```

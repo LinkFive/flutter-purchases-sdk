@@ -1,34 +1,72 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:linkfive_purchases_example/key/keyLoader.dart';
+import 'package:linkfive_purchases_example/provider/linkfive_provider.dart';
 
-import 'package:linkfive_purchases_example/root/root_page.dart';
-
-class IAPConnection {
-  static InAppPurchase? _instance;
-  static set instance(InAppPurchase value) {
-    _instance = value;
-  }
-
-  static InAppPurchase get instance {
-    _instance ??= InAppPurchase.instance;
-    return _instance!;
-  }
-}
-
+import 'package:linkfive_purchases_example/routing/delegate.dart';
+import 'package:linkfive_purchases_example/routing/parser.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => MyAppState();
+}
+
+class MyAppState extends State<MyApp> {
+  MainRouterDelegate _delegate = MainRouterDelegate();
+  AppPathInformationParser _parser = AppPathInformationParser();
+
+  Completer<Keys> _keysCompleter = Completer<Keys>();
+  late Future<Keys> _keysFuture;
+
+  MyAppState() {
+    _keysFuture = _keysCompleter.future;
+  }
+
+  @override
+  void initState() {
+    _keysCompleter.complete(KeyLoader().load(context));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Dash Clicker',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: RootPage(),
-    );
+    return FutureBuilder<Keys>(
+        future: _keysFuture,
+        builder: (BuildContext context, AsyncSnapshot<Keys> snapshot) {
+          if (snapshot.hasData) {
+            return MultiProvider(
+                providers: [
+                  ChangeNotifierProvider(
+                    create: (context) => LinkFiveProvider(snapshot.data!),
+                    lazy: false,
+                  )
+                ],
+                child: MaterialApp(
+                  title: 'LinkFive Example App',
+                  theme: ThemeData(
+                    primarySwatch: Colors.blue,
+                  ),
+                  home: MaterialApp.router(
+                    routeInformationParser: _parser,
+                    routerDelegate: _delegate,
+                    theme: ThemeData(
+                        primarySwatch: Colors.green),
+                  ),
+                ));
+          }
+          // loading
+          return Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [CircularProgressIndicator()],
+            ),
+          );
+        });
   }
 }
