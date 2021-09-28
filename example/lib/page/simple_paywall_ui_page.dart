@@ -72,17 +72,18 @@ class SimplePayWallUiElement extends StatelessWidget {
   List<LinkFiveProductDetails> get _skuData => linkFiveSubscriptionData?.linkFiveSkuData ?? [];
 
   int getDeal(LinkFiveProductDetails linkFiveProductDetails){
+    Map<String, dynamic> attributesMap = _attributesPaywall;
     switch (linkFiveProductDetails.getSubscriptionPeriod()) {
       case SubscriptionPeriod.P1Y:
-        return dealPercentage?[SubscriptionPeriod.P1Y] ?? 0;
+        return attributesMap["deal.P1Y"] ?? dealPercentage?[SubscriptionPeriod.P1Y] ?? 0;
       case SubscriptionPeriod.P6M:
-        return dealPercentage?[SubscriptionPeriod.P6M] ?? 0;
+        return attributesMap["deal.P6M"] ?? dealPercentage?[SubscriptionPeriod.P6M] ?? 0;
       case SubscriptionPeriod.P3M:
-        return dealPercentage?[SubscriptionPeriod.P3M] ?? 0;
+        return attributesMap["deal.P3M"] ?? dealPercentage?[SubscriptionPeriod.P3M] ?? 0;
       case SubscriptionPeriod.P1M:
-        return dealPercentage?[SubscriptionPeriod.P1M] ?? 0;
+        return attributesMap["deal.P1M"] ?? dealPercentage?[SubscriptionPeriod.P1M] ?? 0;
       case SubscriptionPeriod.P1W:
-        return dealPercentage?[SubscriptionPeriod.P1W] ?? 0;
+        return attributesMap["deal.P1W"] ?? dealPercentage?[SubscriptionPeriod.P1W] ?? 0;
       case null:
         return 0;
     }
