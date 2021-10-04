@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchases_paywall_ui/in_app_purchases_paywall_ui.dart';
-import 'package:linkfive_purchases/purchases.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases_example/key/keyLoader.dart';
 
 class LinkFiveProvider extends ChangeNotifier {

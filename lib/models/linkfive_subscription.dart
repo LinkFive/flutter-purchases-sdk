@@ -4,7 +4,7 @@ import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:in_app_purchases_intl/in_app_purchases_intl.dart';
-import 'package:linkfive_purchases/purchases.dart';
+import 'package:linkfive_purchases/util/subscription_duration_convert.dart';
 
 /// LinkFive SubscriotionData. it includes:
 /// [linkFiveSkuData] includes platform specific information

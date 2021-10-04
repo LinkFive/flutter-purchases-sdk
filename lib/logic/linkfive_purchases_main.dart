@@ -11,7 +11,6 @@ import 'package:linkfive_purchases/default/default_purchase_handler.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:linkfive_purchases/models/linkfive_subscription.dart';
-import 'package:linkfive_purchases/purchases.dart';
 import 'package:linkfive_purchases/store/link_five_store.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
@@ -91,7 +90,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
 
   /// Make a purchase
   ///
-  /// If you want to know if the purchase is pending, listen to [listenOnPendingPurchase]
+  /// If you want to know if the purchase is pending, listen to listenOnPendingPurchase
   /// @returns true if UI is shown, false otherwise
   Future<bool> purchase(dynamic productDetails) async {
     ProductDetails? _productDetails;

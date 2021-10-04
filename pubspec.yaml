@@ -16,8 +16,7 @@ dependencies:
   in_app_purchase: ^1.0.6
   http: ^0.13.3
   package_info_plus: ^1.0.3
-  provider: ^5.0.0
-  device_info_plus: "^2.0.1"
+  device_info_plus: ^2.0.1
   in_app_purchase_ios: ^0.1.3
   in_app_purchase_platform_interface: ^1.1.0
   in_app_purchase_android: ^0.1.4+1
@@ -25,7 +24,6 @@ dependencies:
     #path: ../in_app_purchases_paywall/packages/in_app_purchases_interface
   in_app_purchases_intl: ^0.0.2
     #path: ../in_app_purchases_paywall/packages/in_app_purchases_intl
-  collection: ^1.15.0
 
 dev_dependencies:
   flutter_test:

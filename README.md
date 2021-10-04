@@ -40,7 +40,6 @@ Just call purchase including the productDetails from the subscription stream
 
 ```dart
 await LinkFivePurchases.purchase( productDetails );
-}
 ```
 
 ### Restore a Purchases
