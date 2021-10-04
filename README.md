@@ -86,6 +86,42 @@ StreamBuilder<LinkFiveActiveSubscriptionData?>(
 )
 ```
 
+## Provider usage
+```dart
+class LinkFiveProvider extends ChangeNotifier {
+  LinkFivePurchasesMain linkFivePurchases = LinkFivePurchasesMain();
+
+  LinkFiveSubscriptionData? linkFiveSubscriptionData = null;
+  LinkFiveActiveSubscriptionData? linkFiveActiveSubscriptionData = null;
+
+  List<StreamSubscription> _streams = [];
+
+  LinkFiveProvider(Keys keys) {
+    linkFivePurchases.init(keys.linkFiveApiKey, env: LinkFiveEnvironment.STAGING);
+    linkFivePurchases.fetchSubscriptions();
+    _streams.add(linkFivePurchases.listenOnSubscriptionData().listen(_subscriptionDataUpdate));
+    _streams.add(linkFivePurchases.listenOnActiveSubscriptionData().listen(_activeSubscriptionDataUpdate));
+  }
+
+  void _subscriptionDataUpdate(LinkFiveSubscriptionData? data) async {
+    linkFiveSubscriptionData = data;
+    notifyListeners();
+  }
+
+  void _activeSubscriptionDataUpdate(LinkFiveActiveSubscriptionData? data) {
+    linkFiveActiveSubscriptionData = data;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _streams.forEach((element) async { await element.cancel(); });
+    _streams = [];
+    super.dispose();
+  }
+}
+```
+
 ## Easy Integration with the Paywall UI package
 
 Integrate linkfive_purchases with package [in_app_purchases_paywall_ui](https://pub.dev/packages/in_app_purchases_paywall_ui).
