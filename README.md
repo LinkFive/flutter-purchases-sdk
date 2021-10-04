@@ -12,13 +12,13 @@ Add the SDK to your flutter app:
 
 Initialize the SDK
 
-```
+```dart
 LinkFivePurchases.init("LinkFive Api Key");
 ```
 
 Fetch all available subscriptions from LinkFive. The result will be passed to the Stream
 
-```
+```dart
 LinkFivePurchases.fetchSubscriptions();
 ```
 
@@ -26,7 +26,7 @@ LinkFivePurchases.fetchSubscriptions();
 
 LinkFive mainly uses streams to pass data to your application.
 
-```
+```dart
 // Stream of subscriptions to offer to the user
 LinkFivePurchases.listenOnSubscriptionData()
 
@@ -38,7 +38,7 @@ LinkFivePurchases.listenOnActiveSubscriptionData()
 
 Just call purchase including the productDetails from the subscription stream
 
-```
+```dart
 await LinkFivePurchases.purchase( productDetails );
 }
 ```
@@ -47,7 +47,7 @@ await LinkFivePurchases.purchase( productDetails );
 
 All restored subscriptions will be available through the activeSubscription listener
 
-```
+```dart
 LinkFivePurchases.restore();
 ```
 
@@ -55,7 +55,7 @@ LinkFivePurchases.restore();
 
 Show purchasable subscriptions
 
-```
+```dart
 StreamBuilder<LinkFiveSubscriptionData?>(
   stream: LinkFivePurchases.listenOnSubscriptionData(),
   builder: (context, snapshot) {
@@ -71,7 +71,7 @@ StreamBuilder<LinkFiveSubscriptionData?>(
 
 Get Active Subscriptions
 
-```
+```dart
 StreamBuilder<LinkFiveActiveSubscriptionData?>(
   stream: LinkFivePurchases.listenOnActiveSubscriptionData(),
   builder: (BuildContext context, snapshot) {
@@ -110,7 +110,7 @@ Integrate linkfive_purchases with package [in_app_purchases_paywall_ui](https://
 ### Example usage with Paywall UI
 usage with [in_app_purchases_paywall_ui](https://pub.dev/packages/in_app_purchases_paywall_ui).
 
-```
+```dart
 // get LinkFivePurchases object from your provider or just create it
 final linkFivePurchases = LinkFivePurchasesMain()
 
