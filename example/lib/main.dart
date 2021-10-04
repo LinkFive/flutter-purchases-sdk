@@ -50,13 +50,14 @@ class MyAppState extends State<MyApp> {
                 child: MaterialApp(
                   title: 'LinkFive Example App',
                   theme: ThemeData(
-                    primarySwatch: Colors.blue,
+                    primarySwatch: Colors.green,
                   ),
                   home: MaterialApp.router(
                     routeInformationParser: _parser,
                     routerDelegate: _delegate,
                     theme: ThemeData(
-                        primarySwatch: Colors.green),
+                        primarySwatch: Colors.green,
+                        iconTheme: IconThemeData(color: Colors.green)),
                   ),
                 ));
           }

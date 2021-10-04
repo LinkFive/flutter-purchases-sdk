@@ -7,15 +7,18 @@ import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/client/linkfive_client.dart';
 import 'package:linkfive_purchases/client/linkfive_billing_client.dart';
+import 'package:linkfive_purchases/default/default_purchase_handler.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:linkfive_purchases/models/linkfive_subscription.dart';
+import 'package:linkfive_purchases/purchases.dart';
 import 'package:linkfive_purchases/store/link_five_store.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 
-class LinkFivePurchasesMain extends CallbackInterface {
+class LinkFivePurchasesMain extends DefaultPurchaseHandler
+    implements CallbackInterface {
   //#region Singleton
   LinkFivePurchasesMain._();
 
@@ -26,20 +29,34 @@ class LinkFivePurchasesMain extends CallbackInterface {
   //#endregion Singleton
 
   //#region Members
-
+  /// Cache of AppStoreProductDetail
   AppStoreProductDetails? _productDetailsToPurchase;
+
+  /// LinkFive HTTP Client
   LinkFiveClient client = LinkFiveClient();
+
+  /// Billing Client to Store
   LinkFiveBillingClient billingClient = LinkFiveBillingClient();
+
+  /// Internal Store for data
   LinkFiveStore store = LinkFiveStore();
+
+  /// Settings data Store
   LinkFiveAppDataStore appDataStore = LinkFiveAppDataStore();
 
   StreamSubscription<List<PurchaseDetails>>? _purchaseStream;
 
-  Stream<LinkFiveResponseData?> listenOnResponseData() => store.listenOnResponseData();
+  /// Response Data as Stream
+  Stream<LinkFiveResponseData?> listenOnResponseData() =>
+      store.listenOnResponseData();
 
-  Stream<LinkFiveSubscriptionData?> listenOnSubscriptionData() => store.listenOnSubscriptionData();
+  /// Subscription Data as Stream
+  Stream<LinkFiveSubscriptionData?> listenOnSubscriptionData() =>
+      store.listenOnSubscriptionData();
 
-  Stream<LinkFiveActiveSubscriptionData?> listenOnActiveSubscriptionData() => store.listenOnActiveSubscriptionData();
+  /// Active Subscription as Stream
+  Stream<LinkFiveActiveSubscriptionData?> listenOnActiveSubscriptionData() =>
+      store.listenOnActiveSubscriptionData();
 
   //#endregion Members
 
@@ -65,27 +82,31 @@ class LinkFivePurchasesMain extends CallbackInterface {
     var linkFiveResponse = await client.fetchLinkFiveResponse();
     store.onNewResponseData(linkFiveResponse);
 
-    var platformSubscriptions = await billingClient.getPlatformSubscriptions(linkFiveResponse);
+    var platformSubscriptions =
+        await billingClient.getPlatformSubscriptions(linkFiveResponse);
     if (platformSubscriptions != null) {
       store.onNewPlatformSubscriptions(platformSubscriptions);
     }
   }
 
-  /// PURCHASE
   /// Make a purchase
-  purchase(dynamic productDetails) async {
+  ///
+  /// If you want to know if the purchase is pending, listen to [listenOnPendingPurchase]
+  /// @returns true if UI is shown, false otherwise
+  Future<bool> purchase(dynamic productDetails) async {
     ProductDetails? _productDetails;
     if (productDetails is ProductDetails) {
       _productDetails = productDetails;
     }
     if (productDetails is SubscriptionData) {
-      if (productDetails.productDetails != null && productDetails.productDetails is ProductDetails) {
+      if (productDetails.productDetails != null &&
+          productDetails.productDetails is ProductDetails) {
         _productDetails = productDetails.productDetails;
       }
     }
-    if(_productDetails == null){
+    if (_productDetails == null) {
       LinkFiveLogger.d("No ProductDetails to purchase found");
-      return;
+      return false;
     }
 
     final purchaseParam = PurchaseParam(productDetails: _productDetails);
@@ -100,7 +121,8 @@ class LinkFivePurchasesMain extends CallbackInterface {
     try {
       // try to buy it
       LinkFiveLogger.d("try to purchase item 1/2");
-      showBuySuccess = await InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
+      showBuySuccess = await InAppPurchase.instance
+          .buyNonConsumable(purchaseParam: purchaseParam);
     } on PlatformException catch (e) {
       LinkFiveLogger.e(e);
       if (Platform.isIOS) {
@@ -112,7 +134,8 @@ class LinkFivePurchasesMain extends CallbackInterface {
         LinkFiveLogger.d("Finish previous transactions");
         var transactions = await SKPaymentQueueWrapper().transactions();
         transactions.forEach((skPaymentTransactionWrapper) async {
-          await SKPaymentQueueWrapper().finishTransaction(skPaymentTransactionWrapper);
+          await SKPaymentQueueWrapper()
+              .finishTransaction(skPaymentTransactionWrapper);
         });
 
         // try to restore
@@ -120,17 +143,25 @@ class LinkFivePurchasesMain extends CallbackInterface {
 
         LinkFiveLogger.d("try to purchase item 2/2");
         // try buy again
-        showBuySuccess = await InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
+        showBuySuccess = await InAppPurchase.instance
+            .buyNonConsumable(purchaseParam: purchaseParam);
       }
     }
 
     LinkFiveLogger.d("Show Buy Intent success: $showBuySuccess");
+    // set Pending Purchase. this will notify all listeners
+    if (showBuySuccess) {
+      super.isPendingPurchase = true;
+    }
+    return showBuySuccess;
   }
 
   /// Restore
   /// Restore a Purchase
-  Future<void> restore() async {
+  Future<bool> restore() async {
+    super.isPendingPurchase = true;
     await InAppPurchase.instance.restorePurchases();
+    return false;
   }
 
   setUTMSource(String? utmSource) {
@@ -153,12 +184,19 @@ class LinkFivePurchasesMain extends CallbackInterface {
     final verifiedReceiptsList = await billingClient.verifiedReceipts;
 
     // update listeners
-    store.onNewLinkFiveActiveSubDetails(LinkFiveActiveSubscriptionData(verifiedReceiptsList));
+    store.onNewLinkFiveActiveSubDetails(
+        LinkFiveActiveSubscriptionData(verifiedReceiptsList));
+    if (verifiedReceiptsList.length > 0) {
+      super.purchaseState = PurchaseState.PURCHASED;
+    } else {
+      super.purchaseState = PurchaseState.NOT_PURCHASED;
+    }
   }
 
   /// connects to the internal IAP library
   void _listenPurchaseUpdates() {
-    final Stream<List<PurchaseDetails>> purchaseUpdated = InAppPurchase.instance.purchaseStream;
+    final Stream<List<PurchaseDetails>> purchaseUpdated =
+        InAppPurchase.instance.purchaseStream;
     _purchaseStream = purchaseUpdated.listen((purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
     }, onDone: () {
@@ -172,29 +210,38 @@ class LinkFivePurchasesMain extends CallbackInterface {
 
   /// Internal IAP library purchase update method
   void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
-    LinkFiveLogger.d("got PurchaseUpdated");
+    if (purchaseDetailsList.isEmpty) {
+      super.isPendingPurchase = false;
+    }
     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
       switch (purchaseDetails.status) {
         case PurchaseStatus.pending:
           LinkFiveLogger.d("_showPendingUI();");
+          super.isPendingPurchase = true;
           break;
         case PurchaseStatus.error:
           LinkFiveLogger.e("_handleError(purchaseDetails.error!)");
+          super.isPendingPurchase = false;
           break;
         case PurchaseStatus.purchased:
           if (Platform.isIOS && _productDetailsToPurchase != null) {
-            final appstorePurchaseDetails = purchaseDetails as AppStorePurchaseDetails;
-            await client.purchaseIos(_productDetailsToPurchase!, appstorePurchaseDetails);
+            final appstorePurchaseDetails =
+                purchaseDetails as AppStorePurchaseDetails;
+            await client.purchaseIos(
+                _productDetailsToPurchase!, appstorePurchaseDetails);
             _productDetailsToPurchase = null;
           }
-          _handlePurchasedPurchaseDetails(purchaseDetails);
+          await _handlePurchasedPurchaseDetails(purchaseDetails);
+          super.isPendingPurchase = false;
           break;
         // if restored. this will be triggered many many times.
         // maybe we need to handle it differently since we do a request for each transaction
         case PurchaseStatus.restored:
-          _handlePurchasedPurchaseDetails(purchaseDetails);
+          await _handlePurchasedPurchaseDetails(purchaseDetails);
+          super.isPendingPurchase = false;
           break;
         default:
+          super.isPendingPurchase = false;
           break;
       }
 

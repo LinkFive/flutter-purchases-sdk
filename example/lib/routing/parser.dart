@@ -3,7 +3,8 @@ import 'package:linkfive_purchases_example/routing/app_path.dart';
 
 class AppPathInformationParser extends RouteInformationParser<AppPath> {
   @override
-  Future<AppPath> parseRouteInformation(RouteInformation routeInformation) async {
+  Future<AppPath> parseRouteInformation(
+      RouteInformation routeInformation) async {
     final uri = Uri.parse(routeInformation.location!);
 
     if (uri.pathSegments.length == 1) {

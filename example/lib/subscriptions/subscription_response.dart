@@ -5,19 +5,22 @@ import 'package:linkfive_purchases_example/provider/linkfive_provider.dart';
 import 'package:provider/provider.dart';
 
 class SubscriptionResponseStream extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.all(8),
         child: StreamBuilder<LinkFiveResponseData?>(
           stream: LinkFivePurchases.listenOnResponseData(),
-          builder: (BuildContext context, AsyncSnapshot<LinkFiveResponseData?> snapshot) {
+          builder: (BuildContext context,
+              AsyncSnapshot<LinkFiveResponseData?> snapshot) {
             if (snapshot.hasData) {
               var subscriptionData = snapshot.data;
               if (subscriptionData != null) {
                 return Column(
-                  children: [Text("LinkFive Response"), ...subscriptionData.subscriptionList.map((e) => Text(e.sku))],
+                  children: [
+                    Text("LinkFive Response"),
+                    ...subscriptionData.subscriptionList.map((e) => Text(e.sku))
+                  ],
                 );
               }
             }
@@ -26,19 +29,22 @@ class SubscriptionResponseStream extends StatelessWidget {
         ));
   }
 }
-class SubscriptionResponseProvider extends StatelessWidget {
 
+class SubscriptionResponseProvider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.all(8),
         child: Consumer<LinkFiveProvider>(
-            builder: (_, linkFiveProvider, __) {
+          builder: (_, linkFiveProvider, __) {
             if (linkFiveProvider.linkFiveResponseData != null) {
               var subscriptionData = linkFiveProvider.linkFiveResponseData;
               if (subscriptionData != null) {
                 return Column(
-                  children: [Text("LinkFive Response"), ...subscriptionData.subscriptionList.map((e) => Text(e.sku))],
+                  children: [
+                    Text("LinkFive Response"),
+                    ...subscriptionData.subscriptionList.map((e) => Text(e.sku))
+                  ],
                 );
               }
             }

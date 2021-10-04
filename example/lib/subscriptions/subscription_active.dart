@@ -39,7 +39,8 @@ class SubscriptionActiveStream extends StatelessWidget {
                   alignment: Alignment.topLeft,
                   child: Column(
                     children: [
-                      Text("Active Subscriptions:", style: Theme.of(context).textTheme.headline6),
+                      Text("Active Subscriptions:",
+                          style: Theme.of(context).textTheme.headline6),
                       ...buildSubscriptions(subscriptionData)
                     ],
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -81,14 +82,16 @@ class SubscriptionActiveProvider extends StatelessWidget {
         child: Consumer<LinkFiveProvider>(
           builder: (_, linkFiveProvider, __) {
             if (linkFiveProvider.linkFiveResponseData != null) {
-              var subscriptionData = linkFiveProvider.linkFiveActiveSubscriptionData;
+              var subscriptionData =
+                  linkFiveProvider.linkFiveActiveSubscriptionData;
               if (subscriptionData != null) {
                 return Container(
                   padding: EdgeInsets.all(16),
                   alignment: Alignment.topLeft,
                   child: Column(
                     children: [
-                      Text("Active Subscriptions:", style: Theme.of(context).textTheme.headline6),
+                      Text("Active Subscriptions:",
+                          style: Theme.of(context).textTheme.headline6),
                       ...buildSubscriptions(subscriptionData)
                     ],
                     mainAxisAlignment: MainAxisAlignment.start,

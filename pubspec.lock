@@ -160,6 +160,11 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_localizations:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -232,7 +237,21 @@ packages:
       name: in_app_purchases_interface
       url: "https://pub.dartlang.org"
     source: hosted
+    version: "0.0.5"
+  in_app_purchases_intl:
+    dependency: "direct main"
+    description:
+      name: in_app_purchases_intl
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.0.2"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.17.0"
   io:
     dependency: transitive
     description:

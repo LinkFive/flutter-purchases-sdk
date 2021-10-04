@@ -1,3 +1,4 @@
+/// Verified Receipt from LinkFive including all data
 class LinkFiveVerifiedReceipt {
   LinkFiveVerifiedReceipt(
       {required this.sku,
@@ -20,16 +21,17 @@ class LinkFiveVerifiedReceipt {
   String? attributes;
   String? period;
 
-  factory LinkFiveVerifiedReceipt.fromJson(Map<String, dynamic> json) => LinkFiveVerifiedReceipt(
-      sku: json["sku"],
-      purchaseId: json["purchaseId"],
-      transactionDate: DateTime.parse(json["transactionDate"]),
-      validUntilDate: DateTime.parse(json["validUntilDate"]),
-      isTrial: json["isTrial"],
-      isExpired: json["isExpired"],
-      familyName: json["familyName"],
-      attributes: json["attributes"],
-      period: json["period"]);
+  factory LinkFiveVerifiedReceipt.fromJson(Map<String, dynamic> json) =>
+      LinkFiveVerifiedReceipt(
+          sku: json["sku"],
+          purchaseId: json["purchaseId"],
+          transactionDate: DateTime.parse(json["transactionDate"]),
+          validUntilDate: DateTime.parse(json["validUntilDate"]),
+          isTrial: json["isTrial"],
+          isExpired: json["isExpired"],
+          familyName: json["familyName"],
+          attributes: json["attributes"],
+          period: json["period"]);
 
   Map<String, dynamic> toJson() => {
         "sku": sku,
@@ -43,6 +45,9 @@ class LinkFiveVerifiedReceipt {
         "period": period,
       };
 
-  static List<LinkFiveVerifiedReceipt> fromJsonList(Map<String, dynamic> json) =>
-      (json["purchases"] as List).map((e) => LinkFiveVerifiedReceipt.fromJson(e)).toList();
+  static List<LinkFiveVerifiedReceipt> fromJsonList(
+          Map<String, dynamic> json) =>
+      (json["purchases"] as List)
+          .map((e) => LinkFiveVerifiedReceipt.fromJson(e))
+          .toList();
 }

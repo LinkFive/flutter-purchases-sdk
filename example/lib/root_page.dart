@@ -21,24 +21,26 @@ class RootWidget extends StatelessWidget {
         title: const Text('LinkFive Subscription Test App'),
       ),
       body: Container(
-        width: double.infinity,
+          width: double.infinity,
           child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            child: Text("Raw Example"),
-            onPressed: () {
-              (Router.of(context).routerDelegate as MainRouterDelegate).goToRawPayWall();
-            },
-          ),
-          ElevatedButton(
-            child: Text("Simple UI Example"),
-            onPressed: () {
-              (Router.of(context).routerDelegate as MainRouterDelegate).goToSimplePayWall();
-            },
-          ),
-        ],
-      )),
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                child: Text("Raw Example"),
+                onPressed: () {
+                  (Router.of(context).routerDelegate as MainRouterDelegate)
+                      .goToRawPayWall();
+                },
+              ),
+              ElevatedButton(
+                child: Text("Simple UI Example"),
+                onPressed: () {
+                  (Router.of(context).routerDelegate as MainRouterDelegate)
+                      .goToSimplePayWall();
+                },
+              ),
+            ],
+          )),
     );
   }
 }

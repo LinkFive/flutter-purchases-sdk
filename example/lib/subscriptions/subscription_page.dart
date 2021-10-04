@@ -9,7 +9,8 @@ class SubscriptionPage extends StatefulWidget {
   State<StatefulWidget> createState() => new _SubscriptionPageState();
 }
 
-class _SubscriptionPageState extends State<SubscriptionPage> with WidgetsBindingObserver {
+class _SubscriptionPageState extends State<SubscriptionPage>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();

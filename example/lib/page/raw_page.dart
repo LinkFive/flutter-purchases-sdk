@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:linkfive_purchases_example/subscriptions/subscription_page.dart';
 
 class RawPage extends Page {
-
-  RawPage(): super(key: ValueKey("RawPage"));
+  RawPage() : super(key: ValueKey("RawPage"));
 
   @override
   Route createRoute(BuildContext context) => MaterialPageRoute(
-      settings: this,
-      builder: (BuildContext context) {
-        return RawWidget();
-      },
-    );
-
+        settings: this,
+        builder: (BuildContext context) {
+          return RawWidget();
+        },
+      );
 }
 
 class RawWidget extends StatefulWidget {
@@ -21,7 +19,6 @@ class RawWidget extends StatefulWidget {
 }
 
 class _RawWidgetState extends State<RawWidget> with WidgetsBindingObserver {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -3,8 +3,8 @@ class AppPath {
   bool _isSimplePaywall = false;
 
   AppPath.home() : _isSimplePaywall = false;
-  AppPath.rawPaywall(): _isRawPaywall = true;
-  AppPath.simplePaywall(): _isSimplePaywall = true;
+  AppPath.rawPaywall() : _isRawPaywall = true;
+  AppPath.simplePaywall() : _isSimplePaywall = true;
 
   bool get isHomePage => !_isRawPaywall && !_isSimplePaywall;
 

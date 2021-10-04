@@ -15,7 +15,8 @@ class SubscriptionButton extends StatelessWidget {
 
   String getSubscriptionPeriod() {
     if (linkFiveProductDetails.productDetails is GooglePlayProductDetails) {
-      return getSubscriptionPeriodGoogle(linkFiveProductDetails.productDetails as GooglePlayProductDetails);
+      return getSubscriptionPeriodGoogle(
+          linkFiveProductDetails.productDetails as GooglePlayProductDetails);
     }
     return "-";
   }
@@ -43,7 +44,10 @@ class SubscriptionButton extends StatelessWidget {
         padding: EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: [Text(getSubscriptionPeriod()), Text(linkFiveProductDetails.productDetails.price)],
+          children: [
+            Text(getSubscriptionPeriod()),
+            Text(linkFiveProductDetails.productDetails.price)
+          ],
         ),
       ),
     );

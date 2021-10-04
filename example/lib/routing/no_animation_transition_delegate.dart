@@ -4,8 +4,10 @@ class NoAnimationTransitionDelegate extends TransitionDelegate<void> {
   @override
   Iterable<RouteTransitionRecord> resolve(
       {required List<RouteTransitionRecord> newPageRouteHistory,
-      required Map<RouteTransitionRecord?, RouteTransitionRecord> locationToExitingPageRoute,
-      required Map<RouteTransitionRecord?, List<RouteTransitionRecord>> pageRouteToPagelessRoutes}) {
+      required Map<RouteTransitionRecord?, RouteTransitionRecord>
+          locationToExitingPageRoute,
+      required Map<RouteTransitionRecord?, List<RouteTransitionRecord>>
+          pageRouteToPagelessRoutes}) {
     final results = <RouteTransitionRecord>[];
 
     for (final pageRoute in newPageRouteHistory) {

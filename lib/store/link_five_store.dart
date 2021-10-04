@@ -6,6 +6,8 @@ import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:linkfive_purchases/models/linkfive_subscription.dart';
 import 'package:linkfive_purchases/purchases.dart';
 
+/// Data holder for API related calls
+/// includes all Streams for the sdk
 class LinkFiveStore {
   LinkFiveResponseData? latestLinkFiveResponse;
   List<ProductDetails>? latestProductDetailList;
@@ -14,9 +16,12 @@ class LinkFiveStore {
   LinkFiveActiveSubscriptionData? latestLinkFiveActiveSubscriptionData;
 
   // Stream to flutter of Raw Response
-  static List<StreamController<LinkFiveResponseData?>> _streamControllerResponse = [];
-  static List<StreamController<LinkFiveSubscriptionData?>> _streamControllerSubscriptions = [];
-  static List<StreamController<LinkFiveActiveSubscriptionData?>> _streamControllerActiveSubscriptions = [];
+  static List<StreamController<LinkFiveResponseData?>>
+      _streamControllerResponse = [];
+  static List<StreamController<LinkFiveSubscriptionData?>>
+      _streamControllerSubscriptions = [];
+  static List<StreamController<LinkFiveActiveSubscriptionData?>>
+      _streamControllerActiveSubscriptions = [];
 
   Stream<LinkFiveResponseData?> listenOnResponseData() {
     var controller = StreamController<LinkFiveResponseData?>();
@@ -53,7 +58,8 @@ class LinkFiveStore {
     LinkFiveLogger.d("new response $data");
     _cleanAllStreams();
     _streamControllerResponse.forEach((element) {
-      LinkFiveLogger.d("push response data with skus: ${data.subscriptionList.map((e) => e.sku)}");
+      LinkFiveLogger.d(
+          "push response data with skus: ${data.subscriptionList.map((e) => e.sku)}");
       element.add(data);
     });
   }
@@ -74,7 +80,8 @@ class LinkFiveStore {
     });
   }
 
-  onNewLinkFiveActiveSubDetails(LinkFiveActiveSubscriptionData linkFiveActiveSubscriptionData) {
+  onNewLinkFiveActiveSubDetails(
+      LinkFiveActiveSubscriptionData linkFiveActiveSubscriptionData) {
     latestLinkFiveActiveSubscriptionData = linkFiveActiveSubscriptionData;
 
     // notify observer
