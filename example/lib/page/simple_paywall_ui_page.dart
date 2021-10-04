@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:in_app_purchases_paywall_ui/in_app_purchases_paywall_ui.dart';
-import 'package:linkfive_purchases/models/linkfive_subscription.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases_example/provider/linkfive_provider.dart';
 import 'package:provider/provider.dart';
 

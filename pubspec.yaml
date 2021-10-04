@@ -1,6 +1,6 @@
 name: linkfive_purchases
 description: LinkFive Purchases flutter sdk. This will allow your app to use the LinkFive subscription service.
-version: 1.1.0
+version: 1.1.1
 homepage: https://www.linkfive.io
 repository: https://github.com/LinkFive/flutter-purchases-sdk
 issue_tracker: https://github.com/LinkFive/flutter-purchases-sdk/issues

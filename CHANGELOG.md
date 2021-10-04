@@ -1,3 +1,6 @@
+## 1.1.1
+remove unused dependencies
+
 ## 1.1.0
 add easy paywall ui integration.
 add provider example.

@@ -7,7 +7,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchases_paywall_ui/in_app_purchases_paywall_ui.dart';
-import 'package:linkfive_purchases/purchases.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases_example/key/keyLoader.dart';
 
 class LinkFiveProvider extends ChangeNotifier {
@@ -59,7 +59,7 @@ This example uses Navigation 2.0
 ```dart
 import 'package:flutter/material.dart';
 import 'package:in_app_purchases_paywall_ui/in_app_purchases_paywall_ui.dart';
-import 'package:linkfive_purchases/models/linkfive_subscription.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases_example/provider/linkfive_provider.dart';
 import 'package:provider/provider.dart';
 
