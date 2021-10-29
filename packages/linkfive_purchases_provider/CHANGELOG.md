@@ -1,2 +1,2 @@
-## 0.0.1
+## 1.2.0
 The Initial provider setup for linkfive_purchases
