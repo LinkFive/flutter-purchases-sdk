@@ -1,3 +1,2 @@
 ## 0.0.1
-
-* TODO: Describe initial release.
+The Initital provider setup for linkfive_purchases
