@@ -178,16 +178,16 @@ packages:
   in_app_purchases_interface:
     dependency: transitive
     description:
-      path: "../../../in_app_purchases_paywall/packages/in_app_purchases_interface"
-      relative: true
-    source: path
-    version: "0.0.5"
+      name: in_app_purchases_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.6"
   in_app_purchases_intl:
     dependency: transitive
     description:
-      path: "../../../in_app_purchases_paywall/packages/in_app_purchases_intl"
-      relative: true
-    source: path
+      name: in_app_purchases_intl
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.0.3"
   intl:
     dependency: transitive
@@ -211,12 +211,12 @@ packages:
     source: hosted
     version: "4.3.0"
   linkfive_purchases:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
-      path: "../linkfive_purchases"
-      relative: true
-    source: path
-    version: "1.1.1"
+      name: linkfive_purchases
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   lints:
     dependency: transitive
     description:
@@ -302,7 +302,7 @@ packages:
     source: hosted
     version: "2.0.2"
   provider:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: provider
       url: "https://pub.dartlang.org"
