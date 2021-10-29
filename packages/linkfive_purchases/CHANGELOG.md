@@ -1,3 +1,10 @@
+## 1.2.0
+update to interface 0.0.6 
+* It fetches the subscriptions on load call now
+update intl to 0.0.3
+removed the unused android folder
+Prepared the package for the new LinkFive provider package
+
 ## 1.1.1
 remove unused dependencies
 
