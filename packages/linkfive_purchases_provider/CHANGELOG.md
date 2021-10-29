@@ -1,2 +1,2 @@
 ## 0.0.1
-The Initital provider setup for linkfive_purchases
+The Initial provider setup for linkfive_purchases
