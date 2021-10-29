@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchases_paywall_ui/in_app_purchases_paywall_ui.dart';
 import 'package:linkfive_purchases/models/linkfive_subscription.dart';
-import 'package:linkfive_purchases_example/provider/linkfive_provider.dart';
+import 'package:linkfive_purchases_provider/linkfive_purchases_provider.dart';
 import 'package:provider/provider.dart';
 
 class LinkFivePaywall extends Page {
@@ -22,11 +22,9 @@ class SimplePayWallUIWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<LinkFiveProvider>(builder: (_, linkFiveProvider, __) {
-      LinkFiveSubscriptionData? linkFiveSubscriptionData =
-          linkFiveProvider.linkFiveSubscriptionData;
       return SimplePayWallUiElement(
         linkFiveProvider,
-        linkFiveSubscriptionData,
+        linkFiveProvider.availableSubscriptionData,
         appBarTitle: "Premium",
         title: "Go Premium",
         subTitle: "All features now",

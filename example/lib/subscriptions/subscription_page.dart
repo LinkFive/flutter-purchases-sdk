@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases_example/subscriptions/subscription_active.dart';
 import 'package:linkfive_purchases_example/subscriptions/subscription_offering.dart';
-import 'package:linkfive_purchases_example/subscriptions/subscription_response.dart';
 
 class SubscriptionPage extends StatefulWidget {
   @override
@@ -21,8 +20,11 @@ class _SubscriptionPageState extends State<SubscriptionPage>
     return SingleChildScrollView(
       child: Column(
         children: [
-          SubscriptionResponseStream(),
-          SubscriptionResponseProvider(),
+          ElevatedButton(
+              onPressed: () {
+                LinkFivePurchases.fetchSubscriptions();
+              },
+              child: Text("Fetch")),
           SubscriptionOfferingStream(),
           SubscriptionOfferingProvider(),
           SubscriptionActiveStream(),

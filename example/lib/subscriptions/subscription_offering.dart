@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/models/linkfive_subscription.dart';
-import 'package:linkfive_purchases_example/provider/linkfive_provider.dart';
 import 'package:linkfive_purchases_example/subscriptions/subscription_button.dart';
+import 'package:linkfive_purchases_provider/linkfive_purchases_provider.dart';
 import 'package:provider/provider.dart';
 
 class SubscriptionOfferingStream extends StatelessWidget {
@@ -51,8 +51,8 @@ class SubscriptionOfferingProvider extends StatelessWidget {
         padding: EdgeInsets.all(8),
         child: Consumer<LinkFiveProvider>(
           builder: (_, linkFiveProvider, __) {
-            if (linkFiveProvider.linkFiveSubscriptionData != null) {
-              var subscriptionData = linkFiveProvider.linkFiveSubscriptionData;
+            if (linkFiveProvider.availableSubscriptionData != null) {
+              var subscriptionData = linkFiveProvider.availableSubscriptionData;
               if (subscriptionData != null) {
                 return Column(
                   children: [

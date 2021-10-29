@@ -1,6 +1,68 @@
+# Examples
+
+## Provider Example
+
+Now also as a standalone package: [linkfive_purchases_provider](https://pub.dev/packages/linkfive_purchases_provider)
+
+```dart
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:in_app_purchases_paywall_ui/in_app_purchases_paywall_ui.dart';
-import 'package:linkfive_purchases_provider/linkfive_purchases_provider.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
+import 'package:linkfive_purchases_example/key/keyLoader.dart';
+
+class LinkFiveProvider extends ChangeNotifier {
+  LinkFivePurchasesMain linkFivePurchases = LinkFivePurchasesMain();
+
+  LinkFiveResponseData? linkFiveResponseData = null;
+  LinkFiveSubscriptionData? linkFiveSubscriptionData = null;
+  LinkFiveActiveSubscriptionData? linkFiveActiveSubscriptionData = null;
+
+  List<StreamSubscription> _streams = [];
+
+  LinkFiveProvider(Keys keys) {
+    linkFivePurchases.init(keys.linkFiveApiKey);
+    linkFivePurchases.fetchSubscriptions();
+    _streams.add(linkFivePurchases.listenOnResponseData().listen(_responseDataUpdate));
+    _streams.add(linkFivePurchases.listenOnSubscriptionData().listen(_subscriptionDataUpdate));
+    _streams.add(linkFivePurchases.listenOnActiveSubscriptionData().listen(_activeSubscriptionDataUpdate));
+  }
+
+  void _responseDataUpdate(LinkFiveResponseData? data) {
+    linkFiveResponseData = data;
+    notifyListeners();
+  }
+
+  void _subscriptionDataUpdate(LinkFiveSubscriptionData? data) async {
+    linkFiveSubscriptionData = data;
+    notifyListeners();
+  }
+
+  void _activeSubscriptionDataUpdate(LinkFiveActiveSubscriptionData? data) {
+    linkFiveActiveSubscriptionData = data;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _streams.forEach((element) async {
+      await element.cancel();
+    });
+    _streams = [];
+    super.dispose();
+  }
+}
+```
+
+## Use the provider and show the UI
+This example uses Navigation 2.0
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:in_app_purchases_paywall_ui/in_app_purchases_paywall_ui.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
+import 'package:linkfive_purchases_example/provider/linkfive_provider.dart';
 import 'package:provider/provider.dart';
 
 class SimplePaywallUiPage extends Page {
@@ -57,3 +119,5 @@ class SimplePaywallUiPage extends Page {
         },
       );
 }
+
+```

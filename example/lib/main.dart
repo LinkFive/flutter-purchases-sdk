@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases_example/key/keyLoader.dart';
-import 'package:linkfive_purchases_example/provider/linkfive_provider.dart';
 
 import 'package:linkfive_purchases_example/routing/delegate.dart';
 import 'package:linkfive_purchases_example/routing/parser.dart';
+import 'package:linkfive_purchases_provider/linkfive_purchases_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -40,10 +40,11 @@ class MyAppState extends State<MyApp> {
         future: _keysFuture,
         builder: (BuildContext context, AsyncSnapshot<Keys> snapshot) {
           if (snapshot.hasData) {
+            print(snapshot.data!.linkFiveApiKey);
             return MultiProvider(
                 providers: [
                   ChangeNotifierProvider(
-                    create: (context) => LinkFiveProvider(snapshot.data!),
+                    create: (context) => LinkFiveProvider(snapshot.data!.linkFiveApiKey, environment: LinkFiveEnvironment.STAGING),
                     lazy: false,
                   )
                 ],

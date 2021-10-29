@@ -1,0 +1,138 @@
+Index: ios/Classes/LinkfivePurchasesPlugin.m
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#import \"LinkfivePurchasesPlugin.h\"\n#if __has_include(<linkfive_purchases/linkfive_purchases-Swift.h>)\n#import <linkfive_purchases/linkfive_purchases-Swift.h>\n#else\n// Support project import fallback if the generated compatibility header\n// is not copied when this plugin is created as a library.\n// https://forums.swift.org/t/swift-static-libraries-dont-copy-generated-objective-c-header/19816\n#import \"linkfive_purchases-Swift.h\"\n#endif\n\n@implementation LinkfivePurchasesPlugin\n+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {\n  [SwiftLinkfivePurchasesPlugin registerWithRegistrar:registrar];\n}\n@end\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- ios/Classes/LinkfivePurchasesPlugin.m	(revision 8b4d77867fbb8bededa7d10f21f0f6a168357bd2)
++++ ios/Classes/LinkFivePurchasesPlugin.m	(date 1626337641782)
+@@ -8,8 +8,8 @@
+ #import "linkfive_purchases-Swift.h"
+ #endif
+ 
+-@implementation LinkfivePurchasesPlugin
++@implementation LinkFivePurchasesPlugin
+ + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+-  [SwiftLinkfivePurchasesPlugin registerWithRegistrar:registrar];
++  [SwiftLinkFivePurchasesPlugin registerWithRegistrar:registrar];
+ }
+ @end
+Index: ios/Classes/LinkfivePurchasesPlugin.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#import <Flutter/Flutter.h>\n\n@interface LinkfivePurchasesPlugin : NSObject<FlutterPlugin>\n@end\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- ios/Classes/LinkfivePurchasesPlugin.h	(revision 8b4d77867fbb8bededa7d10f21f0f6a168357bd2)
++++ ios/Classes/LinkFivePurchasesPlugin.h	(date 1626337515469)
+@@ -1,4 +1,4 @@
+ #import <Flutter/Flutter.h>
+ 
+-@interface LinkfivePurchasesPlugin : NSObject<FlutterPlugin>
++@interface LinkFivePurchasesPlugin : NSObject<FlutterPlugin>
+ @end
+Index: ios/Classes/SwiftLinkfivePurchasesPlugin.swift
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import Flutter\nimport UIKit\n\npublic class SwiftLinkfivePurchasesPlugin: NSObject, FlutterPlugin {\n  public static func register(with registrar: FlutterPluginRegistrar) {\n    let channel = FlutterMethodChannel(name: \"linkfive_purchases\", binaryMessenger: registrar.messenger())\n    let instance = SwiftLinkfivePurchasesPlugin()\n    registrar.addMethodCallDelegate(instance, channel: channel)\n  }\n\n  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {\n    result(\"iOS \" + UIDevice.current.systemVersion)\n  }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- ios/Classes/SwiftLinkfivePurchasesPlugin.swift	(revision 8b4d77867fbb8bededa7d10f21f0f6a168357bd2)
++++ ios/Classes/SwiftLinkFivePurchasesPlugin.swift	(date 1626337515466)
+@@ -1,10 +1,10 @@
+ import Flutter
+ import UIKit
+ 
+-public class SwiftLinkfivePurchasesPlugin: NSObject, FlutterPlugin {
++public class SwiftLinkFivePurchasesPlugin: NSObject, FlutterPlugin {
+   public static func register(with registrar: FlutterPluginRegistrar) {
+     let channel = FlutterMethodChannel(name: "linkfive_purchases", binaryMessenger: registrar.messenger())
+-    let instance = SwiftLinkfivePurchasesPlugin()
++    let instance = SwiftLinkFivePurchasesPlugin()
+     registrar.addMethodCallDelegate(instance, channel: channel)
+   }
+ 
+Index: pubspec.yaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>name: linkfive_purchases\ndescription: LinkFive Purchases flutter sdk\nversion: 0.0.1\nhomepage:\n\nenvironment:\n  sdk: \">=2.12.0 <3.0.0\"\n  flutter: \">=1.20.0\"\n\ndependencies:\n  flutter:\n    sdk: flutter\n  in_app_purchase: ^1.0.6\n  http: ^0.13.3\n  package_info: ^2.0.2\n  provider: ^5.0.0\n\ndev_dependencies:\n  flutter_test:\n    sdk: flutter\n\n# For information on the generic Dart part of this file, see the\n# following page: https://dart.dev/tools/pub/pubspec\n\n# The following section is specific to Flutter.\nflutter:\n  # This section identifies this Flutter project as a plugin project.\n  # The 'pluginClass' and Android 'package' identifiers should not ordinarily\n  # be modified. They are used by the tooling to maintain consistency when\n  # adding or updating assets for this project.\n  plugin:\n    platforms:\n      android:\n        package: io.linkfive.linkfive_purchases\n        pluginClass: LinkFivePurchasesPlugin\n      ios:\n        pluginClass: LinkfivePurchasesPlugin\n\n  # To add assets to your plugin package, add an assets section, like this:\n  # assets:\n  #   - images/a_dot_burr.jpeg\n  #   - images/a_dot_ham.jpeg\n  #\n  # For details regarding assets in packages, see\n  # https://flutter.dev/assets-and-images/#from-packages\n  #\n  # An image asset can refer to one or more resolution-specific \"variants\", see\n  # https://flutter.dev/assets-and-images/#resolution-aware.\n\n  # To add custom fonts to your plugin package, add a fonts section here,\n  # in this \"flutter\" section. Each entry in this list should have a\n  # \"family\" key with the font family name, and a \"fonts\" key with a\n  # list giving the asset and other descriptors for the font. For\n  # example:\n  # fonts:\n  #   - family: Schyler\n  #     fonts:\n  #       - asset: fonts/Schyler-Regular.ttf\n  #       - asset: fonts/Schyler-Italic.ttf\n  #         style: italic\n  #   - family: Trajan Pro\n  #     fonts:\n  #       - asset: fonts/TrajanPro.ttf\n  #       - asset: fonts/TrajanPro_Bold.ttf\n  #         weight: 700\n  #\n  # For details regarding fonts in packages, see\n  # https://flutter.dev/custom-fonts/#from-packages\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pubspec.yaml	(revision 8b4d77867fbb8bededa7d10f21f0f6a168357bd2)
++++ pubspec.yaml	(date 1626337515456)
+@@ -34,7 +34,7 @@
+         package: io.linkfive.linkfive_purchases
+         pluginClass: LinkFivePurchasesPlugin
+       ios:
+-        pluginClass: LinkfivePurchasesPlugin
++        pluginClass: LinkFivePurchasesPlugin
+ 
+   # To add assets to your plugin package, add an assets section, like this:
+   # assets:
+Index: lib/client/linkfive_billing_client.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import 'dart:io';\n\nimport 'package:flutter/foundation.dart';\nimport 'package:in_app_purchase/in_app_purchase.dart';\nimport 'package:in_app_purchase_android/in_app_purchase_android.dart';\nimport 'package:linkfive_purchases/logger/linkfive_logger.dart';\nimport 'package:linkfive_purchases/models/linkfive_response.dart';\nimport 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';\nimport 'package:in_app_purchase_ios/store_kit_wrappers.dart';\nimport 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';\n\nimport 'linkfive_client.dart';\n\nclass LinkFiveBillingClient {\n  late LinkFiveClient _apiClient;\n\n  init(LinkFiveClient apiClient) {\n    this._apiClient = apiClient;\n    if (defaultTargetPlatform == TargetPlatform.android) {\n      InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();\n    }\n  }\n\n  Future<List<ProductDetails>?> getPlatformSubscriptions(LinkFiveResponseData linkFiveResponse) async {\n    if (await _isStoreReachable) {\n      return await _loadProducts(linkFiveResponse.subscriptionList);\n    }\n    LinkFiveLogger.d(\"No Products to return Store is proabably not reachable\");\n    return null;\n  }\n\n  Future<bool> get _isStoreReachable async {\n    LinkFiveLogger.d(\"wait for connection\");\n    // wait for connecting\n    final bool available = await InAppPurchase.instance.isAvailable();\n\n    if (!available) {\n      // The store cannot be reached or accessed. Update the UI accordingly.\n      LinkFiveLogger.e(\"Store not reachable\");\n      return false;\n    }\n    LinkFiveLogger.d(\"Store reachable\");\n    return true;\n  }\n\n  Future<List<ProductDetails>> _loadProducts(List<LinkFiveResponseDataSubscription> subscriptionList) async {\n    LinkFiveLogger.d(\"load products from store\");\n    Set<String> _kIds = subscriptionList.map((e) => e.sku).toSet();\n    final ProductDetailsResponse response = await InAppPurchase.instance.queryProductDetails(_kIds);\n\n    if (response.notFoundIDs.isNotEmpty) {\n      // Handle the error.\n      LinkFiveLogger.e(\"ID NOT FOUND\");\n    }\n    if (response.error != null) {\n      LinkFiveLogger.e(\"Purchase Error ${response.error?.code}, ${response.error?.message}\");\n    }\n    return response.productDetails;\n  }\n\n  ///\n  /// Fetches the active receipts and sends them to LinkFive\n  ///\n  Future<List<LinkFiveVerifiedReceipt>> get verifiedReceipts async {\n    final isAvailable = await _isStoreReachable;\n\n    if (!isAvailable) {\n      LinkFiveLogger.e(\"Store not reachable. Are you using an Emulator/Simulator?)\");\n      return List.empty();\n    }\n\n    if (Platform.isIOS) {\n      try {\n        final receiptData = await SKReceiptManager.retrieveReceiptData();\n        final verifiedReceipt = await _apiClient.verifyAppleReceipt(receiptData);\n\n        if (verifiedReceipt.isExpired) {\n          return List.empty();\n        }\n\n        return [verifiedReceipt];\n      } catch (error) {\n        LinkFiveLogger.e(\"An error occured: $error\");\n        return List.empty();\n      }\n    } else if (Platform.isAndroid) {\n      // get android purchases\n      final androidExtension = InAppPurchase.instance.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();\n      final pastPurchases = (await androidExtension.queryPastPurchases()).pastPurchases;\n\n      if(pastPurchases.isEmpty){\n        return List.empty();\n      }\n\n      // verify a list of purchases\n      final verifiedReceiptList = await _apiClient.verifyGoogleReceipt(pastPurchases);\n\n      // filter expired subscriptions\n      return verifiedReceiptList.where((element) => !element.isExpired).toList();\n    }\n\n    return List.empty();\n  }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- lib/client/linkfive_billing_client.dart	(revision 8b4d77867fbb8bededa7d10f21f0f6a168357bd2)
++++ lib/client/linkfive_billing_client.dart	(date 1626349547886)
+@@ -71,6 +71,14 @@
+ 
+     if (Platform.isIOS) {
+       try {
++        print("check transaction");
++        var transactions = await SKPaymentQueueWrapper().transactions();
++        print("got ${transactions.length}");
++
++        if(transactions.length == 0) {
++          return List.empty();
++        }
++
+         final receiptData = await SKReceiptManager.retrieveReceiptData();
+         final verifiedReceipt = await _apiClient.verifyAppleReceipt(receiptData);
+ 
+Index: example/ios/Podfile.lock
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>PODS:\n  - Flutter (1.0.0)\n  - in_app_purchase_ios (0.0.1):\n    - Flutter\n  - linkfive_purchases (0.0.1):\n    - Flutter\n  - package_info (0.0.1):\n    - Flutter\n\nDEPENDENCIES:\n  - Flutter (from `Flutter`)\n  - in_app_purchase_ios (from `.symlinks/plugins/in_app_purchase_ios/ios`)\n  - linkfive_purchases (from `.symlinks/plugins/linkfive_purchases/ios`)\n  - package_info (from `.symlinks/plugins/package_info/ios`)\n\nEXTERNAL SOURCES:\n  Flutter:\n    :path: Flutter\n  in_app_purchase_ios:\n    :path: \".symlinks/plugins/in_app_purchase_ios/ios\"\n  linkfive_purchases:\n    :path: \".symlinks/plugins/linkfive_purchases/ios\"\n  package_info:\n    :path: \".symlinks/plugins/package_info/ios\"\n\nSPEC CHECKSUMS:\n  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c\n  in_app_purchase_ios: 18c65275991b8a28b2a47634a7797fb23d5d773e\n  linkfive_purchases: ea14b1ca0ebf6653e34ba29d52a0bb788804d649\n  package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62\n\nPODFILE CHECKSUM: a75497545d4391e2d394c3668e20cfb1c2bbd4aa\n\nCOCOAPODS: 1.10.0\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- example/ios/Podfile.lock	(revision 8b4d77867fbb8bededa7d10f21f0f6a168357bd2)
++++ example/ios/Podfile.lock	(date 1626338085133)
+@@ -4,6 +4,8 @@
+     - Flutter
+   - linkfive_purchases (0.0.1):
+     - Flutter
++    - LinkFivePurchases (= 0.0.2)
++  - LinkFivePurchases (0.0.2)
+   - package_info (0.0.1):
+     - Flutter
+ 
+@@ -13,6 +15,10 @@
+   - linkfive_purchases (from `.symlinks/plugins/linkfive_purchases/ios`)
+   - package_info (from `.symlinks/plugins/package_info/ios`)
+ 
++SPEC REPOS:
++  trunk:
++    - LinkFivePurchases
++
+ EXTERNAL SOURCES:
+   Flutter:
+     :path: Flutter
+@@ -26,7 +32,8 @@
+ SPEC CHECKSUMS:
+   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+   in_app_purchase_ios: 18c65275991b8a28b2a47634a7797fb23d5d773e
+-  linkfive_purchases: ea14b1ca0ebf6653e34ba29d52a0bb788804d649
++  linkfive_purchases: 060e9dd8288e17fef963c1857511dcec7c4aaf3f
++  LinkFivePurchases: f09f4f0969f89f4f7b05fb7ea9e0475f1da9281d
+   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
+ 
+ PODFILE CHECKSUM: a75497545d4391e2d394c3668e20cfb1c2bbd4aa

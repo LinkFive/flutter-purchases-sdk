@@ -43,13 +43,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
-  cupertino_icons:
-    dependency: "direct main"
-    description:
-      name: cupertino_icons
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.3"
   device_info_plus:
     dependency: transitive
     description:
@@ -118,13 +111,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_inappwebview:
-    dependency: transitive
+  flutter_lints:
+    dependency: "direct dev"
     description:
-      name: flutter_inappwebview
+      name: flutter_lints
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.3.2"
+    version: "1.0.4"
   flutter_localizations:
     dependency: transitive
     description: flutter
@@ -185,24 +178,17 @@ packages:
   in_app_purchases_interface:
     dependency: transitive
     description:
-      path: "../../in_app_purchases_paywall/packages/in_app_purchases_interface"
+      path: "../../../in_app_purchases_paywall/packages/in_app_purchases_interface"
       relative: true
     source: path
     version: "0.0.5"
   in_app_purchases_intl:
     dependency: transitive
     description:
-      path: "../../in_app_purchases_paywall/packages/in_app_purchases_intl"
+      path: "../../../in_app_purchases_paywall/packages/in_app_purchases_intl"
       relative: true
     source: path
     version: "0.0.3"
-  in_app_purchases_paywall_ui:
-    dependency: "direct main"
-    description:
-      path: "../../in_app_purchases_paywall/packages/in_app_purchases_paywall_ui"
-      relative: true
-    source: path
-    version: "0.3.2"
   intl:
     dependency: transitive
     description:
@@ -225,19 +211,19 @@ packages:
     source: hosted
     version: "4.3.0"
   linkfive_purchases:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
-      path: "../packages/linkfive_purchases"
+      path: "../linkfive_purchases"
       relative: true
     source: path
     version: "1.1.1"
-  linkfive_purchases_provider:
-    dependency: "direct main"
+  lints:
+    dependency: transitive
     description:
-      path: "../packages/linkfive_purchases_provider"
-      relative: true
-    source: path
-    version: "1.1.2"
+      name: lints
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   matcher:
     dependency: transitive
     description:
@@ -316,7 +302,7 @@ packages:
     source: hosted
     version: "2.0.2"
   provider:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: provider
       url: "https://pub.dartlang.org"

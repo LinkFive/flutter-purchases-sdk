@@ -12,13 +12,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   linkfive_purchases:
-    path: ../
-  in_app_purchases_paywall_ui: ^0.3.1
-    #path: ../../in_app_purchases_paywall/packages/in_app_purchases_paywall_ui
+    path: ../packages/linkfive_purchases
+  linkfive_purchases_provider:
+    path: ../packages/linkfive_purchases_provider
+  in_app_purchases_paywall_ui: #^0.3.1
+    path: ../../in_app_purchases_paywall/packages/in_app_purchases_paywall_ui
   cupertino_icons: ^1.0.2
-  provider: ^5.0.0
+  provider: ^6.0.1
 
 dev_dependencies:
   flutter_test:

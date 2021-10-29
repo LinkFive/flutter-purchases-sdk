@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
-import 'package:linkfive_purchases_example/provider/linkfive_provider.dart';
+import 'package:linkfive_purchases_provider/linkfive_purchases_provider.dart';
 import 'package:provider/provider.dart';
 
 class SubscriptionActiveStream extends StatelessWidget {
@@ -81,26 +81,23 @@ class SubscriptionActiveProvider extends StatelessWidget {
         padding: EdgeInsets.all(8),
         child: Consumer<LinkFiveProvider>(
           builder: (_, linkFiveProvider, __) {
-            if (linkFiveProvider.linkFiveResponseData != null) {
-              var subscriptionData =
-                  linkFiveProvider.linkFiveActiveSubscriptionData;
-              if (subscriptionData != null) {
-                return Container(
-                  padding: EdgeInsets.all(16),
-                  alignment: Alignment.topLeft,
-                  child: Column(
-                    children: [
-                      Text("Active Subscriptions:",
-                          style: Theme.of(context).textTheme.headline6),
-                      ...buildSubscriptions(subscriptionData)
-                    ],
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                  ),
-                );
-              }
+            var subscriptionData = linkFiveProvider.activeSubscriptionData;
+            if (subscriptionData != null) {
+              return Container(
+                padding: EdgeInsets.all(16),
+                alignment: Alignment.topLeft,
+                child: Column(
+                  children: [
+                    Text("Active Subscriptions:",
+                        style: Theme.of(context).textTheme.headline6),
+                    ...buildSubscriptions(subscriptionData)
+                  ],
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+              );
             }
-            return Center(child: Text('Loading...'));
+            return Center(child: Text('Nothing found...'));
           },
         ));
   }
