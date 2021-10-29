@@ -67,7 +67,6 @@ MultiProvider(
     ),
   ]
 )
-
 ```
 
 ### Provider example
