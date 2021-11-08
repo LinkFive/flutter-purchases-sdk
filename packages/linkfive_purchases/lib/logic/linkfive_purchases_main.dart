@@ -75,17 +75,20 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     _loadActiveSubs();
   }
 
-  /// Fetches the subscriptions from LinkFive and retreives the IAP from the platform
-  fetchSubscriptions() async {
+  /// Fetches the subscriptions from LinkFive and retrieves the IAP from the platform
+  /// It also submits the ProductDetails to the LinkFive Stream
+  /// @returns a list of ProductDetails
+  Future<List<ProductDetails>?> fetchSubscriptions() async {
     LinkFiveLogger.d("fetch subscriptions");
     var linkFiveResponse = await client.fetchLinkFiveResponse();
     store.onNewResponseData(linkFiveResponse);
 
-    var platformSubscriptions =
+    List<ProductDetails>? platformSubscriptions =
         await billingClient.getPlatformSubscriptions(linkFiveResponse);
     if (platformSubscriptions != null) {
       store.onNewPlatformSubscriptions(platformSubscriptions);
     }
+    return platformSubscriptions;
   }
 
   /// Make a purchase
