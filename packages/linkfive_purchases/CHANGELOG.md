@@ -1,6 +1,7 @@
 ## 1.3.0
 update to interface 0.0.7
 return a Future<List<ProductDetails>?> on fetchSubscriptions instead of a dynamics, thanks to king-louis-rds for the feedback!
+added platform files again to satisfy pub.dev points (hopefully)
 
 ## 1.2.0
 update to interface 0.0.6 

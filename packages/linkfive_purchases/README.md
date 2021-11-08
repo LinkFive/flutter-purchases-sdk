@@ -8,15 +8,15 @@ Add the plugin to your Flutter app:
 
 ## Getting Started
 
-Initialize the SDK
+Initialize the SDK. [Read our more detailed docs](https://www.linkfive.io/docs/flutter/initializing/)
 
 ```dart
 LinkFivePurchases.init("LinkFive Api Key");
 ```
 
-Get your API key after [Sign up](https://). It's free!
+Get your API key after [Sign up](https://app.linkfive.io/sign-up?utm_source=flutter). It's free!
 
-Fetch all available subscriptions from LinkFive. The result will be passed to the Stream
+Fetch all available subscriptions from LinkFive. The result will be passed to the stream or returned as a Future. [Fetch Docs](https://www.linkfive.io/docs/flutter/show-subscription-offer/)
 
 ```dart
 LinkFivePurchases.fetchSubscriptions();
@@ -24,7 +24,7 @@ LinkFivePurchases.fetchSubscriptions();
 
 ### Subscription Streams
 
-LinkFive mainly uses streams to pass data to your application.
+LinkFive mainly uses streams to pass data to your application. [Active Subscriptions Docs](https://www.linkfive.io/docs/flutter/get-all-active-subscriptions/)
 
 ```dart
 // Stream of subscriptions to offer to the user
@@ -36,7 +36,7 @@ LinkFivePurchases.listenOnActiveSubscriptionData()
 
 ### Purchase a Subscription
 
-Just call purchase including the productDetails from the subscription stream
+Simply call purchase with the productDetails from the retrieved subscriptions. [Purchase Docs](https://www.linkfive.io/docs/flutter/make-a-purchase/)
 
 ```dart
 await LinkFivePurchases.purchase( productDetails );
@@ -44,7 +44,7 @@ await LinkFivePurchases.purchase( productDetails );
 
 ### Restore a Purchases
 
-All restored subscriptions will be available through the activeSubscription listener
+All restored subscriptions will be available through the activeSubscription listener. [Restore Docs](https://www.linkfive.io/docs/flutter/restore-a-purchase/)
 
 ```dart
 LinkFivePurchases.restore();
@@ -183,4 +183,4 @@ SimplePaywall(
 );
 ```
 
-Thats it. Now the page will automatically offer the subscriptions to the user or if the user already bought the subscription, the paywall will show the success page.
+That‘s it. Now the page will automatically offer the subscriptions to the user or if the user already bought the subscription, the paywall will show the success page.
