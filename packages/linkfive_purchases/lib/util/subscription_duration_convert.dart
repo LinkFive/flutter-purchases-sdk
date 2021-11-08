@@ -1,5 +1,6 @@
 import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
 
 /// Convert The duration String from Google and Apple to an actual Duration
 class SubscriptionDurationConvert {
@@ -45,5 +46,22 @@ class SubscriptionDurationConvert {
     }
 
     return SubscriptionDuration.P1M;
+  }
+
+  static String? getSubscriptionDurationAsText(
+      SubscriptionDuration? subscriptionDuration) {
+    switch (subscriptionDuration) {
+      case SubscriptionDuration.P1Y:
+        return "P1Y";
+      case SubscriptionDuration.P6M:
+        return "P6M";
+      case SubscriptionDuration.P3M:
+        return "P3M";
+      case SubscriptionDuration.P1M:
+        return "P1M";
+      case SubscriptionDuration.P1W:
+        return "P1W";
+    }
+    return null;
   }
 }

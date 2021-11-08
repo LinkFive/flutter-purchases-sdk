@@ -44,6 +44,9 @@ class LinkFiveSubscriptionData {
         return currDuration.index < nextDuration.index ? curr : next;
       });
     }
+    // index used to place the items
+    int index = 0;
+
     // Map through everything and calculate the deal if set to true
     return linkFiveSkuData.map((linkFiveProductDetails) {
       final durationStrings =
@@ -51,10 +54,16 @@ class LinkFiveSubscriptionData {
 
       /// Sub Data with Strings
       var subData = SubscriptionData(
-          price: linkFiveProductDetails.productDetails.price,
           durationTitle: durationStrings.durationText.toTitleCase(),
           durationShort: durationStrings.durationTextNumber.toTitleCase(),
-          productDetails: linkFiveProductDetails.productDetails);
+          productDetails: linkFiveProductDetails.productDetails,
+          price: linkFiveProductDetails.productDetails.price,
+          rawPrice: linkFiveProductDetails.productDetails.rawPrice,
+          currencySymbol: linkFiveProductDetails.productDetails.currencySymbol,
+          duration: SubscriptionDurationConvert.getSubscriptionDurationAsText(
+              linkFiveProductDetails.getSubscriptionPeriod()),
+          monthText: PaywallL10NHelper.of(context).month,
+          index: index);
       // calculate the deal
       if (lowestDurationProduct != null) {
         if (lowestDurationProduct != linkFiveProductDetails) {
@@ -66,6 +75,8 @@ class LinkFiveSubscriptionData {
           subData.dealPercentage = dealPercent;
         }
       }
+      // increase index
+      index += 1;
       return subData;
     }).toList();
   }
