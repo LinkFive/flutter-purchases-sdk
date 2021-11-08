@@ -30,7 +30,7 @@ class LinkFiveBillingClient {
     if (await _isStoreReachable) {
       return await _loadProducts(linkFiveResponse.subscriptionList);
     }
-    LinkFiveLogger.d("No Products to return Store is proabably not reachable");
+    LinkFiveLogger.d("No Products to return Store is probably not reachable");
     return null;
   }
 
