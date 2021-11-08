@@ -13,7 +13,7 @@ class SimplePaywallUiPage extends Page {
           return Consumer<LinkFiveProvider>(builder: (_, linkFiveProvider, __) {
             return PaywallScaffold(
                 appBarTitle: "LinkFive Premium",
-                child: SimplePaywall(
+                child: MoritzPaywall(
                     theme: Theme.of(context),
                     callbackInterface: linkFiveProvider.callbackInterface,
                     subscriptionListData: linkFiveProvider.getSubscriptionListData(context),

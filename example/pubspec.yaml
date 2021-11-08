@@ -16,8 +16,8 @@ dependencies:
     path: ../packages/linkfive_purchases
   linkfive_purchases_provider:
     path: ../packages/linkfive_purchases_provider
-  in_app_purchases_paywall_ui: #^0.3.1
-    path: ../../in_app_purchases_paywall/packages/in_app_purchases_paywall_ui
+  in_app_purchases_paywall_ui: ^0.5.0
+    #path: ../../in_app_purchases_paywall/packages/in_app_purchases_paywall_ui
   cupertino_icons: ^1.0.2
   provider: ^6.0.1
 
