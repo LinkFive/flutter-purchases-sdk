@@ -184,6 +184,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     await InAppPurchase.instance.restorePurchases();
     return false;
   }
+
   /// Handles the Up and Downgrade of a Subscription plans
   /// [oldPurchaseDetails] given by the LinkFive Plugin
   /// [productDetails] from the purchases you want to switch to
@@ -196,7 +197,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
       return handleAndroidSwitchPlan(oldPurchaseDetails, productDetails,
           prorationMode: prorationMode);
     }
-    if(Platform.isIOS){
+    if (Platform.isIOS) {
       return handleIosSwitchPlan(productDetails);
     }
     return false;
