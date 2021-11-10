@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/client/linkfive_client.dart';
+import 'package:linkfive_purchases/logic/upgrade_downgrade_purchases.dart';
 import 'package:linkfive_purchases/client/linkfive_billing_client.dart';
 import 'package:linkfive_purchases/default/default_purchase_handler.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:linkfive_purchases/models/linkfive_subscription.dart';
@@ -49,17 +52,33 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   Stream<LinkFiveResponseData?> listenOnResponseData() =>
       store.listenOnResponseData();
 
+  /// Response Data as Stream
+  Stream<LinkFiveResponseData?> get linkFiveResponse =>
+      store.listenOnResponseData();
+
   /// Subscription Data as Stream
   Stream<LinkFiveSubscriptionData?> listenOnSubscriptionData() =>
+      store.listenOnSubscriptionData();
+
+  /// Subscription Data as Stream
+  Stream<LinkFiveSubscriptionData?> get products =>
       store.listenOnSubscriptionData();
 
   /// Active Subscription as Stream
   Stream<LinkFiveActiveSubscriptionData?> listenOnActiveSubscriptionData() =>
       store.listenOnActiveSubscriptionData();
 
+  /// Active Subscription as Stream
+  Stream<LinkFiveActiveSubscriptionData?> get activeProducts =>
+      store.listenOnActiveSubscriptionData();
+
   //#endregion Members
 
-  /// Initialize the LinkFive client
+  /// Initialize the LinkFive client with .init(...)
+  /// This will check all active Subscriptions
+  /// [apiKey] get your API Key in the API section of LinkFive
+  /// [logLevel] default is DEBUG. Possible values are TRACE, DEBUG, INFO, WARN, ERROR
+  /// [env] default is Production. Sets the LinkFive Environment.
   Future<void> init(String apiKey,
       {LinkFiveLogLevel logLevel = LinkFiveLogLevel.DEBUG,
       LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION}) async {
@@ -163,6 +182,23 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   Future<bool> restore() async {
     super.isPendingPurchase = true;
     await InAppPurchase.instance.restorePurchases();
+    return false;
+  }
+  /// Handles the Up and Downgrade of a Subscription plans
+  /// [oldPurchaseDetails] given by the LinkFive Plugin
+  /// [productDetails] from the purchases you want to switch to
+  /// [prorationMode] Google Only: default replaces immediately the subscription, and the remaining time will be prorated and credited to the user.
+  ///   Check https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode for more information
+  Future<bool> switchPlan(
+      LinkFiveVerifiedReceipt oldPurchaseDetails, ProductDetails productDetails,
+      {ProrationMode? prorationMode}) async {
+    if (Platform.isAndroid) {
+      return handleAndroidSwitchPlan(oldPurchaseDetails, productDetails,
+          prorationMode: prorationMode);
+    }
+    if(Platform.isIOS){
+      return handleIosSwitchPlan(productDetails);
+    }
     return false;
   }
 

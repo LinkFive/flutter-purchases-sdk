@@ -11,6 +11,7 @@ class LinkFiveVerifiedReceipt {
       this.attributes,
       this.period});
 
+  /// Also called productID
   String sku;
   String? purchaseId;
   DateTime transactionDate;

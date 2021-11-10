@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_purchases_main.dart';
 import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
@@ -42,6 +44,19 @@ class LinkFivePurchases {
   /// and not if the purchase was successful
   static Future<bool> purchase(ProductDetails productDetails) async {
     return LinkFivePurchasesMain().purchase(productDetails);
+  }
+
+  /// Handles the Up and Downgrade of a Subscription plans
+  /// [oldPurchaseDetails] given by the LinkFive Plugin
+  /// [productDetails] from the purchases you want to switch to
+  /// [prorationMode] Google Only: default replaces immediately the subscription, and the remaining time will be prorated and credited to the user.
+  ///   Check https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode for more information
+  static Future<bool> switchPlan(
+      LinkFiveVerifiedReceipt oldPurchaseDetails, ProductDetails productDetails,
+      {ProrationMode? prorationMode}) {
+    return LinkFivePurchasesMain().switchPlan(
+        oldPurchaseDetails, productDetails,
+        prorationMode: prorationMode);
   }
 
   /// LinkFive Server Response Data as Stream

@@ -1,3 +1,6 @@
+## 1.4.0
+Add Switch Plan functionality. You can now call LinkFivePurchases.switchPlan(...) to switch from one plan to another. 
+
 ## 1.3.0
 update to interface 0.0.7
 return a Future<List<ProductDetails>?> on fetchSubscriptions instead of a dynamics, thanks to king-louis-rds for the feedback!
