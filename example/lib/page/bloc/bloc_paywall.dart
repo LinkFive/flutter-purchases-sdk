@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 class BlocPaywall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     return BlocBuilder<LinkFiveProductsCubit, LinkFiveProductsState>(
         builder: (context, state) {
       // empty list if no data available

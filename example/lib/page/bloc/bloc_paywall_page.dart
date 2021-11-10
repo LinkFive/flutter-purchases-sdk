@@ -4,10 +4,16 @@ import 'package:linkfive_purchases_example/bloc/linkfive_active_products_cubit.d
 import 'package:linkfive_purchases_example/bloc/linkfive_products_cubit.dart';
 import 'package:linkfive_purchases_example/main.dart';
 import 'package:linkfive_purchases_example/page/bloc/bloc_paywall.dart';
+import 'package:linkfive_purchases_example/page/bloc/bloc_raw.dart';
 import 'package:linkfive_purchases_provider/linkfive_purchases_provider.dart';
 
 class BlocPaywallPage extends Page {
-  BlocPaywallPage() : super(key: ValueKey("BlocPaywallPage")) {
+
+  // 1 == raw
+  // 2 == paywall
+  final int page;
+
+  BlocPaywallPage(this.page) : super(key: ValueKey("BlocPaywallPage")) {
     LinkFivePurchases.init(MyApp.linkFiveApiKey,
         env: LinkFiveEnvironment.STAGING);
   }
@@ -17,8 +23,10 @@ class BlocPaywallPage extends Page {
       settings: this,
       builder: (BuildContext context) {
         return MultiBlocProvider(providers: [
-          BlocProvider<LinkFiveProductsCubit>(create: (context) => LinkFiveProductsCubit()),
-          BlocProvider<LinkFiveActiveProductsCubit>(create: (context) => LinkFiveActiveProductsCubit())
-        ], child: BlocPaywall());
+          BlocProvider<LinkFiveProductsCubit>(
+              create: (context) => LinkFiveProductsCubit()),
+          BlocProvider<LinkFiveActiveProductsCubit>(
+              create: (context) => LinkFiveActiveProductsCubit())
+        ], child: page == 1 ? BlocRaw() : BlocPaywall());
       });
 }

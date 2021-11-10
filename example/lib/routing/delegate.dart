@@ -14,7 +14,7 @@ class MainRouterDelegate extends RouterDelegate<AppPath>
 
   bool isRawPaywall = false;
   bool isSimplePaywall = false;
-  bool isMoritzPaywall = false;
+  int blocPage = 0;
 
   MainRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
 
@@ -30,7 +30,7 @@ class MainRouterDelegate extends RouterDelegate<AppPath>
         RootPage(),
         if (isRawPaywall) RawPage(),
         if (isSimplePaywall) ProviderSimplePaywallPage()
-        else if(isMoritzPaywall) BlocPaywallPage(),
+        else if(blocPage > 0) BlocPaywallPage(blocPage),
       ],
       onPopPage: (route, result) {
         if (!route.didPop(result)) {
@@ -40,8 +40,8 @@ class MainRouterDelegate extends RouterDelegate<AppPath>
         if (isSimplePaywall) {
           isSimplePaywall = false;
         }
-        if(isMoritzPaywall){
-          isMoritzPaywall = false;
+        if(blocPage > 0){
+          blocPage = 0;
         }
         if (isRawPaywall) {
           isRawPaywall = false;
@@ -61,8 +61,8 @@ class MainRouterDelegate extends RouterDelegate<AppPath>
     if (configuration.isSimplePaywallPage) {
       isSimplePaywall = true;
     }
-    if (configuration.isMoritzPaywallPage) {
-      isMoritzPaywall = true;
+    if (configuration.isBlocPage) {
+      blocPage = configuration.blocPage;
     }
   }
 
@@ -76,8 +76,12 @@ class MainRouterDelegate extends RouterDelegate<AppPath>
     notifyListeners();
   }
 
-  goToBlocMoritzPayWall() {
-    isMoritzPaywall = true;
+  goToBlocRaw() {
+    blocPage = 1;
+    notifyListeners();
+  }
+  goToBlocUI() {
+    blocPage = 2;
     notifyListeners();
   }
 

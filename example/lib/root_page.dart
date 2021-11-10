@@ -39,13 +39,23 @@ class RootWidget extends StatelessWidget {
                       .goToProviderSimplePayWall();
                 },
               ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
               ElevatedButton(
                 child: Text("Bloc Moritz UI Example"),
                 onPressed: () {
                   (Router.of(context).routerDelegate as MainRouterDelegate)
-                      .goToBlocMoritzPayWall();
+                      .goToBlocUI();
                 },
-              ),
+              ),ElevatedButton(
+                  child: Text("Bloc RAW"),
+                  onPressed: () {
+                    (Router.of(context).routerDelegate as MainRouterDelegate)
+                        .goToBlocRaw();
+                  },
+                )],)
             ],
           )),
     );
