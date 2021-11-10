@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:linkfive_purchases_example/page/bloc/bloc_paywall_page.dart';
+import 'package:linkfive_purchases_example/page/provider/provider_simple_paywall_page.dart';
 import 'package:linkfive_purchases_example/page/raw_page.dart';
-import 'package:linkfive_purchases_example/page/simple_paywall_ui_page.dart';
 import 'package:linkfive_purchases_example/root_page.dart';
 import 'package:linkfive_purchases_example/routing/app_path.dart';
 import 'package:linkfive_purchases_example/routing/no_animation_transition_delegate.dart';
@@ -13,6 +14,7 @@ class MainRouterDelegate extends RouterDelegate<AppPath>
 
   bool isRawPaywall = false;
   bool isSimplePaywall = false;
+  bool isMoritzPaywall = false;
 
   MainRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
 
@@ -27,7 +29,8 @@ class MainRouterDelegate extends RouterDelegate<AppPath>
       pages: [
         RootPage(),
         if (isRawPaywall) RawPage(),
-        if (isSimplePaywall) SimplePaywallUiPage()
+        if (isSimplePaywall) ProviderSimplePaywallPage()
+        else if(isMoritzPaywall) BlocPaywallPage(),
       ],
       onPopPage: (route, result) {
         if (!route.didPop(result)) {
@@ -36,6 +39,9 @@ class MainRouterDelegate extends RouterDelegate<AppPath>
 
         if (isSimplePaywall) {
           isSimplePaywall = false;
+        }
+        if(isMoritzPaywall){
+          isMoritzPaywall = false;
         }
         if (isRawPaywall) {
           isRawPaywall = false;
@@ -55,6 +61,9 @@ class MainRouterDelegate extends RouterDelegate<AppPath>
     if (configuration.isSimplePaywallPage) {
       isSimplePaywall = true;
     }
+    if (configuration.isMoritzPaywallPage) {
+      isMoritzPaywall = true;
+    }
   }
 
   goToRawPayWall() {
@@ -62,9 +71,14 @@ class MainRouterDelegate extends RouterDelegate<AppPath>
     notifyListeners();
   }
 
-  goToSimplePayWall() {
+  goToProviderSimplePayWall() {
     isSimplePaywall = true;
-    // LinkFivePurchases.fetchSubscriptions();
     notifyListeners();
   }
+
+  goToBlocMoritzPayWall() {
+    isMoritzPaywall = true;
+    notifyListeners();
+  }
+
 }

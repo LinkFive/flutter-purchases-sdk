@@ -15,6 +15,9 @@ void main() {
 class MyApp extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => MyAppState();
+
+  /// convenient prop to not always have the future hussle
+  static late String linkFiveApiKey;
 }
 
 class MyAppState extends State<MyApp> {
@@ -40,27 +43,24 @@ class MyAppState extends State<MyApp> {
         future: _keysFuture,
         builder: (BuildContext context, AsyncSnapshot<Keys> snapshot) {
           if (snapshot.hasData) {
+
+            // for convenient save to static prop
+            MyApp.linkFiveApiKey = snapshot.data!.linkFiveApiKey;
             print(snapshot.data!.linkFiveApiKey);
-            return MultiProvider(
-                providers: [
-                  ChangeNotifierProvider(
-                    create: (context) => LinkFiveProvider(snapshot.data!.linkFiveApiKey, environment: LinkFiveEnvironment.STAGING),
-                    lazy: false,
-                  )
-                ],
-                child: MaterialApp(
-                  title: 'LinkFive Example App',
-                  theme: ThemeData(
+
+            return MaterialApp(
+              title: 'LinkFive Example App',
+              theme: ThemeData(
+                primarySwatch: Colors.green,
+              ),
+              home: MaterialApp.router(
+                routeInformationParser: _parser,
+                routerDelegate: _delegate,
+                theme: ThemeData(
                     primarySwatch: Colors.green,
-                  ),
-                  home: MaterialApp.router(
-                    routeInformationParser: _parser,
-                    routerDelegate: _delegate,
-                    theme: ThemeData(
-                        primarySwatch: Colors.green,
-                        iconTheme: IconThemeData(color: Colors.green)),
-                  ),
-                ));
+                    iconTheme: IconThemeData(color: Colors.green)),
+              ),
+            );
           }
           // loading
           return Container(

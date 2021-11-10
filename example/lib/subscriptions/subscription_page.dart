@@ -26,9 +26,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
               },
               child: Text("Fetch")),
           SubscriptionOfferingStream(),
-          SubscriptionOfferingProvider(),
           SubscriptionActiveStream(),
-          SubscriptionActiveProvider(),
           ElevatedButton(
               onPressed: () async {
                 await LinkFivePurchases.restore();

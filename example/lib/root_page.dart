@@ -33,10 +33,17 @@ class RootWidget extends StatelessWidget {
                 },
               ),
               ElevatedButton(
-                child: Text("Simple UI Example"),
+                child: Text("Provider Simple UI Example"),
                 onPressed: () {
                   (Router.of(context).routerDelegate as MainRouterDelegate)
-                      .goToSimplePayWall();
+                      .goToProviderSimplePayWall();
+                },
+              ),
+              ElevatedButton(
+                child: Text("Bloc Moritz UI Example"),
+                onPressed: () {
+                  (Router.of(context).routerDelegate as MainRouterDelegate)
+                      .goToBlocMoritzPayWall();
                 },
               ),
             ],
