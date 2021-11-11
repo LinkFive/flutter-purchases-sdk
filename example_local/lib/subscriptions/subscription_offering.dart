@@ -15,7 +15,7 @@ class SubscriptionOfferingStream extends StatelessWidget {
     return Container(
         padding: EdgeInsets.all(8),
         child: StreamBuilder<LinkFiveSubscriptionData?>(
-          stream: LinkFivePurchases.listenOnSubscriptionData(),
+          stream: LinkFivePurchases.products,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var subscriptionData = snapshot.data;

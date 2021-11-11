@@ -14,22 +14,20 @@ class SubscriptionButton extends StatelessWidget {
   }
 
   String getSubscriptionPeriod() {
-    if (linkFiveProductDetails.productDetails is GooglePlayProductDetails) {
-      return getSubscriptionPeriodGoogle(
-          linkFiveProductDetails.productDetails as GooglePlayProductDetails);
-    }
-    return "-";
+    return getSubscriptionPeriodGoogle(linkFiveProductDetails.getSubscriptionPeriod());
   }
 
-  String getSubscriptionPeriodGoogle(GooglePlayProductDetails productDetails) {
-    switch (productDetails.skuDetails.subscriptionPeriod) {
-      case "P1M":
+  String getSubscriptionPeriodGoogle(SubscriptionDuration? subDuration) {
+    switch (subDuration) {
+      case SubscriptionDuration.P1W:
+        return "1 Week";
+      case SubscriptionDuration.P1M:
         return "1 Month";
-      case "P3M":
+      case SubscriptionDuration.P3M:
         return "3 Months";
-      case "P6M":
+      case SubscriptionDuration.P6M:
         return "6 Months";
-      case "P1Y":
+      case SubscriptionDuration.P1Y:
         return "1 Year";
     }
     return "unknown";

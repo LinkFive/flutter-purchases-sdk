@@ -25,7 +25,7 @@ class UpgradeDowngradeButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<LinkFiveSubscriptionData?>(
-        stream: LinkFivePurchases.listenOnSubscriptionData(),
+        stream: LinkFivePurchases.products,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Container(
