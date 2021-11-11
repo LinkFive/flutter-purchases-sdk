@@ -14,7 +14,7 @@ class SubscriptionButton extends StatelessWidget {
   }
 
   String getSubscriptionPeriod() {
-    return getSubscriptionPeriodGoogle(linkFiveProductDetails.getSubscriptionPeriod());
+    return getSubscriptionPeriodGoogle(linkFiveProductDetails.subscriptionDuration);
   }
 
   String getSubscriptionPeriodGoogle(SubscriptionDuration? subDuration) {

@@ -6,7 +6,11 @@ import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:in_app_purchases_intl/in_app_purchases_intl.dart';
 import 'package:linkfive_purchases/util/subscription_duration_convert.dart';
 
-/// LinkFive SubscriotionData. it includes:
+/// LinkFive SubscriptionData.
+///
+/// Basically a subscription you want to offer to your user.
+///
+/// it includes:
 /// [linkFiveSkuData] includes platform specific information
 /// [attributes] which are comming from the server
 /// [error] if something is off.
@@ -23,7 +27,9 @@ class LinkFiveSubscriptionData {
   LinkFiveSubscriptionData(this.linkFiveSkuData, this.attributes, this.error);
 
   /// Function to get the subscription Data automatically
+  ///
   /// [calculateDeal] is default true. This will calculate the deal automatically
+  ///
   /// The reference is always the subscription with the lowest duration
   List<SubscriptionData> getSubscriptionData(
       {required BuildContext context, bool calculateDeal = true}) {
@@ -88,8 +94,25 @@ class LinkFiveProductDetails {
 
   LinkFiveProductDetails(this.productDetails);
 
-  /// Duration Period of the subscription
+  /// receives the duration or period of the subscription
+  /// Deprecated: Please use subscriptionDuration instead.
+  @Deprecated("Please use subscriptionDuration instead")
   SubscriptionDuration? getSubscriptionPeriod() {
+    return subscriptionDuration;
+  }
+
+  /// Duration Period of the subscription
+  ///
+  /// Possible values:
+  ///
+  /// enum SubscriptionDuration {
+  ///   P1W,
+  ///   P1M,
+  ///   P3M,
+  ///   P6M,
+  ///   P1Y,
+  /// }
+  SubscriptionDuration? get subscriptionDuration {
     if (productDetails is GooglePlayProductDetails) {
       GooglePlayProductDetails googleDetails =
           productDetails as GooglePlayProductDetails;
@@ -106,6 +129,8 @@ class LinkFiveProductDetails {
   }
 
   /// Helper to get the Strings from the intl package
+  ///
+  /// Use it only with a valid context.
   DurationStrings getDurationStrings(BuildContext context) {
     final period = getSubscriptionPeriod();
     return period.toString().split(".").last.toDurationStrings(context);

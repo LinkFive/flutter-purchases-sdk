@@ -28,10 +28,10 @@ LinkFive mainly uses streams to pass data to your application. [Active Subscript
 
 ```dart
 // Stream of subscriptions to offer to the user
-LinkFivePurchases.listenOnSubscriptionData()
+LinkFivePurchases.products
 
 // Stream of active subscriptions
-LinkFivePurchases.listenOnActiveSubscriptionData()
+LinkFivePurchases.activeProducts
 ```
 
 ### Purchase a Subscription
@@ -48,6 +48,22 @@ All restored subscriptions will be available through the activeSubscription list
 
 ```dart
 LinkFivePurchases.restore();
+```
+
+### Switch from one subscription plan to another
+
+You can switch from one Subscription plan to another. Example: from currently a 1 month subscription to a 3 months subscription. 
+
+* On iOS: you can only switch to a plan which is in the same Subscription Family
+
+The Proration Mode is Google Only. On default, it replaces immediately the subscription and the remaining time will be prorated and credited to the user. You can specify a different proration mode.
+
+```dart
+LinkFivePurchases.switchPlan(
+  oldPurchaseDetails, 
+  linkFiveProductDetails.productDetails,
+  prorationMode: ProrationMode.immediateWithTimeProration
+);
 ```
 
 ## Provider usage
@@ -83,8 +99,8 @@ class LinkFiveProvider extends ChangeNotifier {
   LinkFiveProvider(Keys keys) {
     linkFivePurchases.init(keys.linkFiveApiKey, env: LinkFiveEnvironment.STAGING);
     linkFivePurchases.fetchSubscriptions();
-    _streams.add(linkFivePurchases.listenOnSubscriptionData().listen(_subscriptionDataUpdate));
-    _streams.add(linkFivePurchases.listenOnActiveSubscriptionData().listen(_activeSubscriptionDataUpdate));
+    _streams.add(linkFivePurchases.products.listen(_subscriptionDataUpdate));
+    _streams.add(linkFivePurchases.activeProducts.listen(_activeSubscriptionDataUpdate));
   }
 
   void _subscriptionDataUpdate(LinkFiveSubscriptionData? data) async {
@@ -112,7 +128,7 @@ Show purchasable subscriptions
 
 ```dart
 StreamBuilder<LinkFiveSubscriptionData?>(
-  stream: LinkFivePurchases.listenOnSubscriptionData(),
+  stream: LinkFivePurchases.products,
   builder: (context, snapshot) {
     if (snapshot.hasData) {
       var subscriptionData = snapshot.data;
@@ -128,7 +144,7 @@ Get Active Subscriptions
 
 ```dart
 StreamBuilder<LinkFiveActiveSubscriptionData?>(
-  stream: LinkFivePurchases.listenOnActiveSubscriptionData(),
+  stream: LinkFivePurchases.activeProducts,
   builder: (BuildContext context, snapshot) {
     if (snapshot.hasData) {
       var subscriptionData = snapshot.data;

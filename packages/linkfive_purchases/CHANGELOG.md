@@ -1,5 +1,6 @@
 ## 1.4.0
-Add Switch Plan functionality. You can now call LinkFivePurchases.switchPlan(...) to switch from one plan to another. 
+Add Switch Plan functionality. You can now call LinkFivePurchases.switchPlan(...) to switch from one plan to another.
+Add more documentation
 
 ## 1.3.0
 update to interface 0.0.7

@@ -4,7 +4,7 @@ import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
 extension UpgradeDowngradePurchases on LinkFivePurchasesMain {
-  /// Handles the Up and Downgrade of a Subscription plans
+  /// Handles the Up and Downgrade of a Subscription plan
   /// [oldPurchaseDetails] given by the LinkFive Plugin
   /// [productDetails] from the purchases you want to switch to
   /// [prorationMode] default replaces immediately the subscription, and the remaining time will be prorated and credited to the user.

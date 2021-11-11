@@ -25,8 +25,8 @@ class LinkFiveProvider extends ChangeNotifier {
     linkFivePurchases.init(keys.linkFiveApiKey);
     linkFivePurchases.fetchSubscriptions();
     _streams.add(linkFivePurchases.listenOnResponseData().listen(_responseDataUpdate));
-    _streams.add(linkFivePurchases.listenOnSubscriptionData().listen(_subscriptionDataUpdate));
-    _streams.add(linkFivePurchases.listenOnActiveSubscriptionData().listen(_activeSubscriptionDataUpdate));
+    _streams.add(linkFivePurchases.products.listen(_subscriptionDataUpdate));
+    _streams.add(linkFivePurchases.activeProducts.listen(_activeSubscriptionDataUpdate));
   }
 
   void _responseDataUpdate(LinkFiveResponseData? data) {
