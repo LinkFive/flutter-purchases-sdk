@@ -1,3 +1,6 @@
+## 1.4.0
+Update to linkfive_purchases 1.4.0 - added switchPlan to provider
+
 ## 1.3.0
 Update to linkfive_purchases 1.3.0 - no provider changes
 

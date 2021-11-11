@@ -3,6 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
+/// LinkFive Provider
+///
+/// Initialize LinkFive with your Api Key
+///
+/// Please register on our website: https://www.linkfive.io to get an api key
 class LinkFiveProvider extends ChangeNotifier {
   /// LinkFive client
   final LinkFivePurchasesMain linkFivePurchases = LinkFivePurchasesMain();
@@ -23,17 +28,17 @@ class LinkFiveProvider extends ChangeNotifier {
   /// LinkFive as CallbackInterface for your Paywall
   CallbackInterface get callbackInterface => linkFivePurchases;
 
-  /// Init LinkFive with your API Key
+  /// Initialize LinkFive with your Api Key
+  ///
+  /// Please register on our website: https://www.linkfive.io to get an api key
+  ///
   /// [LinkFiveEnvironment] is 99,999..% [LinkFiveEnvironment.PRODUCTION] better not touch it
   LinkFiveProvider(String apiKey,
       {LinkFiveEnvironment environment = LinkFiveEnvironment.PRODUCTION}) {
     linkFivePurchases.init(apiKey, env: environment);
-    _streams.add(linkFivePurchases
-        .listenOnSubscriptionData()
-        .listen(_subscriptionDataUpdate));
-    _streams.add(linkFivePurchases
-        .listenOnActiveSubscriptionData()
-        .listen(_activeSubscriptionDataUpdate));
+    _streams.add(linkFivePurchases.products.listen(_subscriptionDataUpdate));
+    _streams.add(
+        linkFivePurchases.activeProducts.listen(_activeSubscriptionDataUpdate));
   }
 
   /// Saves available Subscriptions and notifies all listeners
@@ -66,6 +71,22 @@ class LinkFiveProvider extends ChangeNotifier {
   /// and not if the purchase was successful
   purchase(ProductDetails productDetail) async {
     return LinkFivePurchases.purchase(productDetail);
+  }
+
+  /// Handles the Switch Plan functionality.
+  ///
+  /// You can switch from one Subscription plan to another. Example: from currently a 1 month subscription to a 3 months subscription
+  ///
+  /// on iOS: you can only switch to a plan which is in the same Subscription Family
+  /// [oldPurchaseDetails] given by the LinkFive Plugin
+  /// [productDetails] from the purchases you want to switch to
+  /// [prorationMode] Google Only: default replaces immediately the subscription, and the remaining time will be prorated and credited to the user.
+  ///   Check https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode for more information
+  switchPlan(
+      LinkFiveVerifiedReceipt oldPurchaseDetails, ProductDetails productDetails,
+      {ProrationMode? prorationMode}) {
+    return LinkFivePurchases.switchPlan(oldPurchaseDetails, productDetails,
+        prorationMode: prorationMode);
   }
 
   @override
