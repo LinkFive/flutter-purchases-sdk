@@ -12,8 +12,11 @@ import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_inte
 
 /// LinkFive Purchases.
 class LinkFivePurchases {
+
   /// Initialize LinkFive with your Api Key
+  ///
   /// Please register on our website: https://www.linkfive.io to get an api key
+  ///
   /// [LinkFiveLogLevel] to see or hide internal logging
   /// [LinkFiveEnvironment] is 99,999..% [LinkFiveEnvironment.PRODUCTION] better not touch it
   static init(
