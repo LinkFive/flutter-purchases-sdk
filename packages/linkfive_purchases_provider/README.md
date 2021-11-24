@@ -19,4 +19,13 @@ MultiProvider(
 )
 ```
 
+And then integrate your UI:
+
+```dart
+Consumer<LinkFiveProvider>(builder: (_, linkFiveProvider, __) {
+  // linkFiveProvider.products if you want to show your subscription offer
+  // linkFiveProvider.activeProducts if a user purchased a subscription
+}
+```
+
 That‘s it. Simple enough?

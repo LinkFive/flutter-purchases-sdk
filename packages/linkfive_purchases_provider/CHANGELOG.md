@@ -1,3 +1,6 @@
+## 1.5.0
+Update to linkfive_purchases 1.5.0 - breaking change on fetchSubscriptions.
+
 ## 1.4.0
 Update to linkfive_purchases 1.4.0 - added switchPlan to provider
 
