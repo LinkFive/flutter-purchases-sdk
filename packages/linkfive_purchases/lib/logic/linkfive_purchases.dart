@@ -91,7 +91,8 @@ class LinkFivePurchases {
   /// You usually don't need to use this stream.
   ///
   /// It contains the raw response from LinkFive.
-  @Deprecated("The Response data is not in use anymore. There is no replacement.")
+  @Deprecated(
+      "The Response data is not in use anymore. There is no replacement.")
   static Stream<LinkFiveResponseData?> listenOnResponseData() =>
       LinkFivePurchasesMain().listenOnResponseData();
 

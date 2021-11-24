@@ -50,7 +50,6 @@ class SubscriptionDurationConvert {
     return null;
   }
 
-
   /// Convert LinkFive String Period to Duration
   ///
   /// return null if not possible

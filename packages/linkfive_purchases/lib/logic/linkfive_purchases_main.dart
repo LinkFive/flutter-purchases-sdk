@@ -201,8 +201,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
       LinkFiveProductDetails productDetails,
       {ProrationMode? prorationMode}) async {
     if (Platform.isAndroid) {
-      return handleAndroidSwitchPlan(
-          oldPurchaseDetails, productDetails,
+      return handleAndroidSwitchPlan(oldPurchaseDetails, productDetails,
           prorationMode: prorationMode);
     }
     if (Platform.isIOS) {
