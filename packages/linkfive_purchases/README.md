@@ -24,13 +24,13 @@ LinkFivePurchases.fetchSubscriptions();
 
 ### Subscription Streams
 
-LinkFive mainly uses streams to pass data to your application. [Active Subscriptions Docs](https://www.linkfive.io/docs/flutter/get-all-active-subscriptions/)
+LinkFive mainly uses streams to send data to your application. [Active Subscriptions Docs](https://www.linkfive.io/docs/flutter/get-all-active-subscriptions/)
 
 ```dart
 // Stream of subscriptions to offer to the user
 LinkFivePurchases.products
 
-// Stream of active subscriptions
+// Stream of purchased subscriptions
 LinkFivePurchases.activeProducts
 ```
 
@@ -44,7 +44,7 @@ await LinkFivePurchases.purchase( productDetails );
 
 ### Restore a Purchases
 
-All restored subscriptions will be available through the activeSubscription listener. [Restore Docs](https://www.linkfive.io/docs/flutter/restore-a-purchase/)
+All restored subscriptions will be available through activeProducts. [Restore Docs](https://www.linkfive.io/docs/flutter/restore-a-purchase/)
 
 ```dart
 LinkFivePurchases.restore();
@@ -186,7 +186,7 @@ usage with [in_app_purchases_paywall_ui](https://pub.dev/packages/in_app_purchas
 final linkFivePurchases = LinkFivePurchasesMain();
 
 // get subscription data from your provider or from your stream (as described above)
-LinkFiveSubscriptionData? linkFiveSubscriptionData = subscriptionData;
+var linkFiveSubscriptionData = subscriptionData;
 
 // you can use your own strings or use the intl package to automatically generate the subscription strings
 final subscriptionListData = linkFiveSubscriptionData?.getSubscriptionData(context: context) ?? []

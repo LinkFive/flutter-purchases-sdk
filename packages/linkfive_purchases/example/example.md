@@ -15,7 +15,6 @@ import 'package:linkfive_purchases_example/key/keyLoader.dart';
 class LinkFiveProvider extends ChangeNotifier {
   LinkFivePurchasesMain linkFivePurchases = LinkFivePurchasesMain();
 
-  LinkFiveResponseData? linkFiveResponseData = null;
   LinkFiveSubscriptionData? linkFiveSubscriptionData = null;
   LinkFiveActiveSubscriptionData? linkFiveActiveSubscriptionData = null;
 
@@ -24,14 +23,8 @@ class LinkFiveProvider extends ChangeNotifier {
   LinkFiveProvider(Keys keys) {
     linkFivePurchases.init(keys.linkFiveApiKey);
     linkFivePurchases.fetchSubscriptions();
-    _streams.add(linkFivePurchases.listenOnResponseData().listen(_responseDataUpdate));
     _streams.add(linkFivePurchases.products.listen(_subscriptionDataUpdate));
     _streams.add(linkFivePurchases.activeProducts.listen(_activeSubscriptionDataUpdate));
-  }
-
-  void _responseDataUpdate(LinkFiveResponseData? data) {
-    linkFiveResponseData = data;
-    notifyListeners();
   }
 
   void _subscriptionDataUpdate(LinkFiveSubscriptionData? data) async {
