@@ -30,8 +30,7 @@ class LinkFiveProvider extends ChangeNotifier {
 
   /// conveniently check if the user has any activeProducts
   bool get hasActiveProduct =>
-      activeProducts != null &&
-      activeProducts!.subscriptionList.isNotEmpty;
+      activeProducts != null && activeProducts!.subscriptionList.isNotEmpty;
 
   /// Initialize LinkFive with your Api Key
   ///
