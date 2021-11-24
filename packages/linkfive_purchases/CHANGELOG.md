@@ -2,7 +2,9 @@
 Breaking change: fetchSubscriptions returns a Future<LinkFiveSubscriptionData?> instead of Future<List<ProductDetails>?>
 > LinkFiveSubscriptionData has `List<LinkFiveProductDetails> linkFiveSkuData` which contains the productDetail.
 
-
+* listenOnResponseData is now deprecated and won't be replaced.
+* LinkFiveVerifiedReceipt now has subscriptionDuration which containts the duration of the subscription. P1W, P1M, P3M, P6M, P1Y
+* Added some more documentation
 
 ## 1.4.0
 Add Switch Plan functionality. You can now call LinkFivePurchases.switchPlan(...) to switch from one plan to another.
