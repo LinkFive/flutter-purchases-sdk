@@ -11,8 +11,11 @@ import 'package:linkfive_purchases/models/linkfive_subscription.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 /// LinkFive Purchases.
+///
+/// Welcome to LinkFive!
+///
+/// The docs can be found here https://www.linkfive.io/docs/
 class LinkFivePurchases {
-
   /// Initialize LinkFive with your Api Key
   ///
   /// Please register on our website: https://www.linkfive.io to get an api key
@@ -30,14 +33,20 @@ class LinkFivePurchases {
   /// Add the callbackInterface as the UI Paywall callback interface
   static LinkFivePurchasesMain get callbackInterface => LinkFivePurchasesMain();
 
-  /// By Default, the plugin does not fetch any subscriptions to offer
+  /// By Default, the plugin does not fetch any subscriptions to offer.
+  ///
   /// You have to call this method at least once. The best case would be to call fetchSubscriptions
+  ///
   /// Whenever you want to offer subscriptions to your users.
+  ///
   /// This method will call LinkFive to get all available subscriptions for the user
   /// and then uses the native methods for either ios or android to fetch the subscription
   /// details like duration, price, name, id etc.
+  ///
   /// All Data will be send to the stream
-  static fetchSubscriptions() {
+  ///
+  /// @return [LinkFiveSubscriptionData] or null if no subscriptions found
+  static Future<LinkFiveSubscriptionData?> fetchSubscriptions() {
     return LinkFivePurchasesMain().fetchSubscriptions();
   }
 
@@ -48,23 +57,29 @@ class LinkFivePurchases {
     await LinkFivePurchasesMain().restore();
   }
 
-  /// This will make a purchase for the user
-  /// A verified purchase will be send to activeSubscription Stream
-  /// @return Future<bool>: if the "purchase screen" is visible to the user then it's true
-  /// This is usually misunderstood with a successful purchase
+  /// This will trigger the purchase flow for the user.
+  ///
+  /// A verified purchase will be send to activeProducts Stream
+  ///
+  /// @return Future<bool>: if the "purchase screen" is visible.
+  /// Please note: This is not a successful purchase.
   static Future<bool> purchase(ProductDetails productDetails) async {
     return LinkFivePurchasesMain().purchase(productDetails);
   }
 
   /// Handles the Switch Plan functionality.
+  ///
   /// You can switch from one Subscription plan to another. Example: from currently a 1 month subscription to a 3 months subscription
   /// on iOS: you can only switch to a plan which is in the same Subscription Family
+  ///
   /// [oldPurchaseDetails] given by the LinkFive Plugin
+  ///
   /// [productDetails] from the purchases you want to switch to
+  ///
   /// [prorationMode] Google Only: default replaces immediately the subscription, and the remaining time will be prorated and credited to the user.
   ///   Check https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode for more information
-  static Future<bool> switchPlan(
-      LinkFiveVerifiedReceipt oldPurchaseDetails, ProductDetails productDetails,
+  static Future<bool> switchPlan(LinkFiveVerifiedReceipt oldPurchaseDetails,
+      LinkFiveProductDetails productDetails,
       {ProrationMode? prorationMode}) {
     return LinkFivePurchasesMain().switchPlan(
         oldPurchaseDetails, productDetails,
@@ -76,6 +91,7 @@ class LinkFivePurchases {
   /// You usually don't need to use this stream.
   ///
   /// It contains the raw response from LinkFive.
+  @Deprecated("The Response data is not in use anymore. There is no replacement.")
   static Stream<LinkFiveResponseData?> listenOnResponseData() =>
       LinkFivePurchasesMain().listenOnResponseData();
 
@@ -138,14 +154,16 @@ class LinkFivePurchases {
     LinkFivePurchasesMain().setUTMSource(utmSource);
   }
 
-  /// Set your environment
-  /// You can filter this value in your playout
+  /// Set your own environment. Example: Production, Staging
+  ///
+  /// You can filter this value in your subscription playout
   static setEnvironment(String? environment) {
     LinkFivePurchasesMain().setEnvironment(environment);
   }
 
-  /// set the user ID
-  /// You can filter this value in your playout
+  /// set your own user ID
+  ///
+  /// You can filter this value in your subscription playout
   static setUserId(String? userId) {
     LinkFivePurchasesMain().setUserId(userId);
   }

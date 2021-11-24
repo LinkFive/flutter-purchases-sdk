@@ -1,3 +1,5 @@
+import 'package:linkfive_purchases/linkfive_purchases.dart';
+
 /// Verified Receipt from LinkFive including all data
 class LinkFiveVerifiedReceipt {
   LinkFiveVerifiedReceipt(
@@ -51,4 +53,18 @@ class LinkFiveVerifiedReceipt {
       (json["purchases"] as List)
           .map((e) => LinkFiveVerifiedReceipt.fromJson(e))
           .toList();
+
+  /// Duration Period of the subscription
+  ///
+  /// Possible values:
+  ///
+  /// enum SubscriptionDuration {
+  ///   P1W,
+  ///   P1M,
+  ///   P3M,
+  ///   P6M,
+  ///   P1Y,
+  /// }
+  SubscriptionDuration? get subscriptionDuration =>
+      SubscriptionDurationConvert.fromLinkFive(period);
 }

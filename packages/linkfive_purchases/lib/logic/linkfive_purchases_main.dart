@@ -95,9 +95,11 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   }
 
   /// Fetches the subscriptions from LinkFive and retrieves the IAP from the platform
+  ///
   /// It also submits the ProductDetails to the LinkFive Stream
-  /// @returns a list of ProductDetails
-  Future<List<ProductDetails>?> fetchSubscriptions() async {
+  ///
+  /// @return [LinkFiveSubscriptionData] or null if no subscriptions found
+  Future<LinkFiveSubscriptionData?> fetchSubscriptions() async {
     LinkFiveLogger.d("fetch subscriptions");
     var linkFiveResponse = await client.fetchLinkFiveResponse();
     store.onNewResponseData(linkFiveResponse);
@@ -105,9 +107,9 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     List<ProductDetails>? platformSubscriptions =
         await billingClient.getPlatformSubscriptions(linkFiveResponse);
     if (platformSubscriptions != null) {
-      store.onNewPlatformSubscriptions(platformSubscriptions);
+      return store.onNewPlatformSubscriptions(platformSubscriptions);
     }
-    return platformSubscriptions;
+    return null;
   }
 
   /// Make a purchase
@@ -186,15 +188,21 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   }
 
   /// Handles the Up and Downgrade of a Subscription plans
+  ///
   /// [oldPurchaseDetails] given by the LinkFive Plugin
+  ///
+  /// You can pass linkFiveProductDetails or productDetails. But one must be present.
+  ///
+  /// [linkFiveProductDetails]
   /// [productDetails] from the purchases you want to switch to
   /// [prorationMode] Google Only: default replaces immediately the subscription, and the remaining time will be prorated and credited to the user.
   ///   Check https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode for more information
-  Future<bool> switchPlan(
-      LinkFiveVerifiedReceipt oldPurchaseDetails, ProductDetails productDetails,
+  Future<bool> switchPlan(LinkFiveVerifiedReceipt oldPurchaseDetails,
+      LinkFiveProductDetails productDetails,
       {ProrationMode? prorationMode}) async {
     if (Platform.isAndroid) {
-      return handleAndroidSwitchPlan(oldPurchaseDetails, productDetails,
+      return handleAndroidSwitchPlan(
+          oldPurchaseDetails, productDetails,
           prorationMode: prorationMode);
     }
     if (Platform.isIOS) {

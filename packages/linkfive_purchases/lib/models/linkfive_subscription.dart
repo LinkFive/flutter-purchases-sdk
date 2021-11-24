@@ -13,12 +13,14 @@ import 'package:linkfive_purchases/util/subscription_duration_convert.dart';
 /// it includes:
 /// [linkFiveSkuData] includes platform specific information
 /// [attributes] which are comming from the server
-/// [error] if something is off.
+/// [error] if something has an error.
 class LinkFiveSubscriptionData {
   /// Sku Data enhances with LinkFive
   final List<LinkFiveProductDetails> linkFiveSkuData;
 
-  /// Attributes coming from the playout
+  /// Attributes coming from the subscription playout
+  ///
+  /// These Attributes are base64 encoded. please decode.
   final String? attributes;
 
   /// error string
@@ -88,7 +90,17 @@ class LinkFiveSubscriptionData {
   }
 }
 
-/// LinkFive class with platform [ProductDetails] e.g. Price
+/// LinkFive class with platform specific informations
+///
+/// [ProductDetails] containts for example
+///   Price,
+///   description,
+///   currency
+///
+/// You can get more information if you cast ProductDetails to
+///   GooglePlayProductDetails
+///   or
+///   AppStoreProductDetails
 class LinkFiveProductDetails {
   final ProductDetails productDetails;
 
@@ -132,7 +144,10 @@ class LinkFiveProductDetails {
   ///
   /// Use it only with a valid context.
   DurationStrings getDurationStrings(BuildContext context) {
-    final period = getSubscriptionPeriod();
-    return period.toString().split(".").last.toDurationStrings(context);
+    return subscriptionDuration
+        .toString()
+        .split(".")
+        .last
+        .toDurationStrings(context);
   }
 }

@@ -22,6 +22,8 @@ class SubscriptionDurationConvert {
   }
 
   /// Convert Apple Period to Duration
+  ///
+  /// return null if not possible
   static SubscriptionDuration? fromAppStore(
       SKProductSubscriptionPeriodWrapper? subscriptionPeriod) {
     if (subscriptionPeriod == null) {
@@ -45,9 +47,39 @@ class SubscriptionDurationConvert {
       return SubscriptionDuration.P1W;
     }
 
-    return SubscriptionDuration.P1M;
+    return null;
   }
 
+
+  /// Convert LinkFive String Period to Duration
+  ///
+  /// return null if not possible
+  static SubscriptionDuration? fromLinkFive(String? period) {
+    switch (period) {
+      case "P1Y":
+        return SubscriptionDuration.P1Y;
+      case "P6M":
+        return SubscriptionDuration.P6M;
+      case "P3M":
+        return SubscriptionDuration.P3M;
+      case "P1M":
+        return SubscriptionDuration.P1M;
+      case "P1W":
+        return SubscriptionDuration.P1W;
+      case null:
+        return null;
+    }
+    return null;
+  }
+
+  /// Convert from [SubscriptionDuration] to a String
+  ///
+  /// possible values:
+  ///   "P1Y"
+  ///   "P6M"
+  ///   "P3M"
+  ///   "P1M"
+  ///   "P1W"
   static String? getSubscriptionDurationAsText(
       SubscriptionDuration? subscriptionDuration) {
     switch (subscriptionDuration) {
@@ -61,7 +93,8 @@ class SubscriptionDurationConvert {
         return "P1M";
       case SubscriptionDuration.P1W:
         return "P1W";
+      case null:
+        return null;
     }
-    return null;
   }
 }

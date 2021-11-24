@@ -64,7 +64,11 @@ class LinkFiveStore {
     });
   }
 
-  onNewPlatformSubscriptions(List<ProductDetails> platformSubscriptions) {
+  ///
+  /// Whenever new subscriptions are loaded, we save it in a [LinkFiveSubscriptionData]
+  ///
+  LinkFiveSubscriptionData? onNewPlatformSubscriptions(
+      List<ProductDetails> platformSubscriptions) {
     latestProductDetailList = platformSubscriptions;
     latestLinkFiveSubscriptionData = LinkFiveSubscriptionData(
         platformSubscriptions.map((pd) => LinkFiveProductDetails(pd)).toList(),
@@ -78,6 +82,7 @@ class LinkFiveStore {
           "push sub data with ids ${latestLinkFiveSubscriptionData?.linkFiveSkuData.map((e) => e.productDetails.id)}");
       element.add(latestLinkFiveSubscriptionData);
     });
+    return latestLinkFiveSubscriptionData;
   }
 
   onNewLinkFiveActiveSubDetails(
