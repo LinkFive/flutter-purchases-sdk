@@ -12,7 +12,7 @@ class UpgradeDowngradeButtons extends StatelessWidget {
     return ElevatedButton(
         onPressed: () {
           LinkFivePurchases.switchPlan(
-              oldPurchaseDetails, linkFiveProductDetails.productDetails,
+              oldPurchaseDetails, linkFiveProductDetails,
               prorationMode: ProrationMode.immediateWithTimeProration);
         },
         child: Text(

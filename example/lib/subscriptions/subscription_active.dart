@@ -81,7 +81,7 @@ class SubscriptionActiveProvider extends StatelessWidget {
         padding: EdgeInsets.all(8),
         child: Consumer<LinkFiveProvider>(
           builder: (_, linkFiveProvider, __) {
-            var subscriptionData = linkFiveProvider.activeSubscriptionData;
+            var subscriptionData = linkFiveProvider.activeProducts;
             if (subscriptionData != null) {
               return Container(
                 padding: EdgeInsets.all(16),
