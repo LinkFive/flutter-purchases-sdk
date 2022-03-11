@@ -5,9 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
+import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
 
 import 'linkfive_client.dart';
@@ -19,9 +20,6 @@ class LinkFiveBillingClient {
   /// Init with the LinkFive Api client
   init(LinkFiveClient apiClient) {
     this._apiClient = apiClient;
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
-    }
   }
 
   /// load the products from the native billing sdk
@@ -42,6 +40,8 @@ class LinkFiveBillingClient {
     if (Platform.isIOS) {
       var iosInfo = await deviceInfo.iosInfo;
       if (!iosInfo.isPhysicalDevice) {
+        LinkFiveLogger.e(
+            "No PhysicalDevice detected. Please use a real device to use LinkFive");
         return false;
       }
     }
@@ -82,6 +82,7 @@ class LinkFiveBillingClient {
   }
 
   /// Fetches the active receipts and sends them to LinkFive
+  /*
   Future<List<LinkFiveVerifiedReceipt>> get verifiedReceipts async {
     final isAvailable = await _isStoreReachable;
 
@@ -95,7 +96,6 @@ class LinkFiveBillingClient {
     if (Platform.isIOS) {
       try {
         final receiptData = await SKReceiptManager.retrieveReceiptData();
-        // print(receiptData);
         linkFiveReceipts = await _apiClient.verifyAppleReceipt(receiptData);
       } catch (error) {
         LinkFiveLogger.d("ReceiptError. Maybe just no receipt?: $error");
@@ -113,7 +113,12 @@ class LinkFiveBillingClient {
       }
     }
 
+    if(LinkFiveUserManagement().hasNoUser){
+      await _apiClient.fetchUserPlanListFromLinkFive();
+    }
+
     // filter expired subscriptions
     return linkFiveReceipts.where((element) => !element.isExpired).toList();
   }
+   */
 }

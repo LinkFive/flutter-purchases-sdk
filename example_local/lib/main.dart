@@ -15,7 +15,6 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-
   Completer<Keys> _keysCompleter = Completer<Keys>();
   late Future<Keys> _keysFuture;
 
@@ -35,21 +34,21 @@ class MyAppState extends State<MyApp> {
         future: _keysFuture,
         builder: (BuildContext context, AsyncSnapshot<Keys> snapshot) {
           if (snapshot.hasData) {
-
             print(snapshot.data!.linkFiveApiKey);
             LinkFivePurchases.init(snapshot.data!.linkFiveApiKey,
-                env: LinkFiveEnvironment.STAGING);
-            LinkFivePurchases.fetchSubscriptions();
+                    env: LinkFiveEnvironment.STAGING)
+                .then((value) => LinkFivePurchases.fetchProducts());
 
             return MaterialApp(
-              title: 'LinkFive Example App',
-              theme: ThemeData(
-                primarySwatch: Colors.green,
-              ),
-              home: Scaffold(
-                appBar: AppBar(title: Text("Hello"),),
-                  body: SubscriptionPage())
-            );
+                title: 'LinkFive Example App',
+                theme: ThemeData(
+                  primarySwatch: Colors.green,
+                ),
+                home: Scaffold(
+                    appBar: AppBar(
+                      title: Text("Hello"),
+                    ),
+                    body: SubscriptionPage()));
           }
           // loading
           return Container(

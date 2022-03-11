@@ -5,7 +5,6 @@ import 'package:linkfive_purchases/linkfive_purchases.dart';
 
 class SubscriptionPage extends StatefulWidget {
 
-
   @override
   State<StatefulWidget> createState() => new _SubscriptionPageState();
 }
@@ -24,7 +23,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
         children: [
           ElevatedButton(
               onPressed: () {
-                LinkFivePurchases.fetchSubscriptions();
+                LinkFivePurchases.fetchProducts();
               },
               child: Text("Fetch")),
           SubscriptionOfferingStream(),

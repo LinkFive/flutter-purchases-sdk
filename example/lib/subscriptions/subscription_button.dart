@@ -23,6 +23,8 @@ class SubscriptionButton extends StatelessWidget {
 
   String getSubscriptionPeriodGoogle(GooglePlayProductDetails productDetails) {
     switch (productDetails.skuDetails.subscriptionPeriod) {
+      case "P1W":
+        return "1 Week";
       case "P1M":
         return "1 Month";
       case "P3M":

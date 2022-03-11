@@ -5,9 +5,8 @@ import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_purchases_main.dart';
-import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
-import 'package:linkfive_purchases/models/linkfive_response.dart';
-import 'package:linkfive_purchases/models/linkfive_subscription.dart';
+import 'package:linkfive_purchases/models/linkfive_active_products.dart';
+import 'package:linkfive_purchases/models/linkfive_products.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 /// LinkFive Purchases.
@@ -16,13 +15,27 @@ import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_inte
 ///
 /// The docs can be found here https://www.linkfive.io/docs/
 class LinkFivePurchases {
+
   /// Initialize LinkFive with your Api Key
   ///
   /// Please register on our website: https://www.linkfive.io to get an api key
   ///
+  /// Possible usage:
+  ///
+  /// LinkFivePurchases.init(linkFiveApiKey)
+  ///
+  /// and then later while or before you show your paywall ui:
+  ///
+  /// LinkFivePurchases.fetchProducts()
+  ///
+  /// Also Possible but not recommended:
+  ///
+  /// LinkFivePurchases.init(linkFiveApiKey)
+  ///     .then((value) => LinkFivePurchases.fetchProducts());
+  ///
   /// [LinkFiveLogLevel] to see or hide internal logging
   /// [LinkFiveEnvironment] is 99,999..% [LinkFiveEnvironment.PRODUCTION] better not touch it
-  static init(
+  static Future<LinkFiveActiveProducts> init(
     String apiKey, {
     LinkFiveLogLevel logLevel = LinkFiveLogLevel.DEBUG,
     LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION,
@@ -30,12 +43,10 @@ class LinkFivePurchases {
     return LinkFivePurchasesMain().init(apiKey, logLevel: logLevel, env: env);
   }
 
-  /// Add the callbackInterface as the UI Paywall callback interface
-  static LinkFivePurchasesMain get callbackInterface => LinkFivePurchasesMain();
-
-  /// By Default, the plugin does not fetch any subscriptions to offer.
+  /// By Default, the plugin does not fetch any Products to offer.
   ///
-  /// You have to call this method at least once. The best case would be to call fetchSubscriptions
+  /// You have to call this method at least once. The best case would be to call
+  /// fetchProducts whenever you want to show your offer
   ///
   /// Whenever you want to offer subscriptions to your users.
   ///
@@ -45,16 +56,16 @@ class LinkFivePurchases {
   ///
   /// All Data will be send to the stream
   ///
-  /// @return [LinkFiveSubscriptionData] or null if no subscriptions found
-  static Future<LinkFiveSubscriptionData?> fetchSubscriptions() {
-    return LinkFivePurchasesMain().fetchSubscriptions();
+  /// @return [LinkFiveProducts] or null if no subscriptions found
+  static Future<LinkFiveProducts?> fetchProducts() {
+    return LinkFivePurchasesMain().fetchProducts();
   }
 
   /// This will restore the subscriptions a user purchased.
-  /// This is usually only needed for ios users.
-  /// All Data will be send to the stream
-  static Future<void> restore() async {
-    await LinkFivePurchasesMain().restore();
+  ///
+  /// All data will be refreshed and notified with the product stream
+  static Future<bool> restore() {
+    return LinkFivePurchasesMain().restore();
   }
 
   /// This will trigger the purchase flow for the user.
@@ -78,30 +89,12 @@ class LinkFivePurchases {
   ///
   /// [prorationMode] Google Only: default replaces immediately the subscription, and the remaining time will be prorated and credited to the user.
   ///   Check https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode for more information
-  static Future<bool> switchPlan(LinkFiveVerifiedReceipt oldPurchaseDetails,
-      LinkFiveProductDetails productDetails,
+  static Future<bool> switchPlan(
+      LinkFivePlan oldPurchasePlan, LinkFiveProductDetails productDetails,
       {ProrationMode? prorationMode}) {
-    return LinkFivePurchasesMain().switchPlan(
-        oldPurchaseDetails, productDetails,
+    return LinkFivePurchasesMain().switchPlan(oldPurchasePlan, productDetails,
         prorationMode: prorationMode);
   }
-
-  /// LinkFive Server Response Data as Stream.
-  ///
-  /// You usually don't need to use this stream.
-  ///
-  /// It contains the raw response from LinkFive.
-  @Deprecated(
-      "The Response data is not in use anymore. There is no replacement.")
-  static Stream<LinkFiveResponseData?> listenOnResponseData() =>
-      LinkFivePurchasesMain().listenOnResponseData();
-
-  /// This Stream contains all available Subscriptions you can offer to your user
-  ///
-  /// Deprecated: Please use LinkFivePurchases.products instead
-  @Deprecated("Please use LinkFivePurchases.products instead")
-  static Stream<LinkFiveSubscriptionData?> listenOnSubscriptionData() =>
-      LinkFivePurchasesMain().listenOnSubscriptionData();
 
   /// This Stream contains all available Subscriptions you can offer to your user.
   ///
@@ -120,21 +113,13 @@ class LinkFivePurchases {
   ///     currencyCode,
   ///     currencySymbol = ''
   ///     });
-  static Stream<LinkFiveSubscriptionData?> get products =>
+  static Stream<LinkFiveProducts> get products =>
       LinkFivePurchasesMain().products;
-
-  /// if the user has an active verified purchase, then this stream will deliver
-  /// the active and verified purchase
-  /// Deprecated. Please use LinkFivePurchases.activeProducts instead
-  @Deprecated("Please use LinkFivePurchases.activeProducts instead")
-  static Stream<LinkFiveActiveSubscriptionData?>
-      listenOnActiveSubscriptionData() =>
-          LinkFivePurchasesMain().listenOnActiveSubscriptionData();
 
   /// If the user has an active verified purchase, the stream will contain all necessary information
   /// An active product is a verified active subscription the user purchased
   ///
-  /// @return LinkFiveActiveSubscriptionData which can also be null. Please treat it as no active subscription
+  /// @return LinkFiveActiveProducts which can also be null. Please treat it as no active subscription
   /// LinkFiveActiveSubscriptionData.subscriptionList is a List of verified subscriptions receipts
   /// LinkFiveActiveSubscriptionData.subscriptionList[...] can have the following attributes:
   ///   String sku;
@@ -146,7 +131,7 @@ class LinkFivePurchases {
   ///   String? familyName;
   ///   String? attributes;
   ///   String? period;
-  static Stream<LinkFiveActiveSubscriptionData?> get activeProducts =>
+  static Stream<LinkFiveActiveProducts> get activeProducts =>
       LinkFivePurchasesMain().activeProducts;
 
   /// Set the UTM source of a user
@@ -168,4 +153,10 @@ class LinkFivePurchases {
   static setUserId(String? userId) {
     LinkFivePurchasesMain().setUserId(userId);
   }
+
+  /// This is the callback Interface for the UI Paywall plugin
+  ///
+  /// You can just add the callbackInterface as the UI Paywall callback interface
+  ///
+  static LinkFivePurchasesMain get callbackInterface => LinkFivePurchasesMain();
 }

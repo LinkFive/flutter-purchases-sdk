@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
 class UpgradeDowngradeButtons extends StatelessWidget {
-  final LinkFiveVerifiedReceipt oldPurchaseDetails;
+  final LinkFivePlan oldPurchaseDetails;
 
   UpgradeDowngradeButtons(this.oldPurchaseDetails);
 
@@ -24,13 +24,13 @@ class UpgradeDowngradeButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<LinkFiveSubscriptionData?>(
+    return StreamBuilder<LinkFiveProducts?>(
         stream: LinkFivePurchases.products,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Container(
                 child: Column(
-                    children: snapshot.data!.linkFiveSkuData
+                    children: snapshot.data!.productDetailList
                         .map((e) => getButton(context, e))
                         .toList()));
           }

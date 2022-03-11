@@ -1,6 +1,7 @@
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
 /// Verified Receipt from LinkFive including all data
+@deprecated
 class LinkFiveVerifiedReceipt {
   LinkFiveVerifiedReceipt(
       {required this.sku,

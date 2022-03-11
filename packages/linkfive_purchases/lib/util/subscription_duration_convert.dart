@@ -1,12 +1,12 @@
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
 /// Convert The duration String from Google and Apple to an actual Duration
 class SubscriptionDurationConvert {
   /// Convert Google Period to Duration
-  static SubscriptionDuration? fromGoogle(String period) {
-    switch (period) {
+  static SubscriptionDuration fromGoogle(String duration) {
+    switch (duration) {
       case "P1Y":
         return SubscriptionDuration.P1Y;
       case "P6M":
@@ -18,16 +18,16 @@ class SubscriptionDurationConvert {
       case "P1W":
         return SubscriptionDuration.P1W;
     }
-    return null;
+    throw FormatException("The Subscription Period is not supported");
   }
 
   /// Convert Apple Period to Duration
   ///
   /// return null if not possible
-  static SubscriptionDuration? fromAppStore(
+  static SubscriptionDuration fromAppStore(
       SKProductSubscriptionPeriodWrapper? subscriptionPeriod) {
     if (subscriptionPeriod == null) {
-      return null;
+      throw FormatException("The Subscription Period is null");
     }
     if (subscriptionPeriod.unit == SKSubscriptionPeriodUnit.year) {
       return SubscriptionDuration.P1Y;
@@ -47,13 +47,13 @@ class SubscriptionDurationConvert {
       return SubscriptionDuration.P1W;
     }
 
-    return null;
+    throw FormatException("The Subscription Period is not supported");
   }
 
   /// Convert LinkFive String Period to Duration
   ///
   /// return null if not possible
-  static SubscriptionDuration? fromLinkFive(String? period) {
+  static SubscriptionDuration fromLinkFive(String? period) {
     switch (period) {
       case "P1Y":
         return SubscriptionDuration.P1Y;
@@ -65,10 +65,8 @@ class SubscriptionDurationConvert {
         return SubscriptionDuration.P1M;
       case "P1W":
         return SubscriptionDuration.P1W;
-      case null:
-        return null;
     }
-    return null;
+    throw FormatException("The Subscription Period is not supported");
   }
 
   /// Convert from [SubscriptionDuration] to a String
@@ -79,7 +77,7 @@ class SubscriptionDurationConvert {
   ///   "P3M"
   ///   "P1M"
   ///   "P1W"
-  static String? getSubscriptionDurationAsText(
+  static String getSubscriptionDurationAsText(
       SubscriptionDuration? subscriptionDuration) {
     switch (subscriptionDuration) {
       case SubscriptionDuration.P1Y:
@@ -92,8 +90,8 @@ class SubscriptionDurationConvert {
         return "P1M";
       case SubscriptionDuration.P1W:
         return "P1W";
-      case null:
-        return null;
+      default: // just continue
     }
+    throw FormatException("The Subscription Period is not supported");
   }
 }

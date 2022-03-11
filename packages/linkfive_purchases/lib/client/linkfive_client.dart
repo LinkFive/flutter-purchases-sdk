@@ -3,8 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
+import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
+import 'package:linkfive_purchases/models/linkfive_plan.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
@@ -52,12 +54,13 @@ class LinkFiveClient {
       "X-Country": _countryCode,
       "X-App-Version": await _appVersion,
       "X-User-Id": _appDataStore.userId ?? "",
+      "X-LinkFive-UUID": LinkFiveUserManagement().linkFiveUUID ?? "",
       "X-Utm-Source": _appDataStore.utmSource ?? "",
       "X-Environment": _appDataStore.environment ?? ""
     };
   }
 
-  /// Mandatry init with [LinkFiveEnvironment] and [LinkFiveAppDataStore]
+  /// Mandatory init with [LinkFiveEnvironment] and [LinkFiveAppDataStore]
   init(LinkFiveEnvironment env, LinkFiveAppDataStore appDataStore) {
     environment = env;
     this._appDataStore = appDataStore;
@@ -85,7 +88,7 @@ class LinkFiveClient {
   /// We don't need to do this on Android
   Future<void> purchaseIos(AppStoreProductDetails productDetails,
       AppStorePurchaseDetails purchaseDetails) async {
-    final uri = _makeUri("api/v1/purchases/apple");
+    final uri = _makeUri("api/v1/purchases/user/apple");
 
     final transaction = purchaseDetails.skPaymentTransaction;
 
@@ -107,6 +110,8 @@ class LinkFiveClient {
               transactionId
     };
 
+    print(body);
+
     await http.post(uri, body: jsonEncode(body), headers: await _headers);
   }
 
@@ -120,8 +125,11 @@ class LinkFiveClient {
         await http.post(uri, body: jsonEncode(body), headers: await _headers);
     LinkFiveLogger.d(response.body);
 
-    return LinkFiveVerifiedReceipt.fromJsonList(
-        jsonDecode(response.body)["data"]);
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+    LinkFiveUserManagement().onResponse(jsonResponse);
+
+    return LinkFiveVerifiedReceipt.fromJsonList(jsonResponse["data"]);
   }
 
   /// Verify Google Receipt
@@ -148,8 +156,28 @@ class LinkFiveClient {
         await http.post(uri, body: jsonEncode(body), headers: await _headers);
     LinkFiveLogger.d(response.body);
 
-    return LinkFiveVerifiedReceipt.fromJsonList(
-        jsonDecode(response.body)["data"]);
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+    LinkFiveUserManagement().onResponse(jsonResponse);
+
+    return LinkFiveVerifiedReceipt.fromJsonList(jsonResponse["data"]);
+  }
+
+  /// Fetches the receipts for a user
+  ///
+  /// if no LinkFive UUID is provided, LinkFive will generate a new user ID
+  ///
+  Future<List<LinkFivePlan>> fetchUserPlanListFromLinkFive() async {
+    final uri = _makeUri("api/v1/purchases/user");
+
+    final response = await http.get(uri, headers: await _headers);
+    LinkFiveLogger.d(response.body);
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+    // Save the LinkFive userID if any exists
+    LinkFiveUserManagement().onResponse(jsonResponse);
+
+    return LinkFivePlan.fromJsonList(jsonResponse["data"]);
   }
 
   /// Get LinkFive URI with path Parameters

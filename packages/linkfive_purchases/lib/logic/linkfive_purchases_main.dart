@@ -1,23 +1,26 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/services.dart';
 
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/client/linkfive_client.dart';
+import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
 import 'package:linkfive_purchases/logic/upgrade_downgrade_purchases.dart';
 import 'package:linkfive_purchases/client/linkfive_billing_client.dart';
 import 'package:linkfive_purchases/default/default_purchase_handler.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
-import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
-import 'package:linkfive_purchases/models/linkfive_response.dart';
-import 'package:linkfive_purchases/models/linkfive_subscription.dart';
-import 'package:linkfive_purchases/store/link_five_store.dart';
+import 'package:linkfive_purchases/models/linkfive_active_products.dart';
+import 'package:linkfive_purchases/models/linkfive_plan.dart';
+import 'package:linkfive_purchases/models/linkfive_products.dart';
+import 'package:linkfive_purchases/store/linkfive_prefs.dart';
+import 'package:linkfive_purchases/store/linkfive_store.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 
 class LinkFivePurchasesMain extends DefaultPurchaseHandler
     implements CallbackInterface {
@@ -31,46 +34,40 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   //#endregion Singleton
 
   //#region Members
+
   /// Cache of AppStoreProductDetail
   AppStoreProductDetails? _productDetailsToPurchase;
 
   /// LinkFive HTTP Client
+  ///
+  /// Used for all internal LinkFive Requests
   LinkFiveClient client = LinkFiveClient();
 
   /// Billing Client to Store
+  ///
+  /// Used for all interactions with the native billing client
   LinkFiveBillingClient billingClient = LinkFiveBillingClient();
 
-  /// Internal Store for data
+  /// Internal memory Storage for all products and responses
   LinkFiveStore store = LinkFiveStore();
 
-  /// Settings data Store
+  /// Settings data memory storage
+  ///
+  /// We store the api key etc only in memory
   LinkFiveAppDataStore appDataStore = LinkFiveAppDataStore();
 
   StreamSubscription<List<PurchaseDetails>>? _purchaseStream;
 
-  /// Response Data as Stream
-  Stream<LinkFiveResponseData?> listenOnResponseData() =>
-      store.listenOnResponseData();
+  /// All available Products you can offer for purchase to your users
+  ///
+  /// @return a Stream of all available products.
+  ///   null means that we do not have any data yet
+  ///   empty array: we got data but didn't find any subscriptions
+  Stream<LinkFiveProducts> get products => store.productsStream;
 
-  /// Response Data as Stream
-  Stream<LinkFiveResponseData?> get linkFiveResponse =>
-      store.listenOnResponseData();
-
-  /// Subscription Data as Stream
-  Stream<LinkFiveSubscriptionData?> listenOnSubscriptionData() =>
-      store.listenOnSubscriptionData();
-
-  /// Subscription Data as Stream
-  Stream<LinkFiveSubscriptionData?> get products =>
-      store.listenOnSubscriptionData();
-
-  /// Active Subscription as Stream
-  Stream<LinkFiveActiveSubscriptionData?> listenOnActiveSubscriptionData() =>
-      store.listenOnActiveSubscriptionData();
-
-  /// Active Subscription as Stream
-  Stream<LinkFiveActiveSubscriptionData?> get activeProducts =>
-      store.listenOnActiveSubscriptionData();
+  /// All active Products the user purchased
+  Stream<LinkFiveActiveProducts> get activeProducts =>
+      store.activeProductsStream;
 
   //#endregion Members
 
@@ -79,19 +76,41 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   /// [apiKey] get your API Key in the API section of LinkFive
   /// [logLevel] default is DEBUG. Possible values are TRACE, DEBUG, INFO, WARN, ERROR
   /// [env] default is Production. Sets the LinkFive Environment.
-  Future<void> init(String apiKey,
+  Future<LinkFiveActiveProducts> init(String apiKey,
       {LinkFiveLogLevel logLevel = LinkFiveLogLevel.DEBUG,
-      LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION}) async {
+        LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION}) async {
     LinkFiveLogger.setLogLevel(logLevel);
+
+    // init Preferences
+    // does nothing else than putting the shared preference instance in place
+    await LinkFivePrefs().init();
+
+    // LinkFive User Management
+    // also loads the saved LinkFive User ID if available
+    await LinkFiveUserManagement().init();
+
+    // save api Key in memory
     appDataStore.apiKey = apiKey;
+
+    // init the client http client. sets the url etc.
     client.init(env, appDataStore);
 
     LinkFiveLogger.d("init LinkFive");
 
+    // initialize the native billing client.
     billingClient.init(client);
 
+    // main method for purchases.
+    // if a purchase was made, we get an update
     _listenPurchaseUpdates();
-    _loadActiveSubs();
+
+    // if not initialized yet, load all active subs and send to LinkFive
+    // if (!(await LinkFivePrefs().hasInitialized)) {
+    // await _loadActiveSubs();
+    // } else {
+    // Check LinkFive For Active Plans
+    return await _updateActivePlansFromLinkFive();
+    // }
   }
 
   /// Fetches the subscriptions from LinkFive and retrieves the IAP from the platform
@@ -99,13 +118,13 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   /// It also submits the ProductDetails to the LinkFive Stream
   ///
   /// @return [LinkFiveSubscriptionData] or null if no subscriptions found
-  Future<LinkFiveSubscriptionData?> fetchSubscriptions() async {
+  Future<LinkFiveProducts?> fetchProducts() async {
     LinkFiveLogger.d("fetch subscriptions");
     var linkFiveResponse = await client.fetchLinkFiveResponse();
     store.onNewResponseData(linkFiveResponse);
 
     List<ProductDetails>? platformSubscriptions =
-        await billingClient.getPlatformSubscriptions(linkFiveResponse);
+    await billingClient.getPlatformSubscriptions(linkFiveResponse);
     if (platformSubscriptions != null) {
       return store.onNewPlatformSubscriptions(platformSubscriptions);
     }
@@ -115,6 +134,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   /// Make a purchase
   ///
   /// If you want to know if the purchase is pending, listen to listenOnPendingPurchase
+  ///
   /// @returns true if UI is shown, false otherwise
   Future<bool> purchase(dynamic productDetails) async {
     ProductDetails? _productDetails;
@@ -180,7 +200,8 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   }
 
   /// Restore
-  /// Restore a Purchase
+  /// all made purchases
+  @override
   Future<bool> restore() async {
     super.isPendingPurchase = true;
     await InAppPurchase.instance.restorePurchases();
@@ -197,11 +218,11 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   /// [productDetails] from the purchases you want to switch to
   /// [prorationMode] Google Only: default replaces immediately the subscription, and the remaining time will be prorated and credited to the user.
   ///   Check https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode for more information
-  Future<bool> switchPlan(LinkFiveVerifiedReceipt oldPurchaseDetails,
+  Future<bool> switchPlan(LinkFivePlan oldLinkFivePlan,
       LinkFiveProductDetails productDetails,
       {ProrationMode? prorationMode}) async {
     if (Platform.isAndroid) {
-      return handleAndroidSwitchPlan(oldPurchaseDetails, productDetails,
+      return handleAndroidSwitchPlan(oldLinkFivePlan, productDetails,
           prorationMode: prorationMode);
     }
     if (Platform.isIOS) {
@@ -224,19 +245,49 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
 
   //#region private methods
 
-  /// LOAD ACTIVE SUBS
+  /// This method will load all active subs
+  /// and call linkfive to submit all loaded
+  /// this will probably be deprecated?
   _loadActiveSubs() async {
-    LinkFiveLogger.d("load active subs");
+    LinkFiveLogger.d("load active subs from Store");
+/*
+    // get all receipts from the native client
     final verifiedReceiptsList = await billingClient.verifiedReceipts;
-
+    LinkFiveLogger.d("loaded active subs from Store");
     // update listeners
-    store.onNewLinkFiveActiveSubDetails(
+    store.onNewLinkFiveActivePlanList(
         LinkFiveActiveSubscriptionData(verifiedReceiptsList));
     if (verifiedReceiptsList.length > 0) {
       super.purchaseState = PurchaseState.PURCHASED;
     } else {
       super.purchaseState = PurchaseState.NOT_PURCHASED;
+    }*/
+  }
+
+  ///
+  /// This Method will fetch all active plans from LinkFive,
+  /// notify all listeners and return the instance
+  Future<LinkFiveActiveProducts> _updateActivePlansFromLinkFive() async {
+    LinkFiveLogger.d("Update active plans from LinkFive");
+    try {
+      // Fetch all Plans from LinkFive
+      final List<LinkFivePlan> linkFivePlanList = await client
+          .fetchUserPlanListFromLinkFive();
+
+      // Wrap it in a ActiveProducts Object
+      final activeProducts = LinkFiveActiveProducts(planList: linkFivePlanList);
+
+      // notify all listeners
+      store.onNewLinkFiveActivePlanList(activeProducts);
+
+      // return with the created object
+      return activeProducts;
+    } catch (e) {
+      LinkFiveLogger.e("Error while fetching User Data: $e");
     }
+
+    // return an empty List on error
+    return LinkFiveActiveProducts();
   }
 
   /// connects to the internal IAP library
@@ -255,11 +306,15 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   }
 
   /// Internal IAP library purchase update method
-  void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
+  void _listenToPurchaseUpdated(
+      List<PurchaseDetails> purchaseDetailsList) async {
+    print(purchaseDetailsList);
     if (purchaseDetailsList.isEmpty) {
       super.isPendingPurchase = false;
+      return;
     }
-    purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+
+    for (PurchaseDetails purchaseDetails in purchaseDetailsList) {
       switch (purchaseDetails.status) {
         case PurchaseStatus.pending:
           LinkFiveLogger.d("_showPendingUI();");
@@ -267,39 +322,53 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
           break;
         case PurchaseStatus.error:
           LinkFiveLogger.e("_handleError(purchaseDetails.error!)");
-          super.isPendingPurchase = false;
+          break;
+        case PurchaseStatus.canceled:
+          LinkFiveLogger.e("_handleError(purchaseDetails.canceled!)");
           break;
         case PurchaseStatus.purchased:
+        // handle ios Purchase
           if (Platform.isIOS && _productDetailsToPurchase != null) {
             final appstorePurchaseDetails =
-                purchaseDetails as AppStorePurchaseDetails;
+            purchaseDetails as AppStorePurchaseDetails;
             await client.purchaseIos(
                 _productDetailsToPurchase!, appstorePurchaseDetails);
             _productDetailsToPurchase = null;
           }
-          await _handlePurchasedPurchaseDetails(purchaseDetails);
-          super.isPendingPurchase = false;
+
           break;
-        // if restored. this will be triggered many many times.
-        // maybe we need to handle it differently since we do a request for each transaction
         case PurchaseStatus.restored:
-          await _handlePurchasedPurchaseDetails(purchaseDetails);
-          super.isPendingPurchase = false;
-          break;
-        default:
-          super.isPendingPurchase = false;
+          var asd = purchaseDetails as AppStorePurchaseDetails;
+          // log("asd.verificationData.serverVerificationData");
+          // log(asd.verificationData.serverVerificationData);
+          log("asd.skPaymentTransaction.transactionIdentifier");
+          log(asd.skPaymentTransaction.transactionIdentifier ?? "");
+          log(
+              "asd.skPaymentTransaction.originalTransaction?.transactionIdentifier");
+          log(asd.skPaymentTransaction.originalTransaction
+              ?.transactionIdentifier ??
+              "");
+
+          print(asd.productID);
+          print(asd.transactionDate);
+          InAppPurchase.instance.completePurchase(purchaseDetails);
+          return;
           break;
       }
+    }
 
+    for (PurchaseDetails purchaseDetails in purchaseDetailsList) {
       if (purchaseDetails.pendingCompletePurchase) {
         // always on ios. android can be done locally or on server
         await InAppPurchase.instance.completePurchase(purchaseDetails);
       }
-    });
+    }
+    super.isPendingPurchase = false;
   }
 
   /// Platform specific handling of loading active subs
-  _handlePurchasedPurchaseDetails(PurchaseDetails purchaseDetails) async {
+  _handlePurchasedPurchaseDetails() async {
+    LinkFiveLogger.d("handle purchase");
     if (Platform.isAndroid) {
       await _loadActiveSubs();
     } else if (Platform.isIOS) {
@@ -310,7 +379,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   /// This method overrides the interface to fetch the subscriptions on view.
   @override
   Future<bool> loadSubscriptions() async {
-    await fetchSubscriptions();
+    await fetchProducts();
     return true;
   }
 //#endregion private methods
