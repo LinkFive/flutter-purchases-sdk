@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:in_app_purchase_platform_interface/src/types/product_details.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/models/linkfive_active_products.dart';
 import 'package:linkfive_purchases/models/linkfive_products.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
@@ -34,7 +35,7 @@ class LinkFiveStore {
     _streamControllerProducts.add(controller);
     final products = latestLinkFiveProducts;
     if (products != null) {
-      LinkFiveLogger.d("push sub data after create");
+      LinkFiveLogger.d("push sub products data after create");
       controller.add(products);
     }
     return controller.stream;
@@ -48,7 +49,7 @@ class LinkFiveStore {
     _streamControllerActiveProducts.add(controller);
     final activeProducts = latestLinkFiveActiveProducts;
     if (activeProducts != null) {
-      LinkFiveLogger.d("push sub data after create");
+      LinkFiveLogger.d("push sub activeProducts data after create");
       controller.add(activeProducts);
     }
     return controller.stream;
@@ -79,28 +80,40 @@ class LinkFiveStore {
 
     _cleanAllStreams();
 
+    LinkFiveLogger.d(
+        "push sub data with ids ${latestLinkFiveProducts?.productDetailList.map((e) => e.productDetails.id)}");
+
     _streamControllerProducts.forEach((streamController) {
-      LinkFiveLogger.d(
-          "push sub data with ids ${latestLinkFiveProducts?.productDetailList.map((e) => e.productDetails.id)}");
       streamController.add(linkFiveProducts);
     });
     return linkFiveProducts;
   }
 
-  onNewLinkFiveActivePlanList(
-      LinkFiveActiveProducts linkFiveActiveProducts) {
-    latestLinkFiveActiveProducts = linkFiveActiveProducts;
+  /// This method is the first entry point to notify all listeners that there
+  /// are new plans available.
+  LinkFiveActiveProducts onNewLinkFiveNewActivePlanList(
+      List<LinkFivePlan> planList) {
+    // Wrap it in a ActiveProducts Object
+    final activeProducts = LinkFiveActiveProducts(planList: planList);
+
+    latestLinkFiveActiveProducts = activeProducts;
 
     _cleanAllStreams();
 
     // notify observer
-    _streamControllerActiveProducts.forEach((streamController) {
+    for (StreamController<LinkFiveActiveProducts> streamController
+        in _streamControllerActiveProducts) {
       LinkFiveLogger.d(
           "push active sub data with size ${latestLinkFiveActiveProducts?.planList.length ?? 0}");
-      streamController.add(linkFiveActiveProducts);
-    });
+      streamController.add(activeProducts);
+    }
+    return activeProducts;
   }
 
+  /// Cleans all streams
+  ///
+  /// This basically checks if a stream is still active and if not, it will be
+  /// removed from the list
   _cleanAllStreams() {
     _cleanStream(_streamControllerProducts);
     _cleanStream(_streamControllerActiveProducts);

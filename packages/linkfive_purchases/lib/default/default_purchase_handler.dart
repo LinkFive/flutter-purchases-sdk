@@ -36,7 +36,7 @@ class DefaultPurchaseHandler implements PurchaseStateStreamInterface {
   ///
   /// Also cleans all unused streams
   set isPendingPurchase(bool value) {
-    LinkFiveLogger.d("set pending value $value");
+    LinkFiveLogger.d("set pending purchase to $value");
     _isPendingPurchase = value;
 
     // Clean streams

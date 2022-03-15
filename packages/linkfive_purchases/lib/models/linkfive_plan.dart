@@ -61,8 +61,7 @@ class LinkFivePlan {
 
   @override
   String toString() {
-    JsonEncoder encoder = new JsonEncoder.withIndent('  ');
-    return 'LinkFivePlan:\n${encoder.convert(json)}';
+    return 'LinkFivePlan:\n $json}';
   }
 
   /// Duration Period of the subscription

@@ -8,6 +8,7 @@ import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
 import 'package:linkfive_purchases/models/linkfive_plan.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
+import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
 import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
@@ -86,7 +87,7 @@ class LinkFiveClient {
 
   /// after a purchase on ios we call the purchases/apple
   /// We don't need to do this on Android
-  Future<void> purchaseIos(AppStoreProductDetails productDetails,
+  Future<List<LinkFivePlan>> purchaseIos(AppStoreProductDetails productDetails,
       AppStorePurchaseDetails purchaseDetails) async {
     final uri = _makeUri("api/v1/purchases/user/apple");
 
@@ -112,7 +113,9 @@ class LinkFiveClient {
 
     print(body);
 
-    await http.post(uri, body: jsonEncode(body), headers: await _headers);
+    final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
+
+    return _parsePlanListResponse(response);
   }
 
   /// Verify Apple Receipt
@@ -171,13 +174,31 @@ class LinkFiveClient {
     final uri = _makeUri("api/v1/purchases/user");
 
     final response = await http.get(uri, headers: await _headers);
-    LinkFiveLogger.d(response.body);
-    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    return _parsePlanListResponse(response);
+  }
 
-    // Save the LinkFive userID if any exists
-    LinkFiveUserManagement().onResponse(jsonResponse);
+  /// This will send all restored transactionIds to LinkFive
+  /// We will check against apple if those transaction are valid and
+  /// enable or disable a product
+  Future<List<LinkFivePlan>> restoreIos(
+      List<LinkFiveRestoreAppleItem> restoreList) async {
+    final uri = _makeUri("api/v1/purchases/user/apple/restore");
 
-    return LinkFivePlan.fromJsonList(jsonResponse["data"]);
+    final body = {
+      "transactionIdList": restoreList.map((restoreAppleItem) {
+        return {
+          "transactionId": restoreAppleItem.transactionId,
+          "originalTransactionId": restoreAppleItem.originalTransactionId ??
+              restoreAppleItem.transactionId
+        };
+      }).toList(growable: false)
+    };
+
+    LinkFiveLogger.d("Restore body: ${body}");
+
+    final response =
+        await http.post(uri, body: jsonEncode(body), headers: await _headers);
+    return _parsePlanListResponse(response);
   }
 
   /// Get LinkFive URI with path Parameters
@@ -187,5 +208,16 @@ class LinkFiveClient {
     }
 
     return Uri.https(hostUrl, path, queryParams);
+  }
+
+  List<LinkFivePlan> _parsePlanListResponse(http.Response response) {
+    LinkFiveLogger.d("Parse plan with body $response.body");
+
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+    // Save the LinkFive userID if any exists
+    LinkFiveUserManagement().onResponse(jsonResponse);
+
+    return LinkFivePlan.fromJsonList(jsonResponse["data"]);
   }
 }
