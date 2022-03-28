@@ -257,7 +257,7 @@ class LinkFiveClient {
   }
 
   List<LinkFivePlan> _parsePlanListResponse(http.Response response) {
-    LinkFiveLogger.d("Parse plan with body $response.body");
+    LinkFiveLogger.d("Parse plan with body ${response.body}");
 
     Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
