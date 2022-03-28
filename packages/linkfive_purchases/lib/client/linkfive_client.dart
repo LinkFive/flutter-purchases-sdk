@@ -9,6 +9,7 @@ import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
 import 'package:linkfive_purchases/models/linkfive_plan.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
+import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart';
 import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
@@ -113,7 +114,32 @@ class LinkFiveClient {
 
     print(body);
 
-    final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
+    final response =
+        await http.post(uri, body: jsonEncode(body), headers: await _headers);
+
+    return _parsePlanListResponse(response);
+  }
+
+  /// after a purchase on Google we call the purchases/google
+  /// We don't need to do this on Android
+  Future<List<LinkFivePlan>> purchaseGooglePlay(
+      GooglePlayPurchaseDetails purchaseDetails) async {
+    final uri = _makeUri("api/v1/purchases/user/google");
+
+    final purchaseId = purchaseDetails.billingClientPurchase.orderId;
+    final productId = purchaseDetails.productID;
+    final purchaseToken = purchaseDetails.billingClientPurchase.purchaseToken;
+
+    final body = {
+      "sku": productId,
+      "purchaseId": purchaseId,
+      "purchaseToken": purchaseToken
+    };
+
+    print(body);
+
+    final response =
+        await http.post(uri, body: jsonEncode(body), headers: await _headers);
 
     return _parsePlanListResponse(response);
   }
@@ -177,6 +203,8 @@ class LinkFiveClient {
     return _parsePlanListResponse(response);
   }
 
+  /// RESTORE APPLE APP STORE
+  ///
   /// This will send all restored transactionIds to LinkFive
   /// We will check against apple if those transaction are valid and
   /// enable or disable a product
@@ -186,11 +214,29 @@ class LinkFiveClient {
 
     final body = {
       "transactionIdList": restoreList.map((restoreAppleItem) {
-        return {
-          "transactionId": restoreAppleItem.transactionId,
-          "originalTransactionId": restoreAppleItem.originalTransactionId ??
-              restoreAppleItem.transactionId
-        };
+        return restoreAppleItem.toMap;
+      }).toList(growable: false)
+    };
+
+    LinkFiveLogger.d("Restore body: ${body}");
+
+    final response =
+        await http.post(uri, body: jsonEncode(body), headers: await _headers);
+    return _parsePlanListResponse(response);
+  }
+
+  /// RESTORE GOOGLE PLAY STORE
+  ///
+  /// This will send all restored transactionIds to LinkFive
+  /// We will check against apple if those transaction are valid and
+  /// enable or disable a product
+  Future<List<LinkFivePlan>> restoreGoogle(
+      List<LinkFiveRestoreGoogleItem> restoreList) async {
+    final uri = _makeUri("api/v1/purchases/user/google/restore");
+
+    final body = {
+      "restoreList": restoreList.map((restoreGoogleItem) {
+        return restoreGoogleItem.toMap;
       }).toList(growable: false)
     };
 

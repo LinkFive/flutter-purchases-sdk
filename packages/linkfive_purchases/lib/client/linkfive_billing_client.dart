@@ -61,6 +61,7 @@ class LinkFiveBillingClient {
   Future<List<ProductDetails>> _loadProducts(
       List<LinkFiveResponseDataSubscription> subscriptionList) async {
     LinkFiveLogger.d("load products from store");
+    Set<String> productIds = {"linkfive_monthly_2022", "linkfive_yearly_2022"};
     Set<String> _kIds = subscriptionList.map((e) => e.sku).toSet();
     final ProductDetailsResponse response =
         await InAppPurchase.instance.queryProductDetails(_kIds);

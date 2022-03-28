@@ -9,6 +9,14 @@ class LinkFiveRestoreAppleItem {
   LinkFiveRestoreAppleItem(
       {required this.transactionId, this.originalTransactionId});
 
+  Map<String, dynamic> get toMap {
+    return {
+      "transactionId": this.transactionId,
+      "originalTransactionId":
+          this.originalTransactionId ?? this.transactionId
+    };
+  }
+
   @override
   String toString() {
     return "{"
