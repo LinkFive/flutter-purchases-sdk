@@ -1,5 +1,3 @@
-import 'package:linkfive_purchases/models/linkfive_plan.dart';
-
 /// A single restored Apple TransactionId
 class LinkFiveRestoreAppleItem {
   /// a non null transactionId
@@ -12,8 +10,7 @@ class LinkFiveRestoreAppleItem {
   Map<String, dynamic> get toMap {
     return {
       "transactionId": this.transactionId,
-      "originalTransactionId":
-          this.originalTransactionId ?? this.transactionId
+      "originalTransactionId": this.originalTransactionId ?? this.transactionId
     };
   }
 

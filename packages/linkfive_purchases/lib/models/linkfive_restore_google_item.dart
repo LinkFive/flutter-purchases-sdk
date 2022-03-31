@@ -1,5 +1,3 @@
-import 'package:linkfive_purchases/models/linkfive_plan.dart';
-
 /// A single restored Google Transaction
 class LinkFiveRestoreGoogleItem {
   /// SKU item, for example: yearly_pro_2022
@@ -16,7 +14,7 @@ class LinkFiveRestoreGoogleItem {
       required this.purchaseId,
       required this.purchaseToken});
 
-  Map<String,dynamic> get toMap {
+  Map<String, dynamic> get toMap {
     return {
       "sku": this.sku,
       "purchaseId": this.purchaseId,

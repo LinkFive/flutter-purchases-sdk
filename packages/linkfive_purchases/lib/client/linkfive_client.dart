@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
@@ -12,7 +13,6 @@ import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
 import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart';
 import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
-import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 /// HTTP client to LinkFive
@@ -250,8 +250,7 @@ class LinkFiveClient {
   Future<List<LinkFivePlan>> changeUserId(String? userId) async {
     final uri = _makeUri("api/v1/purchases/user/customer-user-id");
 
-    final response =
-        await http.put(uri, headers: await _headers);
+    final response = await http.put(uri, headers: await _headers);
     return _parsePlanListResponse(response);
   }
 

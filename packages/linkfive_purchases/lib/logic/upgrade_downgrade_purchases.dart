@@ -12,8 +12,7 @@ extension UpgradeDowngradePurchases on LinkFivePurchasesMain {
   ///   Check https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode for more information
   ///
   Future<bool> handleAndroidSwitchPlan(
-      LinkFivePlan oldLinkFivePlan,
-      LinkFiveProductDetails productDetails,
+      LinkFivePlan oldLinkFivePlan, LinkFiveProductDetails productDetails,
       {ProrationMode? prorationMode}) async {
     GooglePlayPurchaseDetails? _oldPurchase =
         await getAndroidPurchase(oldLinkFivePlan);

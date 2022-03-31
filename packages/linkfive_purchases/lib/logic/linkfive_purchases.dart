@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
+import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_purchases_main.dart';
 import 'package:linkfive_purchases/models/linkfive_active_products.dart';
 import 'package:linkfive_purchases/models/linkfive_products.dart';
-import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 /// LinkFive Purchases.
 ///
@@ -74,8 +74,8 @@ class LinkFivePurchases {
   /// You usually just do on on App Start, but whenever you think they is a change,
   /// you can manually reload the active Plans for the current user
   ///
-  static Future<LinkFiveActiveProducts> reloadActivePlans(){
-     return LinkFivePurchasesMain().reloadActivePlans();
+  static Future<LinkFiveActiveProducts> reloadActivePlans() {
+    return LinkFivePurchasesMain().reloadActivePlans();
   }
 
   /// This will trigger the purchase flow for the user.

@@ -29,7 +29,9 @@ class LinkFiveUserManagement {
 
   onResponse(Map<String, dynamic> jsonResponse) {
     String? linkFiveUUID = jsonResponse["linkFiveUUID"];
-    if (linkFiveUUID != null && linkFiveUUID.isNotEmpty && linkFiveUUID != _linkFiveUUID) {
+    if (linkFiveUUID != null &&
+        linkFiveUUID.isNotEmpty &&
+        linkFiveUUID != _linkFiveUUID) {
       LinkFiveLogger.d("Setting LinkFive UUID ${linkFiveUUID}");
       _linkFiveUUID = linkFiveUUID;
       LinkFivePrefs().linkFiveUUID = linkFiveUUID;

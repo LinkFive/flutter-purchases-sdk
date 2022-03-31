@@ -108,7 +108,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     LinkFiveLogger.d("init LinkFive");
 
     // initialize the native billing client.
-    _billingClient.init(_client);
+    _billingClient.init();
 
     // main method for purchases.
     // if a purchase was made, we get an update
