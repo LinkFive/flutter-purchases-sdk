@@ -36,6 +36,7 @@ class MyAppState extends State<MyApp> {
           if (snapshot.hasData) {
             print(snapshot.data!.linkFiveApiKey);
             LinkFivePurchases.init(snapshot.data!.linkFiveApiKey,
+                    logLevel: LinkFiveLogLevel.TRACE,
                     env: LinkFiveEnvironment.STAGING)
                 .then((value) => LinkFivePurchases.fetchProducts());
 

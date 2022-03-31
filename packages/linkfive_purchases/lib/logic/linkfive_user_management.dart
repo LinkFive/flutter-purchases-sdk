@@ -1,6 +1,10 @@
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/store/linkfive_prefs.dart';
 
+/// We store a LinkFive user UUID inside shared Preferences
+///
+/// This will basically make sure, that the user always get the latest
+/// subscription status
 class LinkFiveUserManagement {
   LinkFiveUserManagement._();
 
@@ -25,8 +29,8 @@ class LinkFiveUserManagement {
 
   onResponse(Map<String, dynamic> jsonResponse) {
     String? linkFiveUUID = jsonResponse["linkFiveUUID"];
-    LinkFiveLogger.d("Setting LinkFive UUID ${linkFiveUUID}");
-    if (linkFiveUUID != null && linkFiveUUID.isNotEmpty) {
+    if (linkFiveUUID != null && linkFiveUUID.isNotEmpty && linkFiveUUID != _linkFiveUUID) {
+      LinkFiveLogger.d("Setting LinkFive UUID ${linkFiveUUID}");
       _linkFiveUUID = linkFiveUUID;
       LinkFivePrefs().linkFiveUUID = linkFiveUUID;
     }

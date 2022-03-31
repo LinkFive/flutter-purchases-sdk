@@ -247,6 +247,14 @@ class LinkFiveClient {
     return _parsePlanListResponse(response);
   }
 
+  Future<List<LinkFivePlan>> changeUserId(String? userId) async {
+    final uri = _makeUri("api/v1/purchases/user/customer-user-id");
+
+    final response =
+        await http.put(uri, headers: await _headers);
+    return _parsePlanListResponse(response);
+  }
+
   /// Get LinkFive URI with path Parameters
   Uri _makeUri(String path, {Map<String, List<String>>? queryParams}) {
     if (queryParams == null) {

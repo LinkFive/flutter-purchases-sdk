@@ -15,7 +15,6 @@ import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_inte
 ///
 /// The docs can be found here https://www.linkfive.io/docs/
 class LinkFivePurchases {
-
   /// Initialize LinkFive with your Api Key
   ///
   /// Please register on our website: https://www.linkfive.io to get an api key
@@ -37,7 +36,7 @@ class LinkFivePurchases {
   /// [LinkFiveEnvironment] is 99,999..% [LinkFiveEnvironment.PRODUCTION] better not touch it
   static Future<LinkFiveActiveProducts> init(
     String apiKey, {
-    LinkFiveLogLevel logLevel = LinkFiveLogLevel.DEBUG,
+    LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN,
     LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION,
   }) {
     return LinkFivePurchasesMain().init(apiKey, logLevel: logLevel, env: env);
@@ -66,6 +65,17 @@ class LinkFivePurchases {
   /// All data will be refreshed and notified with the product stream
   static Future<bool> restore() {
     return LinkFivePurchasesMain().restore();
+  }
+
+  /// This will reload all active Plans for the current user
+  ///
+  /// This method will also be called on LinkFive INIT
+  ///
+  /// You usually just do on on App Start, but whenever you think they is a change,
+  /// you can manually reload the active Plans for the current user
+  ///
+  static Future<LinkFiveActiveProducts> reloadActivePlans(){
+     return LinkFivePurchasesMain().reloadActivePlans();
   }
 
   /// This will trigger the purchase flow for the user.
@@ -147,9 +157,11 @@ class LinkFivePurchases {
     LinkFivePurchasesMain().setEnvironment(environment);
   }
 
-  /// set your own user ID
+  /// Set your own user ID
   ///
-  /// You can filter this value in your subscription playout
+  /// This will also link all subscriptions to the current user if exist
+  ///
+  /// You can also filter this value in your subscription Playout
   static setUserId(String? userId) {
     LinkFivePurchasesMain().setUserId(userId);
   }

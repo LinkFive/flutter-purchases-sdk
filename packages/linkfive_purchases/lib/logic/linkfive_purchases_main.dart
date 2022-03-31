@@ -59,6 +59,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   /// We store the api key etc only in memory
   LinkFiveAppDataStore appDataStore = LinkFiveAppDataStore();
 
+  /// All PurchaseDetails as a stream
   StreamSubscription<List<PurchaseDetails>>? _purchaseStream;
 
   /// All available Products you can offer for purchase to your users
@@ -97,8 +98,9 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     // also loads the saved LinkFive User ID if available
     await LinkFiveUserManagement().init();
 
-    // save api Key in memory
-    appDataStore.apiKey = apiKey;
+    // Init the App Data Store
+    // this also includes to load data from shared Preferences
+    await appDataStore.init(apiKey);
 
     // init the client http client. sets the url etc.
     _client.init(env, appDataStore);
@@ -207,6 +209,10 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     return showBuySuccess;
   }
 
+  Future<LinkFiveActiveProducts> reloadActivePlans() async {
+    return await _updateActivePlansFromLinkFive();
+  }
+
   /// Restore
   /// all made purchases
   @override
@@ -247,30 +253,33 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     appDataStore.environment = environment;
   }
 
-  setUserId(String? userId) {
+  /// Customer User Id
+  ///
+  /// We also update LinkFive and change the userId if different.
+  ///
+  Future<LinkFiveActiveProducts> setUserId(String? userId) async {
+    final previousUserId = appDataStore.userId;
     appDataStore.userId = userId;
+
+    LinkFiveLogger.d("Set user ID to $userId");
+
+    // If the userId is different than before
+    // do the LinkFive request
+    if (userId != previousUserId) {
+      LinkFiveLogger.d("User Id has changed since last time update LinkFive");
+      final List<LinkFivePlan> linkFivePlanList =
+          await _client.changeUserId(userId);
+
+      // notify all listeners
+      final activeProducts =
+          _store.onNewLinkFiveNewActivePlanList(linkFivePlanList);
+
+      return activeProducts;
+    }
+    return _store.latestLinkFiveActiveProducts ?? LinkFiveActiveProducts();
   }
 
   //#region private methods
-
-  /// This method will load all active subs
-  /// and call linkfive to submit all loaded
-  /// this will probably be deprecated?
-  _loadActiveSubs() async {
-    LinkFiveLogger.d("load active subs from Store");
-/*
-    // get all receipts from the native client
-    final verifiedReceiptsList = await billingClient.verifiedReceipts;
-    LinkFiveLogger.d("loaded active subs from Store");
-    // update listeners
-    store.onNewLinkFiveActivePlanList(
-        LinkFiveActiveSubscriptionData(verifiedReceiptsList));
-    if (verifiedReceiptsList.length > 0) {
-      super.purchaseState = PurchaseState.PURCHASED;
-    } else {
-      super.purchaseState = PurchaseState.NOT_PURCHASED;
-    }*/
-  }
 
   ///
   /// This Method will fetch all active plans from LinkFive,
@@ -301,7 +310,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     final Stream<List<PurchaseDetails>> purchaseUpdated =
         InAppPurchase.instance.purchaseStream;
     _purchaseStream = purchaseUpdated.listen((purchaseDetailsList) {
-      _listenToPurchaseUpdated(purchaseDetailsList);
+      _onPurchaseUpdate(purchaseDetailsList);
     }, onDone: () {
       LinkFiveLogger.d("purchaseListener is DONE");
       _purchaseStream?.cancel();
@@ -315,8 +324,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   ///
   /// This method is getting called whenever there is a purchase update
   ///
-  void _listenToPurchaseUpdated(
-      List<PurchaseDetails> purchaseDetailsList) async {
+  void _onPurchaseUpdate(List<PurchaseDetails> purchaseDetailsList) async {
     LinkFiveLogger.d(
         "Purchase Update with ${purchaseDetailsList.map((e) => "${e.status} ${e.productID} ${e.purchaseID}")}");
     if (purchaseDetailsList.isEmpty) {
@@ -325,9 +333,11 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     }
 
     // instead of calling the api a thousand times for each restored purchase
+    // (this is what happens on Apple)
     // we will collect all restored items and then call the api just once
     bool hasRestoredPurchases = false;
 
+    // Loop through each purchase
     for (PurchaseDetails purchaseDetails in purchaseDetailsList) {
       switch (purchaseDetails.status) {
         case PurchaseStatus.pending:
@@ -398,6 +408,9 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     _store.onNewLinkFiveNewActivePlanList(restoredPlans);
   }
 
+  ///
+  /// Restore Apple
+  ///
   Future<List<LinkFivePlan>> _handleRestoreApple(
       List<PurchaseDetails> purchaseDetailsList) async {
     final List<LinkFiveRestoreAppleItem> restoredTransactionList = [];
