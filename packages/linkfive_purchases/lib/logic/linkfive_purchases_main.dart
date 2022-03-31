@@ -1,29 +1,28 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
-import 'package:flutter/services.dart';
 
+import 'package:flutter/services.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
-import 'package:linkfive_purchases/client/linkfive_client.dart';
-import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
-import 'package:linkfive_purchases/logic/upgrade_downgrade_purchases.dart';
 import 'package:linkfive_purchases/client/linkfive_billing_client.dart';
+import 'package:linkfive_purchases/client/linkfive_client.dart';
 import 'package:linkfive_purchases/default/default_purchase_handler.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
+import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
+import 'package:linkfive_purchases/logic/upgrade_downgrade_purchases.dart';
 import 'package:linkfive_purchases/models/linkfive_active_products.dart';
 import 'package:linkfive_purchases/models/linkfive_plan.dart';
 import 'package:linkfive_purchases/models/linkfive_products.dart';
 import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
 import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart';
+import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 import 'package:linkfive_purchases/store/linkfive_prefs.dart';
 import 'package:linkfive_purchases/store/linkfive_store.dart';
-import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
-import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 
 class LinkFivePurchasesMain extends DefaultPurchaseHandler
     implements CallbackInterface {
@@ -106,9 +105,6 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     _client.init(env, appDataStore);
 
     LinkFiveLogger.d("init LinkFive");
-
-    // initialize the native billing client.
-    _billingClient.init();
 
     // main method for purchases.
     // if a purchase was made, we get an update
@@ -213,8 +209,9 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     return await _updateActivePlansFromLinkFive();
   }
 
-  /// Restore
-  /// all made purchases
+  ///
+  /// Restore all made purchases
+  ///
   @override
   Future<bool> restore() async {
     super.isPendingPurchase = true;
@@ -284,6 +281,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   ///
   /// This Method will fetch all active plans from LinkFive,
   /// notify all listeners and return the instance
+  ///
   Future<LinkFiveActiveProducts> _updateActivePlansFromLinkFive() async {
     LinkFiveLogger.d("Update active plans from LinkFive");
     try {
@@ -305,7 +303,9 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     return LinkFiveActiveProducts();
   }
 
+  ///
   /// connects to the internal IAP library
+  ///
   void _listenPurchaseUpdates() {
     final Stream<List<PurchaseDetails>> purchaseUpdated =
         InAppPurchase.instance.purchaseStream;

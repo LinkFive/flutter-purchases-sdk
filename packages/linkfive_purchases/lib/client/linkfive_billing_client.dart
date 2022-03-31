@@ -8,8 +8,6 @@ import 'package:linkfive_purchases/models/linkfive_response.dart';
 
 /// Internal Billing Client. It holds the connection to the native billing sdk
 class LinkFiveBillingClient {
-  /// Init with the LinkFive Api client
-  init() {}
 
   /// load the products from the native billing sdk
   Future<List<ProductDetails>?> getPlatformSubscriptions(
