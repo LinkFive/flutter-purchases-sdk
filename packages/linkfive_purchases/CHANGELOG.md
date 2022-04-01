@@ -1,4 +1,9 @@
+## 2.0.0-dev.1
+
+Pre-Release of LinkFive 2.0 The changelog is following soon
+
 ## 1.5.0
+
 Breaking change: fetchSubscriptions returns a Future<LinkFiveSubscriptionData?> instead of Future<List<ProductDetails>?>
 > LinkFiveSubscriptionData has `List<LinkFiveProductDetails> linkFiveSkuData` which contains the productDetail.
 
@@ -18,9 +23,9 @@ added platform files again to satisfy pub.dev points (hopefully)
 ## 1.2.0
 update to interface 0.0.6 
 * It fetches the subscriptions on load call now
-update intl to 0.0.3
-removed the unused android folder
-Prepared the package for the new LinkFive provider package
+  update intl to 0.0.3
+  removed the unused android folder
+  Prepared the package for the new LinkFive provider package
 
 ## 1.1.1
 remove unused dependencies
