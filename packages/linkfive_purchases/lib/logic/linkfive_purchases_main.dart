@@ -182,10 +182,9 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
         // try to clear the transactions
         LinkFiveLogger.d("Finish previous transactions");
         var transactions = await SKPaymentQueueWrapper().transactions();
-        transactions.forEach((skPaymentTransactionWrapper) async {
-          await SKPaymentQueueWrapper()
-              .finishTransaction(skPaymentTransactionWrapper);
-        });
+        for (SKPaymentTransactionWrapper transactionWrapper in transactions) {
+          await SKPaymentQueueWrapper().finishTransaction(transactionWrapper);
+        }
 
         // try to restore
         await restore();
