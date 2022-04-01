@@ -271,6 +271,9 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
       final activeProducts =
           _store.onNewLinkFiveNewActivePlanList(linkFivePlanList);
 
+      // update purchase State
+      super.updateStateFromActivePlanList(linkFivePlanList);
+
       return activeProducts;
     }
     return _store.latestLinkFiveActiveProducts ?? LinkFiveActiveProducts();
@@ -292,6 +295,9 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
       // notify all listeners
       final activeProducts =
           _store.onNewLinkFiveNewActivePlanList(linkFivePlanList);
+
+      // update purchase State
+      super.updateStateFromActivePlanList(linkFivePlanList);
 
       // return with the created object
       return activeProducts;
@@ -477,6 +483,9 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     List<LinkFivePlan> linkFivePlanList = await _client.purchaseIos(
         productDetailsToPurchase, appstorePurchaseDetails);
 
+    // update purchase State
+    super.updateStateFromActivePlanList(linkFivePlanList);
+
     // notify all listeners
     _store.onNewLinkFiveNewActivePlanList(linkFivePlanList);
   }
@@ -487,6 +496,9 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   _handlePurchaseGoogle(GooglePlayPurchaseDetails purchaseDetails) async {
     List<LinkFivePlan> linkFivePlanList =
         await _client.purchaseGooglePlay(purchaseDetails);
+
+    // update purchase State
+    super.updateStateFromActivePlanList(linkFivePlanList);
 
     // notify all listeners
     _store.onNewLinkFiveNewActivePlanList(linkFivePlanList);

@@ -2,6 +2,34 @@
 
 Pre-Release of LinkFive 2.0 The changelog is following soon
 
+A subscription is now called a Plan to prepare for flutter web subscriptions and other recurring or time-framed plans like coupon plans, team plans, etc.
+
+* `LinkFivePurchases.fetchSubscriptions();` is now `LinkFivePurchases.fetchProducts();`
+* `LinkFiveSubscriptionData` is now `LinkFiveProducts` and they own a List of `LinkFiveProductDetails` for better understanding.
+* `LinkFiveActiveSubscriptionData` is now `LinkFiveActiveProducts` and they own a List of `LinkFivePlan`.
+
+A LinkFivePlan has a completely new body:
+
+* String productId;
+* String planId;
+* String rootId;
+* DateTime purchaseDate;
+* DateTime endDate;
+* String storeType;
+* String? customerUserId;
+* bool? isTrial;
+* String? familyName;
+* String? attributes;
+* String? duration;
+
+* Listen on purchase updates changes from `LinkFivePurchases.listenOnActiveSubscriptionData()` to `LinkFivePurchases.activeProducts` which is much simpler
+
+**Paywall UI Helper changes**
+
+* `products.getSubscriptionData(context: context)`  is now `products.paywallUIHelperData(context: context)`
+
+* LinkFivePurchases.init("API Key") now returns a Future<> which you should await before you fetch your products
+
 ## 1.5.0
 
 Breaking change: fetchSubscriptions returns a Future<LinkFiveSubscriptionData?> instead of Future<List<ProductDetails>?>
