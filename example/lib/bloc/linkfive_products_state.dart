@@ -13,10 +13,10 @@ class LinkFiveProductsInitState extends LinkFiveProductsState {
 
 class LinkFiveProductsLoadedState extends LinkFiveProductsState {
 
-  final LinkFiveSubscriptionData products;
+  final LinkFiveProducts products;
 
   LinkFiveProductsLoadedState(this.products);
 
   @override
-  List<Object> get props => products.linkFiveSkuData;
+  List<Object> get props => products.productDetailList;
 }

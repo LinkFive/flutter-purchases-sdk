@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
-import 'package:linkfive_purchases/models/linkfive_subscription.dart';
 import 'package:linkfive_purchases_example/subscriptions/subscription_button.dart';
 import 'package:linkfive_purchases_provider/linkfive_purchases_provider.dart';
 import 'package:provider/provider.dart';
 
 class SubscriptionOfferingStream extends StatelessWidget {
-  buildSubscriptionButtons(LinkFiveSubscriptionData subscriptionData) {
-    return subscriptionData.linkFiveSkuData
+  buildSubscriptionButtons(LinkFiveProducts products) {
+    return products.productDetailList
         .map((data) => SubscriptionButton(linkFiveProductDetails: data))
         .toList();
   }
@@ -16,16 +15,16 @@ class SubscriptionOfferingStream extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.all(8),
-        child: StreamBuilder<LinkFiveSubscriptionData?>(
+        child: StreamBuilder<LinkFiveProducts>(
           stream: LinkFivePurchases.products,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              var subscriptionData = snapshot.data;
-              if (subscriptionData != null) {
+              var products = snapshot.data;
+              if (products != null) {
                 return Column(
                   children: [
                     Row(
-                      children: buildSubscriptionButtons(subscriptionData),
+                      children: buildSubscriptionButtons(products),
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     )
                   ],
@@ -39,8 +38,8 @@ class SubscriptionOfferingStream extends StatelessWidget {
 }
 
 class SubscriptionOfferingProvider extends StatelessWidget {
-  buildSubscriptionButtons(LinkFiveSubscriptionData subscriptionData) {
-    return subscriptionData.linkFiveSkuData
+  buildSubscriptionButtons(LinkFiveProducts subscriptionData) {
+    return subscriptionData.productDetailList
         .map((data) => SubscriptionButton(linkFiveProductDetails: data))
         .toList();
   }

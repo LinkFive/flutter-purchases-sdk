@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:linkfive_purchases/linkfive_purchases.dart';
-import 'package:linkfive_purchases/models/linkfive_subscription.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
 
 class SubscriptionButton extends StatelessWidget {
   final LinkFiveProductDetails linkFiveProductDetails;
@@ -23,6 +22,8 @@ class SubscriptionButton extends StatelessWidget {
 
   String getSubscriptionPeriodGoogle(GooglePlayProductDetails productDetails) {
     switch (productDetails.skuDetails.subscriptionPeriod) {
+      case "P1W":
+        return "1 Week";
       case "P1M":
         return "1 Month";
       case "P3M":
@@ -37,7 +38,6 @@ class SubscriptionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return ElevatedButton(
       onPressed: onSubscriptionPressed,
       child: Padding(

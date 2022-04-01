@@ -14,8 +14,8 @@ class ProviderSimplePaywall extends StatelessWidget {
           child: SimplePaywall(
               theme: Theme.of(context),
               callbackInterface: linkFiveProvider.callbackInterface,
-              subscriptionListData: linkFiveProvider.getSubscriptionListData(
-                  context),
+              subscriptionListData:
+                  linkFiveProvider.paywallUIHelperData(context),
               title: "Go Premium",
               // SubTitle
               subTitle: "All features at a glance",

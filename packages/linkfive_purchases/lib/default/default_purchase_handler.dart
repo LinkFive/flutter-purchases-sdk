@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
+import 'package:linkfive_purchases/models/linkfive_plan.dart';
 
+///
 /// Default Purchase Handler
+///
 /// [LinkFivePurchasesMain] extends this class to control the state of a purchase
+///
 class DefaultPurchaseHandler implements PurchaseStateStreamInterface {
   /// initial value for purchase in Progress
   final bool initialIsPurchaseInProgress;
@@ -36,7 +40,7 @@ class DefaultPurchaseHandler implements PurchaseStateStreamInterface {
   ///
   /// Also cleans all unused streams
   set isPendingPurchase(bool value) {
-    LinkFiveLogger.d("set pending value $value");
+    LinkFiveLogger.d("set pending purchase to $value");
     _isPendingPurchase = value;
 
     // Clean streams
@@ -74,6 +78,22 @@ class DefaultPurchaseHandler implements PurchaseStateStreamInterface {
   }
 
   //#endregion
+
+  ///
+  /// Whenever the plugin receives a new Plan List we will update the state
+  /// to either
+  ///
+  /// PURCHASED
+  ///   or
+  /// NOT_PURCHASED
+  ///
+  updateStateFromActivePlanList(List<LinkFivePlan> linkFivePlanList) {
+    if (linkFivePlanList.length > 0) {
+      this.purchaseState = PurchaseState.PURCHASED;
+    } else {
+      this.purchaseState = PurchaseState.NOT_PURCHASED;
+    }
+  }
 
   @override
   Stream<bool> purchaseInProgressStream() {

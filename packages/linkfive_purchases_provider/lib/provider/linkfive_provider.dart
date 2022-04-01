@@ -13,24 +13,23 @@ class LinkFiveProvider extends ChangeNotifier {
   final LinkFivePurchasesMain linkFivePurchases = LinkFivePurchasesMain();
 
   /// LinkFive subscriptions that you can offer to your user
-  LinkFiveSubscriptionData? products;
+  LinkFiveProducts? products;
 
   /// All verified receipt received by LinkFive
-  LinkFiveActiveSubscriptionData? activeProducts;
+  LinkFiveActiveProducts? activeProducts;
 
   /// Streams that will be cleaned on dispose
   List<StreamSubscription> _streams = [];
 
   /// All verified receipts as List or emptyList
-  List<LinkFiveVerifiedReceipt> get verifiedReceiptList =>
-      activeProducts?.subscriptionList ?? [];
+  List<LinkFivePlan> get verifiedReceiptList => activeProducts?.planList ?? [];
 
   /// LinkFive as CallbackInterface for your Paywall
   CallbackInterface get callbackInterface => linkFivePurchases;
 
   /// conveniently check if the user has any activeProducts
   bool get hasActiveProduct =>
-      activeProducts != null && activeProducts!.subscriptionList.isNotEmpty;
+      activeProducts != null && activeProducts!.planList.isNotEmpty;
 
   /// Initialize LinkFive with your Api Key
   ///
@@ -46,13 +45,13 @@ class LinkFiveProvider extends ChangeNotifier {
   }
 
   /// Saves available Subscriptions and notifies all listeners
-  void _subscriptionDataUpdate(LinkFiveSubscriptionData? data) async {
+  void _subscriptionDataUpdate(LinkFiveProducts data) async {
     products = data;
     notifyListeners();
   }
 
   /// Saves active Subscriptions and notifies all listeners
-  void _activeSubscriptionDataUpdate(LinkFiveActiveSubscriptionData? data) {
+  void _activeSubscriptionDataUpdate(LinkFiveActiveProducts data) {
     activeProducts = data;
     notifyListeners();
   }
@@ -60,8 +59,8 @@ class LinkFiveProvider extends ChangeNotifier {
   /// Fetch all available Subscription for purchase for the user
   ///
   /// The provider will notify you for changes
-  Future<LinkFiveSubscriptionData?> fetchSubscriptions() async {
-    return LinkFivePurchases.fetchSubscriptions();
+  Future<LinkFiveProducts?> fetchSubscriptions() async {
+    return LinkFivePurchases.fetchProducts();
   }
 
   /// Restore Subscriptions of the user
@@ -86,16 +85,16 @@ class LinkFiveProvider extends ChangeNotifier {
   ///
   /// on iOS: you can only switch to a plan which is in the same Subscription Family
   ///
-  /// [oldPurchaseDetails] given by the LinkFive Plugin
+  /// [oldPurchasePlan] given by the LinkFive Plugin
   ///
   /// [productDetails] from the purchases you want to switch to
   ///
   /// [prorationMode] Google Only: default replaces immediately the subscription, and the remaining time will be prorated and credited to the user.
   ///   Check https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode for more information
-  switchPlan(LinkFiveVerifiedReceipt oldPurchaseDetails,
-      LinkFiveProductDetails productDetails,
+  switchPlan(
+      LinkFivePlan oldPurchasePlan, LinkFiveProductDetails productDetails,
       {ProrationMode? prorationMode}) {
-    return LinkFivePurchases.switchPlan(oldPurchaseDetails, productDetails,
+    return LinkFivePurchases.switchPlan(oldPurchasePlan, productDetails,
         prorationMode: prorationMode);
   }
 
@@ -111,6 +110,6 @@ class LinkFiveProvider extends ChangeNotifier {
   /// helper function for the paywall to make it easier.
   ///
   /// returns the subscriptionDataList or if null, an empty list
-  List<SubscriptionData> getSubscriptionListData(BuildContext context) =>
-      products?.getSubscriptionData(context: context) ?? [];
+  List<SubscriptionData> paywallUIHelperData(BuildContext context) =>
+      products?.paywallUIHelperData(context: context) ?? [];
 }

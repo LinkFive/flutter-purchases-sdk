@@ -13,10 +13,10 @@ class LinkFiveActiveProductsInitState extends LinkFiveActiveProductsState {
 
 class LinkFiveActiveProductsLoadedState extends LinkFiveActiveProductsState {
 
-  final LinkFiveActiveSubscriptionData activeProducts;
+  final LinkFiveActiveProducts activeProducts;
 
   LinkFiveActiveProductsLoadedState(this.activeProducts);
 
   @override
-  List<Object> get props => activeProducts.subscriptionList;
+  List<Object> get props => activeProducts.planList;
 }

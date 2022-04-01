@@ -2,11 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases_example/key/keyLoader.dart';
-
 import 'package:linkfive_purchases_example/routing/delegate.dart';
 import 'package:linkfive_purchases_example/routing/parser.dart';
-import 'package:linkfive_purchases_provider/linkfive_purchases_provider.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());

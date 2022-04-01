@@ -1,29 +1,13 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
-import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
-import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
-
-import 'linkfive_client.dart';
 
 /// Internal Billing Client. It holds the connection to the native billing sdk
 class LinkFiveBillingClient {
-  late LinkFiveClient _apiClient;
-
-  /// Init with the LinkFive Api client
-  init(LinkFiveClient apiClient) {
-    this._apiClient = apiClient;
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
-    }
-  }
-
   /// load the products from the native billing sdk
   Future<List<ProductDetails>?> getPlatformSubscriptions(
       LinkFiveResponseData linkFiveResponse) async {
@@ -42,6 +26,8 @@ class LinkFiveBillingClient {
     if (Platform.isIOS) {
       var iosInfo = await deviceInfo.iosInfo;
       if (!iosInfo.isPhysicalDevice) {
+        LinkFiveLogger.e(
+            "No PhysicalDevice detected. Please use a real device to use LinkFive");
         return false;
       }
     }
@@ -61,6 +47,7 @@ class LinkFiveBillingClient {
   Future<List<ProductDetails>> _loadProducts(
       List<LinkFiveResponseDataSubscription> subscriptionList) async {
     LinkFiveLogger.d("load products from store");
+    Set<String> productIds = {"linkfive_monthly_2022", "linkfive_yearly_2022"};
     Set<String> _kIds = subscriptionList.map((e) => e.sku).toSet();
     final ProductDetailsResponse response =
         await InAppPurchase.instance.queryProductDetails(_kIds);
@@ -79,41 +66,5 @@ class LinkFiveBillingClient {
           "Purchase Error ${response.error?.code}, ${response.error?.message}");
     }
     return response.productDetails;
-  }
-
-  /// Fetches the active receipts and sends them to LinkFive
-  Future<List<LinkFiveVerifiedReceipt>> get verifiedReceipts async {
-    final isAvailable = await _isStoreReachable;
-
-    if (!isAvailable) {
-      LinkFiveLogger.e(
-          "Store not reachable. Are you using an Emulator/Simulator?)");
-      return List.empty();
-    }
-    List<LinkFiveVerifiedReceipt> linkFiveReceipts = List.empty();
-
-    if (Platform.isIOS) {
-      try {
-        final receiptData = await SKReceiptManager.retrieveReceiptData();
-        // print(receiptData);
-        linkFiveReceipts = await _apiClient.verifyAppleReceipt(receiptData);
-      } catch (error) {
-        LinkFiveLogger.d("ReceiptError. Maybe just no receipt?: $error");
-      }
-    } else if (Platform.isAndroid) {
-      // get android purchases
-      final androidExtension = InAppPurchase.instance
-          .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
-      final pastPurchases =
-          (await androidExtension.queryPastPurchases()).pastPurchases;
-
-      if (pastPurchases.isNotEmpty) {
-        // verify a list of purchases
-        linkFiveReceipts = await _apiClient.verifyGoogleReceipt(pastPurchases);
-      }
-    }
-
-    // filter expired subscriptions
-    return linkFiveReceipts.where((element) => !element.isExpired).toList();
   }
 }

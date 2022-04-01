@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:in_app_purchases_paywall_ui/in_app_purchases_paywall_ui.dart';
-import 'package:linkfive_purchases_example/bloc/linkfive_active_products_cubit.dart';
-import 'package:linkfive_purchases_example/bloc/linkfive_active_products_state.dart';
 import 'package:linkfive_purchases_example/bloc/linkfive_products_cubit.dart';
 import 'package:linkfive_purchases_example/bloc/linkfive_products_state.dart';
 import 'package:linkfive_purchases_provider/linkfive_purchases_provider.dart';
-import 'package:provider/provider.dart';
 
 class BlocPaywall extends StatelessWidget {
   @override
@@ -19,7 +16,7 @@ class BlocPaywall extends StatelessWidget {
 
       // check for the loaded state and set the data
       if (state is LinkFiveProductsLoadedState) {
-        subscriptionData = state.products.getSubscriptionData(context: context);
+        subscriptionData = state.products.paywallUIHelperData(context: context);
       }
 
       return PaywallScaffold(
