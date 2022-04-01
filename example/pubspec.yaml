@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  linkfive_purchases: ^2.0.0-dev.2
+  linkfive_purchases: ^2.0.0-dev.4
   #path: ../packages/linkfive_purchases
   linkfive_purchases_provider: #^1.5.0
     path: ../packages/linkfive_purchases_provider

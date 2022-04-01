@@ -251,14 +251,14 @@ packages:
       name: linkfive_purchases
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0-dev.2"
+    version: "2.0.0-dev.4"
   linkfive_purchases_provider:
     dependency: "direct main"
     description:
       path: "../packages/linkfive_purchases_provider"
       relative: true
     source: path
-    version: "2.0.0-dev.1"
+    version: "2.0.0-dev.4"
   matcher:
     dependency: transitive
     description:
