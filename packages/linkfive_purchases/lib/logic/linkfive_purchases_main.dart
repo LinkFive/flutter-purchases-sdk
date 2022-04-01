@@ -410,6 +410,10 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     } else if (Platform.isAndroid) {
       restoredPlans = await _handleRestoreGoogle(purchaseDetailsList);
     }
+
+    // update purchase state also from the restore function
+    super.updateStateFromActivePlanList(restoredPlans);
+
     // notify all listeners
     _store.onNewLinkFiveNewActivePlanList(restoredPlans);
   }
