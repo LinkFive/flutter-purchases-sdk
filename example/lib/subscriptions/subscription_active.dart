@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
-import 'package:linkfive_purchases/models/linkfive_active_subscription.dart';
 import 'package:linkfive_purchases_provider/linkfive_purchases_provider.dart';
 import 'package:provider/provider.dart';
 
 class SubscriptionActiveStream extends StatelessWidget {
-  buildSubscriptions(LinkFiveActiveSubscriptionData subscriptionData) {
-    return subscriptionData.subscriptionList
+  buildSubscriptions(LinkFiveActiveProducts activeProducts) {
+    return activeProducts.planList
         .map((data) => Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Id: ${data.sku}"),
-                  Text("    PurchaseID: ${data.purchaseId}"),
-                  Text("    Purchased: ${data.transactionDate}"),
-                  Text("    Valid until: ${data.validUntilDate}"),
+                  Text("Id: ${data.productId}"),
+                  Text("    planId: ${data.planId}"),
+                  Text("    rootId: ${data.rootId}"),
+                  Text("    endDate: ${data.endDate}"),
                   Text("    familyName: ${data.familyName}"),
-                  Text("    skus: ${data.sku}"),
-                  Text("    isExpired: ${data.isExpired}")
+                  Text("    storeType: ${data.storeType}"),
+                  Text("    isTrial: ${data.isTrial}")
                 ],
               ),
             ))
@@ -28,12 +27,12 @@ class SubscriptionActiveStream extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.all(8),
-        child: StreamBuilder<LinkFiveActiveSubscriptionData?>(
-          stream: LinkFivePurchases.listenOnActiveSubscriptionData(),
+        child: StreamBuilder<LinkFiveActiveProducts>(
+          stream: LinkFivePurchases.activeProducts,
           builder: (BuildContext context, snapshot) {
             if (snapshot.hasData) {
-              var subscriptionData = snapshot.data;
-              if (subscriptionData != null) {
+              var activeProducts = snapshot.data;
+              if (activeProducts != null) {
                 return Container(
                   padding: EdgeInsets.all(16),
                   alignment: Alignment.topLeft,
@@ -41,7 +40,7 @@ class SubscriptionActiveStream extends StatelessWidget {
                     children: [
                       Text("Active Subscriptions:",
                           style: Theme.of(context).textTheme.headline6),
-                      ...buildSubscriptions(subscriptionData)
+                      ...buildSubscriptions(activeProducts)
                     ],
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,19 +55,19 @@ class SubscriptionActiveStream extends StatelessWidget {
 }
 
 class SubscriptionActiveProvider extends StatelessWidget {
-  buildSubscriptions(LinkFiveActiveSubscriptionData subscriptionData) {
-    return subscriptionData.subscriptionList
+  buildSubscriptions(LinkFiveActiveProducts activeProducts) {
+    return activeProducts.planList
         .map((data) => Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Id: ${data.sku}"),
-                  Text("    PurchaseID: ${data.purchaseId}"),
-                  Text("    Purchased: ${data.transactionDate}"),
-                  Text("    Valid until: ${data.validUntilDate}"),
+                  Text("Id: ${data.productId}"),
+                  Text("    planId: ${data.planId}"),
+                  Text("    rootId: ${data.rootId}"),
+                  Text("    endDate: ${data.endDate}"),
                   Text("    familyName: ${data.familyName}"),
-                  Text("    skus: ${data.sku}"),
-                  Text("    isExpired: ${data.isExpired}")
+                  Text("    storeType: ${data.storeType}"),
+                  Text("    isTrial: ${data.isTrial}")
                 ],
               ),
             ))
@@ -81,8 +80,8 @@ class SubscriptionActiveProvider extends StatelessWidget {
         padding: EdgeInsets.all(8),
         child: Consumer<LinkFiveProvider>(
           builder: (_, linkFiveProvider, __) {
-            var subscriptionData = linkFiveProvider.activeProducts;
-            if (subscriptionData != null) {
+            var activeProducts = linkFiveProvider.activeProducts;
+            if (activeProducts != null) {
               return Container(
                 padding: EdgeInsets.all(16),
                 alignment: Alignment.topLeft,
@@ -90,7 +89,7 @@ class SubscriptionActiveProvider extends StatelessWidget {
                   children: [
                     Text("Active Subscriptions:",
                         style: Theme.of(context).textTheme.headline6),
-                    ...buildSubscriptions(subscriptionData)
+                    ...buildSubscriptions(activeProducts)
                   ],
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,

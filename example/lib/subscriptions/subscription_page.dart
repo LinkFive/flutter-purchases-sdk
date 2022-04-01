@@ -21,10 +21,27 @@ class _SubscriptionPageState extends State<SubscriptionPage>
       child: Column(
         children: [
           ElevatedButton(
-              onPressed: () {
-                LinkFivePurchases.fetchSubscriptions();
+              onPressed: () async {
+                await LinkFivePurchases.reloadActivePlans();
               },
-              child: Text("Fetch")),
+              child: const Text('Reload Active Plans')),
+          ElevatedButton(
+              onPressed: () async {
+                await LinkFivePurchases.fetchProducts();
+              },
+              child: Text("Load Offering")),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            ElevatedButton(
+                onPressed: () async {
+                  await LinkFivePurchases.setUserId(null);
+                },
+                child: Text("Remove UserId")),
+            ElevatedButton(
+                onPressed: () async {
+                  await LinkFivePurchases.setUserId("abc");
+                },
+                child: Text("Set User Id"))
+          ]),
           SubscriptionOfferingStream(),
           SubscriptionActiveStream(),
           ElevatedButton(
