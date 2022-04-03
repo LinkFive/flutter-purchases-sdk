@@ -1,6 +1,8 @@
-## 2.0.0-dev.3
+## 2.0.0
 
-Pre-Release of LinkFive 2.0 The changelog is following soon
+Release of LinkFive 2.0
+
+With this major release we are paving the way for flutter web subscriptions as well as other exciting features coming soon to LinkFive.
 
 A subscription is now called a Plan to prepare for flutter web subscriptions and other recurring or time-framed plans like coupon plans, team plans, etc.
 
@@ -22,7 +24,7 @@ A LinkFivePlan has a completely new body:
 * String? attributes;
 * String? duration;
 
-* Listen on purchase updates changes from `LinkFivePurchases.listenOnActiveSubscriptionData()` to `LinkFivePurchases.activeProducts` which is much simpler
+* Listen on purchase updates changes from `LinkFivePurchases.listenOnActiveSubscriptionData()` to `LinkFivePurchases.activeProducts` which is much simpler.
 
 **Paywall UI Helper changes**
 

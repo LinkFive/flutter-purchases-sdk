@@ -22,7 +22,7 @@ class LinkFiveProvider extends ChangeNotifier {
   List<StreamSubscription> _streams = [];
 
   /// All verified receipts as List or emptyList
-  List<LinkFivePlan> get verifiedReceiptList => activeProducts?.planList ?? [];
+  List<LinkFivePlan> get activePlanList => activeProducts?.planList ?? [];
 
   /// LinkFive as CallbackInterface for your Paywall
   CallbackInterface get callbackInterface => linkFivePurchases;
@@ -39,19 +39,19 @@ class LinkFiveProvider extends ChangeNotifier {
   LinkFiveProvider(String apiKey,
       {LinkFiveEnvironment environment = LinkFiveEnvironment.PRODUCTION}) {
     linkFivePurchases.init(apiKey, env: environment);
-    _streams.add(linkFivePurchases.products.listen(_subscriptionDataUpdate));
-    _streams.add(
-        linkFivePurchases.activeProducts.listen(_activeSubscriptionDataUpdate));
+    _streams.add(linkFivePurchases.products.listen(_productsUpdate));
+    _streams
+        .add(linkFivePurchases.activeProducts.listen(_activeProductsUpdate));
   }
 
   /// Saves available Subscriptions and notifies all listeners
-  void _subscriptionDataUpdate(LinkFiveProducts data) async {
+  void _productsUpdate(LinkFiveProducts data) async {
     products = data;
     notifyListeners();
   }
 
   /// Saves active Subscriptions and notifies all listeners
-  void _activeSubscriptionDataUpdate(LinkFiveActiveProducts data) {
+  void _activeProductsUpdate(LinkFiveActiveProducts data) {
     activeProducts = data;
     notifyListeners();
   }
@@ -59,14 +59,14 @@ class LinkFiveProvider extends ChangeNotifier {
   /// Fetch all available Subscription for purchase for the user
   ///
   /// The provider will notify you for changes
-  Future<LinkFiveProducts?> fetchSubscriptions() async {
+  Future<LinkFiveProducts?> fetchProducts() {
     return LinkFivePurchases.fetchProducts();
   }
 
   /// Restore Subscriptions of the user
   ///
   /// The provider will notify you if there is a change
-  restoreSubscriptions() async {
+  restoreSubscriptions() {
     return LinkFivePurchases.restore();
   }
 

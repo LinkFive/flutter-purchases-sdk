@@ -13,7 +13,7 @@ class LinkFiveProductsCubit extends Cubit<LinkFiveProductsState> {
   }
 
   /// Saves available Subscriptions and notifies all listeners
-  void _subscriptionDataUpdate(LinkFiveProducts data) async {
+  void _subscriptionDataUpdate(LinkFiveProducts data) {
     emit(LinkFiveProductsLoadedState(data));
   }
 

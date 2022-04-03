@@ -1,6 +1,6 @@
-## 2.0.0-dev.3
+## 2.0.0
 
-Update to linkfive_purchases 2.0.0 - breaking change on the whole library.
+Update to linkfive_purchases 2.0.0 - breaking change on the whole library. checkout linkfive_purchases for more informations
 
 We're introducing LinkFive 2.0.0
 
