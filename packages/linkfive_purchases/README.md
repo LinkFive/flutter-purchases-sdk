@@ -175,33 +175,33 @@ If you're mainly using a StreamBuilder. You can implement LinkFive in the follow
 Show all available Products:
 
 ```dart
-StreamBuilder<LinkFiveSubscriptionData?>
+StreamBuilder<LinkFiveProducts>
 (
 stream: LinkFivePurchases.products,builder: (
 context, snapshot) {
 if (snapshot.hasData) {
 var productData = snapshot.data;
 if(productData != null) {
-// subscriptionData to offer
+// productData to offer
 }
 }
 return Center(child: Text('Loading...'));
-},
+})
 ```
 
 Get all Active products
 
 ```dart
-StreamBuilder<LinkFiveActiveSubscriptionData?>
+StreamBuilder<LinkFiveActiveProducts>
 (
 stream: LinkFivePurchases.activeProducts,builder: (
 
 BuildContext context, snapshot
 ) {
 if (snapshot.hasData) {
-var activeProductData = snapshot.data;
-if (activeProductData != null) {
-// Active subscriptionData
+var activeProductsData = snapshot.data;
+if (activeProductsData != null) {
+// activeProductsData to offer
 }
 }
 return Center(child: Text('Loading...'));
