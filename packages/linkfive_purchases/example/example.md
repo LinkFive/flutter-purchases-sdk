@@ -52,7 +52,7 @@ class LinkFiveProvider extends ChangeNotifier {
   }
 
   /// Saves available Subscriptions and notifies all listeners
-  void _productsUpdate(LinkFiveProducts data) async {
+  void _productsUpdate(LinkFiveProducts data) {
     products = data;
     notifyListeners();
   }
