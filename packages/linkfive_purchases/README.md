@@ -11,8 +11,7 @@ Add the plugin to your Flutter app:
 Initialize the SDK. [Read our more detailed docs](https://www.linkfive.io/docs/flutter/initializing/)
 
 ```dart
-await
-LinkFivePurchases.init("LinkFive Api Key");
+await LinkFivePurchases.init("LinkFive Api Key");
 ```
 
 Get your API key after [Sign up](https://app.linkfive.io/sign-up?utm_source=flutter). It's free!
