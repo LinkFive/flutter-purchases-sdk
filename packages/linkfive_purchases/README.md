@@ -12,10 +12,7 @@ Initialize the SDK. [Read our more detailed docs](https://www.linkfive.io/docs/f
 
 ```dart
 await
-LinkFivePurchases.init("
-LinkFive Api Key
-"
-);
+LinkFivePurchases.init("LinkFive Api Key");
 ```
 
 Get your API key after [Sign up](https://app.linkfive.io/sign-up?utm_source=flutter). It's free!
@@ -27,8 +24,7 @@ LinkFivePurchases.fetchProducts();
 
 // or also
 
-LinkFiveProducts? products = await
-LinkFivePurchases.fetchProducts(); 
+LinkFiveProducts? products = await LinkFivePurchases.fetchProducts(); 
 ```
 
 ### Product Streams
@@ -43,19 +39,13 @@ LinkFivePurchases.products
 LinkFivePurchases.activeProducts
 
 // to listen to a stream do the following:
-LinkFivePurchases.products.listen((
-
-LinkFiveProducts products
-) {
-print(products);
+LinkFivePurchases.products.listen((LinkFiveProducts products) {
+  print(products);
 });
 
 // or for all active Products
-LinkFivePurchases.activeProducts.listen((
-
-LinkFiveActiveProducts activeProducts
-) {
-print(activeProducts);
+LinkFivePurchases.activeProducts.listen((LinkFiveActiveProducts activeProducts) {
+  print(activeProducts);
 });
 
 ```
@@ -175,37 +165,33 @@ If you're mainly using a StreamBuilder. You can implement LinkFive in the follow
 Show all available Products:
 
 ```dart
-StreamBuilder<LinkFiveProducts>
-(
-stream: LinkFivePurchases.products,builder: (
-context, snapshot) {
-if (snapshot.hasData) {
-var productData = snapshot.data;
-if(productData != null) {
-// productData to offer
-}
-}
-return Center(child: Text('Loading...'));
-})
+StreamBuilder<LinkFiveProducts>(
+  stream: LinkFivePurchases.products,
+  builder: (context, snapshot) {
+    if (snapshot.hasData) {
+     var productData = snapshot.data;
+      if(productData != null) {
+      // productData to offer
+     }
+    }
+  return Center(child: Text('Loading...'));
+  })
 ```
 
 Get all Active products
 
 ```dart
-StreamBuilder<LinkFiveActiveProducts>
-(
-stream: LinkFivePurchases.activeProducts,builder: (
-
-BuildContext context, snapshot
-) {
-if (snapshot.hasData) {
-var activeProductsData = snapshot.data;
-if (activeProductsData != null) {
-// activeProductsData to offer
-}
-}
-return Center(child: Text('Loading...'));
-},
+StreamBuilder<LinkFiveActiveProducts>(
+  stream: LinkFivePurchases.activeProducts,
+  builder: (BuildContext context, snapshot) {
+    if (snapshot.hasData) {
+      var activeProductsData = snapshot.data;
+      if (activeProductsData != null) {
+        // activeProductsData to offer
+      }
+    }
+    return Center(child: Text('Loading...'));
+  },
 )
 ```
 
