@@ -353,9 +353,11 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
           break;
         case PurchaseStatus.error:
           LinkFiveLogger.e("_handleError(purchaseDetails.error!)");
+          super.isPendingPurchase = false;
           break;
         case PurchaseStatus.canceled:
           LinkFiveLogger.e("_handleError(purchaseDetails.canceled!)");
+          super.isPendingPurchase = false;
           break;
         case PurchaseStatus.purchased:
           final _productDetails = _productDetailsToPurchase;
@@ -375,10 +377,13 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
             await _handlePurchaseGoogle(purchaseDetails);
           }
 
+          super.isPendingPurchase = false;
           break;
         case PurchaseStatus.restored:
           hasRestoredPurchases = true;
           break;
+        default:
+          super.isPendingPurchase = false;
       }
     }
 
@@ -392,8 +397,8 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
       // Whenever the user clicks on restore, all purchases will be delivered
       // we call LinkFive just once instead of for each restored item
       await _handleRestore(purchaseDetailsList);
+      super.isPendingPurchase = false;
     }
-    super.isPendingPurchase = false;
   }
 
   /// This will handle the restore functionality
