@@ -15,6 +15,9 @@ import 'package:linkfive_purchases/models/linkfive_products.dart';
 ///
 /// The docs can be found here https://www.linkfive.io/docs/
 class LinkFivePurchases {
+  /// Plugin Version
+  static const VERSION = "2.0.0";
+
   /// Initialize LinkFive with your Api Key
   ///
   /// Please register on our website: https://www.linkfive.io to get an api key

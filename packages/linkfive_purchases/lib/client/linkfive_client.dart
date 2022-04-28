@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
 import 'package:linkfive_purchases/models/linkfive_plan.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
@@ -58,7 +59,8 @@ class LinkFiveClient {
       "X-User-Id": _appDataStore.userId ?? "",
       "X-LinkFive-UUID": LinkFiveUserManagement().linkFiveUUID ?? "",
       "X-Utm-Source": _appDataStore.utmSource ?? "",
-      "X-Environment": _appDataStore.environment ?? ""
+      "X-Environment": _appDataStore.environment ?? "",
+      "X-LinkFive-Version": "FL-${LinkFivePurchases.VERSION}"
     };
   }
 
