@@ -24,7 +24,8 @@ class SubscriptionOfferingStream extends StatelessWidget {
                     Row(
                       children: buildSubscriptionButtons(subscriptionData),
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    )
+                    ),
+
                   ],
                 );
               }

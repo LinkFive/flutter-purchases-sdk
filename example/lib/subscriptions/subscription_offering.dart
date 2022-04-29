@@ -23,10 +23,12 @@ class SubscriptionOfferingStream extends StatelessWidget {
               if (products != null) {
                 return Column(
                   children: [
+                    SizedBox(height: 16),
                     Row(
                       children: buildSubscriptionButtons(products),
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    )
+                    ),
+                    SizedBox(height: 8),
                   ],
                 );
               }
