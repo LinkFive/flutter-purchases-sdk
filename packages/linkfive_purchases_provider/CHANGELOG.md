@@ -1,3 +1,7 @@
+## 2.0.1
+
+Update to linkfive_purchases 2.0.1
+
 ## 2.0.0
 
 Update to linkfive_purchases 2.0.0 - breaking change on the whole library. checkout linkfive_purchases for more informations

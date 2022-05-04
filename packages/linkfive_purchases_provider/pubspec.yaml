@@ -1,6 +1,6 @@
 name: linkfive_purchases_provider
 description: linkfive_purchases wrapped in an easy to use Provider. Register the provider and use linkfive everywhere.
-version: 2.0.0
+version: 2.0.1
 homepage: https://www.linkfive.io
 repository: https://github.com/LinkFive/flutter-purchases-sdk
 issue_tracker: https://github.com/LinkFive/flutter-purchases-sdk/issues
@@ -14,7 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^6.0.2
-  linkfive_purchases: ^2.0.0
+  linkfive_purchases: ^2.0.1
 
 dev_dependencies:
   flutter_test:
