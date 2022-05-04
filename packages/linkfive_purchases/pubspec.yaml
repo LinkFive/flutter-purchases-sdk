@@ -1,6 +1,6 @@
 name: linkfive_purchases
 description: Manage your in-app subscriptions with the LinkFive plugin - The Easiest Implementation of Subscriptions.
-version: 2.0.0
+version: 2.0.1
 homepage: https://www.linkfive.io
 repository: https://github.com/LinkFive/flutter-purchases-sdk
 issue_tracker: https://github.com/LinkFive/flutter-purchases-sdk/issues

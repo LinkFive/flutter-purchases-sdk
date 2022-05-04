@@ -1,3 +1,9 @@
+## 2.0.1
+* fixing PendingPurchase handler which tells the UI that the purchase is ongoing.
+* We also now send the plugin version to LinkFive with each request
+* update the Example project
+
+
 ## 2.0.0
 
 Release of LinkFive 2.0
