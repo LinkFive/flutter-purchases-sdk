@@ -232,14 +232,14 @@ packages:
       name: in_app_purchases_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.7"
+    version: "0.0.8"
   in_app_purchases_intl:
     dependency: "direct main"
     description:
       name: in_app_purchases_intl
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.3"
+    version: "0.0.4"
   intl:
     dependency: transitive
     description:
