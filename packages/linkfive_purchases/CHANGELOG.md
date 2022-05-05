@@ -1,3 +1,8 @@
+## 2.0.2
+* We fixed a bug when setting the userID is not saved on the device.
+* we also implemented all new dart analysis changes
+* updated to flutter 2.10.4
+
 ## 2.0.1
 * fixing PendingPurchase handler which tells the UI that the purchase is ongoing.
 * We also now send the plugin version to LinkFive with each request
