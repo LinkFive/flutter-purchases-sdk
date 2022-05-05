@@ -33,5 +33,11 @@ class LinkFivePrefs {
 
   String? get userId => _prefs.getString(_USERID);
 
-  set userId(value) => _prefs.setString(_USERID, value);
+  set userId(value) {
+    if (value == null) {
+      _prefs.remove(_USERID);
+    } else {
+      _prefs.setString(_USERID, value);
+    }
+  }
 }

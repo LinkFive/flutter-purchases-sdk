@@ -4,11 +4,18 @@ import 'package:linkfive_purchases/store/linkfive_prefs.dart';
 class LinkFiveAppDataStore {
   String apiKey = "";
   String? utmSource = null;
-  String? userId = null;
+  String? _userId = null;
   String? environment = null;
+
+  String? get userId => _userId;
+
+  set userId(value) {
+    this._userId = value;
+    LinkFivePrefs().userId = value;
+  }
 
   init(String apiKey) async {
     this.apiKey = apiKey;
-    userId = LinkFivePrefs().userId;
+    _userId = LinkFivePrefs().userId;
   }
 }

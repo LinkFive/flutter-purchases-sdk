@@ -27,9 +27,9 @@ dependencies:
   shared_preferences: ^2.0.13
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  test: ^1.21.1
   flutter_lints: ^1.0.4
+
 
 flutter:
   plugin:
