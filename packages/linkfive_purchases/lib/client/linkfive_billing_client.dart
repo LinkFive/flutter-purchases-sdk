@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 
@@ -47,7 +46,6 @@ class LinkFiveBillingClient {
   Future<List<ProductDetails>> _loadProducts(
       List<LinkFiveResponseDataSubscription> subscriptionList) async {
     LinkFiveLogger.d("load products from store");
-    Set<String> productIds = {"linkfive_monthly_2022", "linkfive_yearly_2022"};
     Set<String> _kIds = subscriptionList.map((e) => e.sku).toSet();
     final ProductDetailsResponse response =
         await InAppPurchase.instance.queryProductDetails(_kIds);

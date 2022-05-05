@@ -5,14 +5,10 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
-import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
-import 'package:linkfive_purchases/models/linkfive_plan.dart';
-import 'package:linkfive_purchases/models/linkfive_response.dart';
 import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
 import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart';
-import 'package:linkfive_purchases/models/linkfive_verified_receipt.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -146,54 +142,6 @@ class LinkFiveClient {
     return _parsePlanListResponse(response);
   }
 
-  /// Verify Apple Receipt
-  Future<List<LinkFiveVerifiedReceipt>> verifyAppleReceipt(
-      String receipt) async {
-    final uri = _makeUri("api/v1/purchases/apple/verify");
-    final body = {"receipt": receipt};
-
-    final response =
-        await http.post(uri, body: jsonEncode(body), headers: await _headers);
-    LinkFiveLogger.d(response.body);
-
-    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-
-    LinkFiveUserManagement().onResponse(jsonResponse);
-
-    return LinkFiveVerifiedReceipt.fromJsonList(jsonResponse["data"]);
-  }
-
-  /// Verify Google Receipt
-  Future<List<LinkFiveVerifiedReceipt>> verifyGoogleReceipt(
-      List<GooglePlayPurchaseDetails> purchaseDetailList) async {
-    final uri = _makeUri("api/v1/purchases/google/verify");
-
-    final body = {
-      "purchases": purchaseDetailList
-          .map((purchaseDetails) => {
-                "packageName":
-                    purchaseDetails.billingClientPurchase.packageName,
-                "purchaseToken":
-                    purchaseDetails.billingClientPurchase.purchaseToken,
-                "orderId": purchaseDetails.billingClientPurchase.orderId,
-                "purchaseTime":
-                    purchaseDetails.billingClientPurchase.purchaseTime,
-                "sku": purchaseDetails.billingClientPurchase.sku,
-              })
-          .toList()
-    };
-
-    final response =
-        await http.post(uri, body: jsonEncode(body), headers: await _headers);
-    LinkFiveLogger.d(response.body);
-
-    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-
-    LinkFiveUserManagement().onResponse(jsonResponse);
-
-    return LinkFiveVerifiedReceipt.fromJsonList(jsonResponse["data"]);
-  }
-
   /// Fetches the receipts for a user
   ///
   /// if no LinkFive UUID is provided, LinkFive will generate a new user ID
@@ -220,7 +168,7 @@ class LinkFiveClient {
       }).toList(growable: false)
     };
 
-    LinkFiveLogger.d("Restore body: ${body}");
+    LinkFiveLogger.d("Restore body: $body");
 
     final response =
         await http.post(uri, body: jsonEncode(body), headers: await _headers);
@@ -242,7 +190,7 @@ class LinkFiveClient {
       }).toList(growable: false)
     };
 
-    LinkFiveLogger.d("Restore body: ${body}");
+    LinkFiveLogger.d("Restore body: $body");
 
     final response =
         await http.post(uri, body: jsonEncode(body), headers: await _headers);

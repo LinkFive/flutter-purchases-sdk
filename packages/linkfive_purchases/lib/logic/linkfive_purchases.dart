@@ -1,13 +1,6 @@
 import 'dart:async';
 
-import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase_android/billing_client_wrappers.dart';
-import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
-import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
-import 'package:linkfive_purchases/logic/linkfive_purchases_main.dart';
-import 'package:linkfive_purchases/models/linkfive_active_products.dart';
-import 'package:linkfive_purchases/models/linkfive_products.dart';
 
 /// LinkFive Purchases.
 ///
@@ -165,8 +158,8 @@ class LinkFivePurchases {
   /// This will also link all subscriptions to the current user if exist
   ///
   /// You can also filter this value in your subscription Playout
-  static setUserId(String? userId) {
-    LinkFivePurchasesMain().setUserId(userId);
+  static Future<LinkFiveActiveProducts> setUserId(String? userId) {
+    return LinkFivePurchasesMain().setUserId(userId);
   }
 
   /// This is the callback Interface for the UI Paywall plugin

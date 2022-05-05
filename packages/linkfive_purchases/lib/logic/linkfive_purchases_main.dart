@@ -3,21 +3,15 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
-import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/client/linkfive_billing_client.dart';
 import 'package:linkfive_purchases/client/linkfive_client.dart';
 import 'package:linkfive_purchases/default/default_purchase_handler.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
 import 'package:linkfive_purchases/logic/upgrade_downgrade_purchases.dart';
-import 'package:linkfive_purchases/models/linkfive_active_products.dart';
-import 'package:linkfive_purchases/models/linkfive_plan.dart';
-import 'package:linkfive_purchases/models/linkfive_products.dart';
 import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
 import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
@@ -466,7 +460,6 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
 
     // check each item if it is not null and save the purchaseID
     for (PurchaseDetails pd in purchaseDetailsList) {
-      String? originalTransactionId;
       if (pd is GooglePlayPurchaseDetails) {
         final sku = pd.billingClientPurchase.sku;
         final purchaseId = pd.billingClientPurchase.orderId;

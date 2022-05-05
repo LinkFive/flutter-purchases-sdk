@@ -1,8 +1,6 @@
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
-import 'package:linkfive_purchases/models/linkfive_products.dart';
 
 extension UpgradeDowngradePurchases on LinkFivePurchasesMain {
   /// Handles the Up and Downgrade of a Subscription plan

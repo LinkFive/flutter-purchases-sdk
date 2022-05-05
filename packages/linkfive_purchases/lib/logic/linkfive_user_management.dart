@@ -32,7 +32,7 @@ class LinkFiveUserManagement {
     if (linkFiveUUID != null &&
         linkFiveUUID.isNotEmpty &&
         linkFiveUUID != _linkFiveUUID) {
-      LinkFiveLogger.d("Setting LinkFive UUID ${linkFiveUUID}");
+      LinkFiveLogger.d("Setting LinkFive UUID $linkFiveUUID");
       _linkFiveUUID = linkFiveUUID;
       LinkFivePrefs().linkFiveUUID = linkFiveUUID;
     }

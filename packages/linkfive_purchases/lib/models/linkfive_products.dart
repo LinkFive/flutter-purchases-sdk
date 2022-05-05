@@ -46,7 +46,7 @@ class LinkFiveProducts {
     if (productDetailList.length <= 1) {
       calculateDeal = false;
     }
-    LinkFiveProductDetails? lowestDurationProduct = null;
+    LinkFiveProductDetails? lowestDurationProduct;
     if (calculateDeal) {
       // get the lowest duration
       lowestDurationProduct = productDetailList.reduce((curr, next) {
