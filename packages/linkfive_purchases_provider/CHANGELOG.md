@@ -1,3 +1,9 @@
+## 2.0.2
+
+Update to linkfive_purchases 2.0.2
+
+Check out our other Flutter plugins on https://www.linkfive.io
+
 ## 2.0.1
 
 Update to linkfive_purchases 2.0.1
