@@ -20,7 +20,7 @@ void main() {
 
     linkFiveAppDataStore.userId = null;
 
-    expect(linkFivePrefs.userId , null);
+    expect(linkFivePrefs.userId, null);
     expect(linkFiveAppDataStore.userId, null);
   });
 }
