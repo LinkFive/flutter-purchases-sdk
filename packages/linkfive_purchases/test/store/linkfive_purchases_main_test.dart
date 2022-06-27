@@ -17,7 +17,8 @@ void main() {
     final inAppPurchaseInstance = MockInAppPurchase();
     final purchaseStream = Stream<List<PurchaseDetails>>.empty();
 
-    when(inAppPurchaseInstance.purchaseStream).thenAnswer((_) => purchaseStream);
+    when(inAppPurchaseInstance.purchaseStream)
+        .thenAnswer((_) => purchaseStream);
 
     final linkFivePurchases = LinkFivePurchasesMain.testing(
         inAppPurchaseInstance: inAppPurchaseInstance);

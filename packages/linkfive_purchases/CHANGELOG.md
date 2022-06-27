@@ -1,3 +1,10 @@
+## 2.1.0
+* Update for Flutter ^3.0.0
+* fetchProducts() now waits until the initialization is done. There is no need to await LinkFiveProducts.init(...) anymore.
+* Update to in_app_purchase: 3.0.6
+* We added more unit tests.
+
+
 ## 2.0.2
 * We fixed a bug when setting the userID is not saved on the device.
 * we also implemented all new dart analysis changes

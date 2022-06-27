@@ -29,11 +29,10 @@ class LinkFivePurchases {
   /// LinkFivePurchases.fetchProducts());
   ///
   /// [LinkFiveLogLevel] to see or hide internal logging
-  static Future<LinkFiveActiveProducts> init(
-    String apiKey, {
-    LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN
-  }) {
-    return LinkFivePurchasesMain().init(apiKey, logLevel: logLevel, env: LinkFiveEnvironment.PRODUCTION);
+  static Future<LinkFiveActiveProducts> init(String apiKey,
+      {LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN}) {
+    return LinkFivePurchasesMain()
+        .init(apiKey, logLevel: logLevel, env: LinkFiveEnvironment.PRODUCTION);
   }
 
   /// By Default, the plugin does not fetch any Products to offer.

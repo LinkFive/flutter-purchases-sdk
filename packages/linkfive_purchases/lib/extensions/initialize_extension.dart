@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
 extension LinkFiveInitilizeExtension on LinkFivePurchasesMain {
-
   ///
   /// For some cases, we want to make sure that LinkFive is initialized
   ///
@@ -31,7 +30,7 @@ extension LinkFiveInitilizeExtension on LinkFivePurchasesMain {
   ///
   /// This will complete the Initialization process
   ///
-  finishInitialize(){
+  finishInitialize() {
     isInitialized.complete(true);
   }
 }

@@ -23,7 +23,8 @@ import 'package:linkfive_purchases/store/linkfive_store.dart';
 class LinkFivePurchasesMain extends DefaultPurchaseHandler
     implements CallbackInterface {
   //#region Singleton
-  LinkFivePurchasesMain._() : this.inAppPurchaseInstance = InAppPurchase.instance;
+  LinkFivePurchasesMain._()
+      : this.inAppPurchaseInstance = InAppPurchase.instance;
 
   @visibleForTesting
   LinkFivePurchasesMain.testing({required this.inAppPurchaseInstance});
@@ -187,8 +188,8 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     try {
       // try to buy it
       LinkFiveLogger.d("try to purchase item 1/2");
-      showBuySuccess = await inAppPurchaseInstance
-          .buyNonConsumable(purchaseParam: purchaseParam);
+      showBuySuccess = await inAppPurchaseInstance.buyNonConsumable(
+          purchaseParam: purchaseParam);
     } on PlatformException catch (e) {
       LinkFiveLogger.e(e);
       if (Platform.isIOS) {
@@ -208,8 +209,8 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
 
         LinkFiveLogger.d("try to purchase item 2/2");
         // try buy again
-        showBuySuccess = await inAppPurchaseInstance
-            .buyNonConsumable(purchaseParam: purchaseParam);
+        showBuySuccess = await inAppPurchaseInstance.buyNonConsumable(
+            purchaseParam: purchaseParam);
       }
     }
 
