@@ -12,8 +12,7 @@ class ProviderSimplePaywallPage extends Page {
       builder: (BuildContext context) {
         return MultiProvider(providers: [
           ChangeNotifierProvider(
-            create: (context) => LinkFiveProvider(MyApp.linkFiveApiKey,
-                environment: LinkFiveEnvironment.STAGING),
+            create: (context) => LinkFiveProvider(MyApp.linkFiveApiKey),
             lazy: false,
           )
         ], child: ProviderSimplePaywall());

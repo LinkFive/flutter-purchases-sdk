@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases_example/main.dart';
@@ -23,78 +21,61 @@ class RootWidget extends StatefulWidget {
 }
 
 class _RootWidgetState extends State<RootWidget> {
-  Completer completer = Completer();
-
   @override
   void initState() {
-    LinkFivePurchases.init(MyApp.linkFiveApiKey,
-            logLevel: LinkFiveLogLevel.TRACE, env: LinkFiveEnvironment.STAGING)
-        .then((value) => completer.complete(true));
+    LinkFivePurchasesMain().init(MyApp.linkFiveApiKey,
+        logLevel: LinkFiveLogLevel.TRACE, env: LinkFiveEnvironment.STAGING);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('LinkFive Subscription Test App'),
-      ),
-      body: FutureBuilder(
-          future: completer.future,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [CircularProgressIndicator()],
-              );
-            }
-            return Container(
-                width: double.infinity,
-                child: Column(
+        appBar: AppBar(
+          title: const Text('LinkFive Subscription Test App'),
+        ),
+        body: Container(
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  child: Text("Raw Example"),
+                  onPressed: () {
+                    (Router.of(context).routerDelegate as MainRouterDelegate)
+                        .goToRawPayWall();
+                  },
+                ),
+                ElevatedButton(
+                  child: Text("Provider Simple UI Example"),
+                  onPressed: () {
+                    (Router.of(context).routerDelegate as MainRouterDelegate)
+                        .goToProviderSimplePayWall();
+                  },
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      child: Text("Raw Example"),
+                      child: Text("Bloc Moritz UI Example"),
                       onPressed: () {
                         (Router.of(context).routerDelegate
                                 as MainRouterDelegate)
-                            .goToRawPayWall();
+                            .goToBlocUI();
                       },
                     ),
                     ElevatedButton(
-                      child: Text("Provider Simple UI Example"),
+                      child: Text("Bloc RAW"),
                       onPressed: () {
                         (Router.of(context).routerDelegate
                                 as MainRouterDelegate)
-                            .goToProviderSimplePayWall();
+                            .goToBlocRaw();
                       },
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          child: Text("Bloc Moritz UI Example"),
-                          onPressed: () {
-                            (Router.of(context).routerDelegate
-                                    as MainRouterDelegate)
-                                .goToBlocUI();
-                          },
-                        ),
-                        ElevatedButton(
-                          child: Text("Bloc RAW"),
-                          onPressed: () {
-                            (Router.of(context).routerDelegate
-                                    as MainRouterDelegate)
-                                .goToBlocRaw();
-                          },
-                        )
-                      ],
                     )
                   ],
-                ));
-          }),
-    );
+                )
+              ],
+            )));
   }
 }
