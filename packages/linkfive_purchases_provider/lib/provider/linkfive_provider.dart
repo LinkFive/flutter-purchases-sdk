@@ -3,16 +3,22 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
+///
 /// LinkFive Provider
 ///
 /// Initialize LinkFive with your Api Key
 ///
 /// Please register on our website: https://www.linkfive.io to get an api key
+///
 class LinkFiveProvider extends ChangeNotifier {
   /// LinkFive client as factory
   final LinkFivePurchasesMain linkFivePurchases = LinkFivePurchasesMain();
 
+  ///
   /// LinkFive subscriptions that you can offer to your user
+  ///
+  /// To receive data on products, you have to call fetchProducts() first.
+  ///
   LinkFiveProducts? products;
 
   /// All verified receipt received by LinkFive
@@ -35,52 +41,61 @@ class LinkFiveProvider extends ChangeNotifier {
   ///
   /// Please register on our website: https://www.linkfive.io to get an api key
   ///
-  /// [LinkFiveEnvironment] is 99,999..% [LinkFiveEnvironment.PRODUCTION] better not touch it
   LinkFiveProvider(String apiKey,
-      {LinkFiveEnvironment environment = LinkFiveEnvironment.PRODUCTION,
-      LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN}) {
-    linkFivePurchases.init(apiKey, env: environment, logLevel: logLevel);
+      {LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN}) {
+    linkFivePurchases.init(apiKey, logLevel: logLevel);
     _streams.add(linkFivePurchases.products.listen(_productsUpdate));
     _streams
         .add(linkFivePurchases.activeProducts.listen(_activeProductsUpdate));
   }
 
+  ///
   /// Saves available Subscriptions and notifies all listeners
+  ///
   void _productsUpdate(LinkFiveProducts data) async {
     products = data;
     notifyListeners();
   }
 
+  ///
   /// Saves active Subscriptions and notifies all listeners
+  ///
   void _activeProductsUpdate(LinkFiveActiveProducts data) {
     activeProducts = data;
     notifyListeners();
   }
 
+  ///
   /// Fetch all available Subscription for purchase for the user
   ///
   /// The provider will notify you for changes
+  ///
   Future<LinkFiveProducts?> fetchProducts() {
     return LinkFivePurchases.fetchProducts();
   }
 
+  ///
   /// Restore Subscriptions of the user
   ///
   /// The provider will notify you if there is a change
+  ///
   restoreSubscriptions() {
     return LinkFivePurchases.restore();
   }
 
+  ///
   /// Make a Purchase
   ///
   /// The provider will notify you if there is a change
   /// The future returns if the "purchase screen" is visible to the user
   /// and not if the purchase was successful
+  ///
   Future<bool> purchase(ProductDetails productDetail) async {
     return LinkFivePurchases.purchase(productDetail);
   }
 
-  /// Handles the Switch Plan functionality.
+  /// H
+  /// andles the Switch Plan functionality.
   ///
   /// You can switch from one Subscription plan to another. Example: from currently a 1 month subscription to a 3 months subscription
   ///

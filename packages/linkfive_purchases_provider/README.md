@@ -6,9 +6,11 @@ Please read our Blogpost [Subscriptions in Flutter - The Complete Implementation
 
 or [LinkFive Provider Example Documentation](https://www.linkfive.io/docs/flutter/provider-example/)
 
-All you need to do:
 
-Register the Provider with our API key and you're all set to use it. 
+## Register the Provider
+
+Register the Provider with our API key and you're all set to use it.
+
 ```dart
 MultiProvider(
   providers: [
@@ -21,7 +23,12 @@ MultiProvider(
 )
 ```
 
-And then integrate your UI:
+## Load Products
+
+Whenever you want to offer your product, call `fetchProducts()` to load the latest products.
+
+
+## Use the products in your UI:
 
 ```dart
 Consumer<LinkFiveProvider>(builder: (_, linkFiveProvider, __) {

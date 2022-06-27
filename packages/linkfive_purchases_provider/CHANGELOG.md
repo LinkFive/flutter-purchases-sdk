@@ -1,3 +1,7 @@
+## 2.1.0
+
+Update to linkfive_purchases 2.1.0 and Flutter 3.0.0
+
 ## 2.0.2
 
 Update to linkfive_purchases 2.0.2

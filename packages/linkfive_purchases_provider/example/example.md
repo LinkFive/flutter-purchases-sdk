@@ -1,5 +1,5 @@
 
-You just have to register the Provider with our API key and you're all set to use it
+Register the Provider with our API key and you're all set to use it
 ```dart
 MultiProvider(
   providers: [
@@ -12,4 +12,4 @@ MultiProvider(
 )
 ```
 
-That‘s it.
+Whenever you want to offer your product, call `fetchProducts()` to load the latest products.
