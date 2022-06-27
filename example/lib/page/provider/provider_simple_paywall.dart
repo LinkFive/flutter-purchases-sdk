@@ -5,14 +5,12 @@ import 'package:provider/provider.dart';
 
 class ProviderSimplePaywall extends StatelessWidget {
 
-
   @override
   Widget build(BuildContext context) {
     return Consumer<LinkFiveProvider>(builder: (_, linkFiveProvider, __) {
       return PaywallScaffold(
           appBarTitle: "LinkFive Premium",
           child: SimplePaywall(
-              theme: Theme.of(context),
               callbackInterface: linkFiveProvider.callbackInterface,
               subscriptionListData:
                   linkFiveProvider.paywallUIHelperData(context),
@@ -49,7 +47,6 @@ class ProviderSimplePaywall extends StatelessWidget {
                   "Privacy Policy", "https://www.linkfive.io/privacy"),
               // add a custom campaign widget
               campaignWidget: CampaignBanner(
-                theme: Theme.of(context),
                 headline: "🥳 Summer Special Sale",
               )));
     });

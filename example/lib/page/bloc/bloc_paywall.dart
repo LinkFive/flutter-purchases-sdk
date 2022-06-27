@@ -22,7 +22,6 @@ class BlocPaywall extends StatelessWidget {
       return PaywallScaffold(
           appBarTitle: "LinkFive Premium",
           child: MoritzPaywall(
-              theme: Theme.of(context),
               callbackInterface: LinkFivePurchases.callbackInterface,
               subscriptionListData: subscriptionData,
               title: "Go Premium",
@@ -58,7 +57,6 @@ class BlocPaywall extends StatelessWidget {
                   "Privacy Policy", "https://www.linkfive.io/privacy"),
               // add a custom campaign widget
               campaignWidget: CampaignBanner(
-                theme: Theme.of(context),
                 headline: "🥳 Summer Special Sale",
               )));
     });

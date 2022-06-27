@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
@@ -9,6 +10,7 @@ import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:linkfive_purchases/client/linkfive_billing_client.dart';
 import 'package:linkfive_purchases/client/linkfive_client.dart';
 import 'package:linkfive_purchases/default/default_purchase_handler.dart';
+import 'package:linkfive_purchases/extensions/initialize_extension.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
 import 'package:linkfive_purchases/logic/upgrade_downgrade_purchases.dart';
@@ -21,11 +23,21 @@ import 'package:linkfive_purchases/store/linkfive_store.dart';
 class LinkFivePurchasesMain extends DefaultPurchaseHandler
     implements CallbackInterface {
   //#region Singleton
-  LinkFivePurchasesMain._();
+  LinkFivePurchasesMain._() : this.inAppPurchaseInstance = InAppPurchase.instance;
+
+  @visibleForTesting
+  LinkFivePurchasesMain.testing({required this.inAppPurchaseInstance});
 
   static LinkFivePurchasesMain _instance = LinkFivePurchasesMain._();
 
   factory LinkFivePurchasesMain() => _instance;
+
+  ///
+  /// InAppPurchase instance
+  ///
+  /// This will be mocked for testing
+  ///
+  final InAppPurchase inAppPurchaseInstance;
 
   //#endregion Singleton
 
@@ -66,6 +78,11 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   Stream<LinkFiveActiveProducts> get activeProducts =>
       _store.activeProductsStream;
 
+  ///
+  /// Will be true whenever LinkFive is done initializing
+  ///
+  final Completer<bool> isInitialized = Completer();
+
   //#endregion Members
 
   /// Initialize the LinkFive client with .init(...)
@@ -74,13 +91,14 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   /// [logLevel] default is DEBUG. Possible values are TRACE, DEBUG, INFO, WARN, ERROR
   /// [env] default is Production. Sets the LinkFive Environment.
   Future<LinkFiveActiveProducts> init(String apiKey,
-      {LinkFiveLogLevel logLevel = LinkFiveLogLevel.DEBUG,
+      {LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN,
       LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION}) async {
     if (appDataStore.apiKey.isNotEmpty) {
-      LinkFiveLogger.d(
+      LinkFiveLogger.w(
           "LinkFive is already Initialized. Please only call init once");
       return _store.latestLinkFiveActiveProducts ?? LinkFiveActiveProducts();
     }
+
     LinkFiveLogger.setLogLevel(logLevel);
 
     // init Preferences
@@ -109,7 +127,10 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     // await _loadActiveSubs();
     // } else {
     // Check LinkFive For Active Plans
-    return await _updateActivePlansFromLinkFive();
+    final activePlans = await _updateActivePlansFromLinkFive();
+    finishInitialize();
+
+    return activePlans;
     // }
   }
 
@@ -120,6 +141,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   /// @return [LinkFiveSubscriptionData] or null if no subscriptions found
   Future<LinkFiveProducts?> fetchProducts() async {
     LinkFiveLogger.d("fetch subscriptions");
+    await waitForInit();
     var linkFiveResponse = await _client.fetchLinkFiveResponse();
     _store.onNewResponseData(linkFiveResponse);
 
@@ -137,6 +159,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   ///
   /// @returns true if UI is shown, false otherwise
   Future<bool> purchase(dynamic productDetails) async {
+    makeSureIsInitialize();
     ProductDetails? _productDetails;
     if (productDetails is ProductDetails) {
       _productDetails = productDetails;
@@ -164,7 +187,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     try {
       // try to buy it
       LinkFiveLogger.d("try to purchase item 1/2");
-      showBuySuccess = await InAppPurchase.instance
+      showBuySuccess = await inAppPurchaseInstance
           .buyNonConsumable(purchaseParam: purchaseParam);
     } on PlatformException catch (e) {
       LinkFiveLogger.e(e);
@@ -185,7 +208,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
 
         LinkFiveLogger.d("try to purchase item 2/2");
         // try buy again
-        showBuySuccess = await InAppPurchase.instance
+        showBuySuccess = await inAppPurchaseInstance
             .buyNonConsumable(purchaseParam: purchaseParam);
       }
     }
@@ -199,6 +222,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   }
 
   Future<LinkFiveActiveProducts> reloadActivePlans() async {
+    await waitForInit();
     return await _updateActivePlansFromLinkFive();
   }
 
@@ -207,8 +231,9 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   ///
   @override
   Future<bool> restore() async {
+    makeSureIsInitialize();
     super.isPendingPurchase = true;
-    await InAppPurchase.instance.restorePurchases();
+    await inAppPurchaseInstance.restorePurchases();
     return false;
   }
 
@@ -225,6 +250,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   Future<bool> switchPlan(
       LinkFivePlan oldLinkFivePlan, LinkFiveProductDetails productDetails,
       {ProrationMode? prorationMode}) async {
+    makeSureIsInitialize();
     if (Platform.isAndroid) {
       return handleAndroidSwitchPlan(oldLinkFivePlan, productDetails,
           prorationMode: prorationMode);
@@ -235,11 +261,13 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     return false;
   }
 
-  setUTMSource(String? utmSource) {
+  Future<void> setUTMSource(String? utmSource) async {
+    await waitForInit();
     appDataStore.utmSource = utmSource;
   }
 
-  setEnvironment(String? environment) {
+  Future<void> setEnvironment(String? environment) async {
+    await waitForInit();
     appDataStore.environment = environment;
   }
 
@@ -248,6 +276,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   /// We also update LinkFive and change the userId if different.
   ///
   Future<LinkFiveActiveProducts> setUserId(String? userId) async {
+    await waitForInit();
     final previousUserId = appDataStore.userId;
     appDataStore.userId = userId;
 
@@ -307,7 +336,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   ///
   void _listenPurchaseUpdates() {
     final Stream<List<PurchaseDetails>> purchaseUpdated =
-        InAppPurchase.instance.purchaseStream;
+        inAppPurchaseInstance.purchaseStream;
     _purchaseStream = purchaseUpdated.listen((purchaseDetailsList) {
       _onPurchaseUpdate(purchaseDetailsList);
     }, onDone: () {
@@ -384,7 +413,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     for (PurchaseDetails purchaseDetails in purchaseDetailsList) {
       if (purchaseDetails.pendingCompletePurchase) {
         // always on ios. android can be done locally or on server
-        await InAppPurchase.instance.completePurchase(purchaseDetails);
+        await inAppPurchaseInstance.completePurchase(purchaseDetails);
       }
     }
     if (hasRestoredPurchases) {

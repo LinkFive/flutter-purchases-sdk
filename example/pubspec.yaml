@@ -10,11 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  linkfive_purchases: ^2.0.0-dev.4
+  linkfive_purchases: ^2.0.2
   #path: ../packages/linkfive_purchases
-  linkfive_purchases_provider: #^1.5.0
-    path: ../packages/linkfive_purchases_provider
-  in_app_purchases_paywall_ui: ^0.5.1
+  linkfive_purchases_provider: 2.0.2
+    #path: ../packages/linkfive_purchases_provider
+  in_app_purchases_paywall_ui: ^0.6.0
   #path: ../../in_app_purchases_paywall/packages/in_app_purchases_paywall_ui
   cupertino_icons: ^1.0.4
   provider: ^6.0.2

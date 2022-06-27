@@ -35,10 +35,10 @@ class MyAppState extends State<MyApp> {
         builder: (BuildContext context, AsyncSnapshot<Keys> snapshot) {
           if (snapshot.hasData) {
             print(snapshot.data!.linkFiveApiKey);
-            LinkFivePurchases.init(snapshot.data!.linkFiveApiKey,
+            LinkFivePurchasesMain().init(snapshot.data!.linkFiveApiKey,
                     logLevel: LinkFiveLogLevel.TRACE,
-                    env: LinkFiveEnvironment.STAGING)
-                .then((value) => LinkFivePurchases.fetchProducts());
+                    env: LinkFiveEnvironment.STAGING);
+                LinkFivePurchases.fetchProducts();
 
             return MaterialApp(
                 title: 'LinkFive Example App',

@@ -36,7 +36,7 @@ class LinkFiveClient {
   }
 
   String get _countryCode {
-    return WidgetsBinding.instance?.window.locale.countryCode ?? "";
+    return WidgetsBinding.instance.window.locale.countryCode ?? "";
   }
 
   Future<String> get _appVersion async {

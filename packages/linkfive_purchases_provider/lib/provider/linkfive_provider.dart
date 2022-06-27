@@ -37,8 +37,9 @@ class LinkFiveProvider extends ChangeNotifier {
   ///
   /// [LinkFiveEnvironment] is 99,999..% [LinkFiveEnvironment.PRODUCTION] better not touch it
   LinkFiveProvider(String apiKey,
-      {LinkFiveEnvironment environment = LinkFiveEnvironment.PRODUCTION}) {
-    linkFivePurchases.init(apiKey, env: environment);
+      {LinkFiveEnvironment environment = LinkFiveEnvironment.PRODUCTION,
+      LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN}) {
+    linkFivePurchases.init(apiKey, env: environment, logLevel: logLevel);
     _streams.add(linkFivePurchases.products.listen(_productsUpdate));
     _streams
         .add(linkFivePurchases.activeProducts.listen(_activeProductsUpdate));

@@ -9,7 +9,7 @@ import 'package:linkfive_purchases/linkfive_purchases.dart';
 /// The docs can be found here https://www.linkfive.io/docs/
 class LinkFivePurchases {
   /// Plugin Version
-  static const VERSION = "2.0.1";
+  static const VERSION = "2.1.0";
 
   /// Initialize LinkFive with your Api Key
   ///
@@ -26,16 +26,14 @@ class LinkFivePurchases {
   /// Also Possible but not recommended:
   ///
   /// LinkFivePurchases.init(linkFiveApiKey)
-  ///     .then((value) => LinkFivePurchases.fetchProducts());
+  /// LinkFivePurchases.fetchProducts());
   ///
   /// [LinkFiveLogLevel] to see or hide internal logging
-  /// [LinkFiveEnvironment] is 99,999..% [LinkFiveEnvironment.PRODUCTION] better not touch it
   static Future<LinkFiveActiveProducts> init(
     String apiKey, {
-    LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN,
-    LinkFiveEnvironment env = LinkFiveEnvironment.PRODUCTION,
+    LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN
   }) {
-    return LinkFivePurchasesMain().init(apiKey, logLevel: logLevel, env: env);
+    return LinkFivePurchasesMain().init(apiKey, logLevel: logLevel, env: LinkFiveEnvironment.PRODUCTION);
   }
 
   /// By Default, the plugin does not fetch any Products to offer.
@@ -56,9 +54,9 @@ class LinkFivePurchases {
     return LinkFivePurchasesMain().fetchProducts();
   }
 
-  /// This will restore the subscriptions a user purchased.
+  /// This will restore the subscriptions a user previously purchased.
   ///
-  /// All data will be refreshed and notified with the product stream
+  /// All data will be refreshed and notified and delivered through the product stream
   static Future<bool> restore() {
     return LinkFivePurchasesMain().restore();
   }
@@ -102,13 +100,12 @@ class LinkFivePurchases {
         prorationMode: prorationMode);
   }
 
-  /// This Stream contains all available Subscriptions you can offer to your user.
+  /// This Stream contains all available Products you can offer to your user.
   ///
-  /// LinkFiveSubscriptionData can be null and should be treated like no subscription available
+  /// productDetailList is NEVER NULL. If the value is null, you probably never
+  /// called [LinkFivePurchases.fetchProducts]
   ///
-  /// LinkFiveSubscriptionData.linkFiveSkuData is a List and contains all Subscriptions
-  ///
-  /// LinkFiveSubscriptionData.linkFiveSkuData[...].productDetails contains:
+  /// [LinkFiveProducts.productDetailList] is a List and contains all Subscriptions
   ///
   /// ProductDetails({
   ///     id,
@@ -125,43 +122,42 @@ class LinkFivePurchases {
   /// If the user has an active verified purchase, the stream will contain all necessary information
   /// An active product is a verified active subscription the user purchased
   ///
-  /// @return LinkFiveActiveProducts which can also be null. Please treat it as no active subscription
-  /// LinkFiveActiveSubscriptionData.subscriptionList is a List of verified subscriptions receipts
-  /// LinkFiveActiveSubscriptionData.subscriptionList[...] can have the following attributes:
-  ///   String sku;
-  ///   String? purchaseId;
-  ///   DateTime transactionDate;
-  ///   DateTime? validUntilDate;
-  ///   bool? isTrial;
-  ///   bool isExpired;
-  ///   String? familyName;
-  ///   String? attributes;
-  ///   String? period;
+  /// @return [LinkFiveActiveProducts] which can also be null. Please treat it as no active subscription.
+  ///
+  /// [LinkFiveActiveProducts.planList] is a List of [LinkFivePlan] verified plans
+  ///
   static Stream<LinkFiveActiveProducts> get activeProducts =>
       LinkFivePurchasesMain().activeProducts;
 
+  ///
   /// Set the UTM source of a user
   /// You can filter this value in your playout
+  ///
   static setUTMSource(String? utmSource) {
     LinkFivePurchasesMain().setUTMSource(utmSource);
   }
 
+  ///
   /// Set your own environment. Example: Production, Staging
   ///
   /// You can filter this value in your subscription playout
+  ///
   static setEnvironment(String? environment) {
     LinkFivePurchasesMain().setEnvironment(environment);
   }
 
+  ///
   /// Set your own user ID
   ///
   /// This will also link all subscriptions to the current user if exist
   ///
   /// You can also filter this value in your subscription Playout
+  ///
   static Future<LinkFiveActiveProducts> setUserId(String? userId) {
     return LinkFivePurchasesMain().setUserId(userId);
   }
 
+  ///
   /// This is the callback Interface for the UI Paywall plugin
   ///
   /// You can just add the callbackInterface as the UI Paywall callback interface
