@@ -1,3 +1,7 @@
+## 2.1.2
+
+Update to linkfive_purchases 2.1.2
+
 ## 2.1.1
 
 Update to linkfive_purchases 2.1.1
