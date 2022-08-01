@@ -1,13 +1,10 @@
 import 'dart:io';
 
-import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
-import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/client/linkfive_billing_client_interface.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
-import 'package:linkfive_purchases/models/linkfive_response.dart';
 
 /// Internal Billing Client. It holds the connection to the native billing sdk
 class LinkFiveBillingClientTest extends LinkFiveBillingClientInterface {
@@ -23,6 +20,7 @@ class LinkFiveBillingClientTest extends LinkFiveBillingClientInterface {
     if (Platform.isAndroid) {
       return [1, 2]
           .map((number) => GooglePlayProductDetails.fromSkuDetails(
+              // ignore: invalid_use_of_visible_for_testing_member
               SkuDetailsWrapper(
                   description: "Test Descriptiption $number",
                   freeTrialPeriod: "P7D",

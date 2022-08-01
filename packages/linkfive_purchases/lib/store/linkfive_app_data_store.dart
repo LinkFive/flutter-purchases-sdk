@@ -2,7 +2,7 @@ import 'package:linkfive_purchases/store/linkfive_prefs.dart';
 
 /// Model to store some sdk data
 class LinkFiveAppDataStore {
-  static String TEST_KEY = "TmljZSAyIG1lZXQgeW91IE1yLkhhY2tlcg=";
+  static const String TEST_KEY = "TmljZSAyIG1lZXQgeW91IE1yLkhhY2tlcg=";
 
   String apiKey = "";
   String? utmSource;

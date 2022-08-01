@@ -1,3 +1,7 @@
+## 2.1.1
+* Add Test API Key handling. Use "TmljZSAyIG1lZXQgeW91IE1yLkhhY2tlcg=" to quickly test this plugin but please do not use it more than just the initial testing.
+* Added some more Unit tests.
+
 ## 2.1.0
 * Update for Flutter ^3.0.0
 * fetchProducts() now waits until the initialization is done. There is no need to await LinkFiveProducts.init(...) anymore.
