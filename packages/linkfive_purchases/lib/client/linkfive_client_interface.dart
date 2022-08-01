@@ -7,7 +7,6 @@ import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 
 /// HTTP client to LinkFive
 abstract class LinkFiveClientInterface {
-
   init(LinkFiveEnvironment env, LinkFiveAppDataStore appDataStore);
 
   /// Call to LinkFive to get the subscriptions to show
@@ -17,7 +16,6 @@ abstract class LinkFiveClientInterface {
   /// We don't need to do this on Android
   Future<List<LinkFivePlan>> purchaseIos(AppStoreProductDetails productDetails,
       AppStorePurchaseDetails purchaseDetails);
-
 
   /// after a purchase on Google we call the purchases/google
   /// We don't need to do this on Android

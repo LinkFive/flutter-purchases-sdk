@@ -34,7 +34,7 @@ class LinkFiveBillingClientTest extends LinkFiveBillingClientInterface {
                   priceCurrencyCode: "EUR",
                   priceCurrencySymbol: "€",
                   sku: "test_$number",
-                  subscriptionPeriod: number == 1 ? "P1M": "P1Y",
+                  subscriptionPeriod: number == 1 ? "P1M" : "P1Y",
                   title: "Test title $number",
                   type: SkuType.subs,
                   originalPrice: "$number.99",
@@ -54,7 +54,9 @@ class LinkFiveBillingClientTest extends LinkFiveBillingClientInterface {
                     price: "$number.99",
                     subscriptionPeriod: SKProductSubscriptionPeriodWrapper(
                         numberOfUnits: 1,
-                        unit: number == 1 ? SKSubscriptionPeriodUnit.month : SKSubscriptionPeriodUnit.year)),
+                        unit: number == 1
+                            ? SKSubscriptionPeriodUnit.month
+                            : SKSubscriptionPeriodUnit.year)),
               ))
           .toList(growable: false);
     }
