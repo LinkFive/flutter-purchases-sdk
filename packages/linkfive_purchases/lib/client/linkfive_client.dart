@@ -37,7 +37,7 @@ class LinkFiveClient extends LinkFiveClientInterface {
   }
 
   String get _countryCode {
-    return WidgetsBinding.instance.window.locale.countryCode ?? "";
+    return _ambiguate(WidgetsBinding.instance)!.window.locale.countryCode ?? "";
   }
 
   Future<String> get _appVersion async {
@@ -224,4 +224,12 @@ class LinkFiveClient extends LinkFiveClientInterface {
 
     return LinkFivePlan.fromJsonList(jsonResponse["data"]);
   }
+
+  /// This allows a value of type T or T?
+  /// to be treated as a value of type T?.
+  ///
+  /// We use this so that APIs that have become
+  /// non-nullable can still be used with `!` and `?`
+  /// to support older versions of the API as well.
+  T? _ambiguate<T>(T? value) => value;
 }
