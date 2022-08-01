@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
+import 'package:linkfive_purchases/client/linkfive_billing_client_interface.dart';
 import 'package:linkfive_purchases/models/linkfive_response.dart';
 
 /// Internal Billing Client. It holds the connection to the native billing sdk
-class LinkFiveBillingClient {
+class LinkFiveBillingClient extends LinkFiveBillingClientInterface {
   /// load the products from the native billing sdk
   Future<List<ProductDetails>?> getPlatformSubscriptions(
       LinkFiveResponseData linkFiveResponse) async {

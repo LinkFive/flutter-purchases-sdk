@@ -8,7 +8,11 @@ import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:linkfive_purchases/client/linkfive_billing_client.dart';
+import 'package:linkfive_purchases/client/linkfive_billing_client_interface.dart';
+import 'package:linkfive_purchases/client/linkfive_billing_client_test.dart';
 import 'package:linkfive_purchases/client/linkfive_client.dart';
+import 'package:linkfive_purchases/client/linkfive_client_interface.dart';
+import 'package:linkfive_purchases/client/linkfive_client_test.dart';
 import 'package:linkfive_purchases/default/default_purchase_handler.dart';
 import 'package:linkfive_purchases/extensions/initialize_extension.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
@@ -26,14 +30,27 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   LinkFivePurchasesMain._()
       : this.inAppPurchaseInstance = InAppPurchase.instance;
 
+  ///
+  /// TEST CONSTRUCTOR. Please do not use.
+  ///
   @visibleForTesting
-  LinkFivePurchasesMain.testing({required this.inAppPurchaseInstance});
+  LinkFivePurchasesMain.testing(
+      {required this.inAppPurchaseInstance,
+      LinkFiveClientInterface? linkFiveClient,
+      LinkFiveBillingClientInterface? linkFiveBillingClient}) {
+    // switching linkFiveClient if exists
+    if (linkFiveClient != null) {
+      this._client = linkFiveClient;
+    }
+    if (linkFiveBillingClient != null) {
+      this._billingClient = linkFiveBillingClient;
+    }
+  }
 
   static LinkFivePurchasesMain _instance = LinkFivePurchasesMain._();
 
   factory LinkFivePurchasesMain() => _instance;
 
-  ///
   /// InAppPurchase instance
   ///
   /// This will be mocked for testing
@@ -50,12 +67,12 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   /// LinkFive HTTP Client
   ///
   /// Used for all internal LinkFive Requests
-  LinkFiveClient _client = LinkFiveClient();
+  LinkFiveClientInterface _client = LinkFiveClient();
 
   /// Billing Client to Store
   ///
   /// Used for all interactions with the native billing client
-  LinkFiveBillingClient _billingClient = LinkFiveBillingClient();
+  LinkFiveBillingClientInterface _billingClient = LinkFiveBillingClient();
 
   /// Internal memory Storage for all products and responses
   LinkFiveStore _store = LinkFiveStore();
@@ -84,10 +101,20 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
   ///
   final Completer<bool> isInitialized = Completer();
 
+  /// Testing Getter
+  @visibleForTesting
+  bool get isTestClient => _client is LinkFiveClientTest;
+
+  /// Testing Getter
+  @visibleForTesting
+  bool get isTestBillingClient => _billingClient is LinkFiveBillingClientTest;
+
   //#endregion Members
 
   /// Initialize the LinkFive client with .init(...)
+  ///
   /// This will check all active Subscriptions
+  ///
   /// [apiKey] get your API Key in the API section of LinkFive
   /// [logLevel] default is DEBUG. Possible values are TRACE, DEBUG, INFO, WARN, ERROR
   /// [env] default is Production. Sets the LinkFive Environment.
@@ -113,6 +140,18 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler
     // Init the App Data Store
     // this also includes to load data from shared Preferences
     await appDataStore.init(apiKey);
+
+    if (appDataStore.isTestKey) {
+      // The Test key is used to test the basic linkfive features.
+      LinkFiveLogger.w("--------------------LinkFive-test--------------------");
+      LinkFiveLogger.w(
+          "TEST KEY DETECTED. Please use this only for TESTING and switch to a real API key. Go to https://www.linkfive.io and register");
+      LinkFiveLogger.w("Thank you!");
+      _client = LinkFiveClientTest();
+      _billingClient = LinkFiveBillingClientTest();
+      LinkFiveLogger.w("Test Client initialized");
+      LinkFiveLogger.w("--------------------LinkFive-test--------------------");
+    }
 
     // init the client http client. sets the url etc.
     _client.init(env, appDataStore);

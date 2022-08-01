@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:linkfive_purchases/client/linkfive_client_interface.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
 import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
@@ -13,7 +14,7 @@ import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 /// HTTP client to LinkFive
-class LinkFiveClient {
+class LinkFiveClient extends LinkFiveClientInterface {
   final String stagingUrl = "api.staging.linkfive.io";
   final String prodUrl = "api.linkfive.io";
 
