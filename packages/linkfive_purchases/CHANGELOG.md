@@ -1,3 +1,7 @@
+## 2.1.3
+* Update dependencies
+* This will also fix the restore-bug on Android
+
 ## 2.1.2
 * Make plugin compatible with pre Flutter 3.0
 
