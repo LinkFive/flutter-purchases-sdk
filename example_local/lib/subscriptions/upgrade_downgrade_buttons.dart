@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
@@ -18,7 +17,7 @@ class UpgradeDowngradeButtons extends StatelessWidget {
         child: Text(
           "to ${linkFiveProductDetails.productDetails.id}",
           style:
-              Theme.of(context).textTheme.caption?.apply(color: Colors.white),
+              Theme.of(context).textTheme.bodySmall?.apply(color: Colors.white),
         ));
   }
 
