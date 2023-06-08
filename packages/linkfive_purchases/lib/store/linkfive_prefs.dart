@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LinkFivePrefs {
   LinkFivePrefs._();
 
-  static LinkFivePrefs _instance = LinkFivePrefs._();
+  static final LinkFivePrefs _instance = LinkFivePrefs._();
 
   factory LinkFivePrefs() => _instance;
 
@@ -16,7 +16,7 @@ class LinkFivePrefs {
   late SharedPreferences _prefs;
 
   init() async {
-    _prefs = await SharedPreferences.getInstance();
+      _prefs = await SharedPreferences.getInstance();
   }
 
   /// LinkFive is initialized if we have a LinkFive UUID

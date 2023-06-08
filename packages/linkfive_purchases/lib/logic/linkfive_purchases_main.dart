@@ -39,14 +39,14 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler implements CallbackIn
       LinkFiveBillingClientInterface? linkFiveBillingClient}) {
     // switching linkFiveClient if exists
     if (linkFiveClient != null) {
-      this._client = linkFiveClient;
+      _client = linkFiveClient;
     }
     if (linkFiveBillingClient != null) {
-      this._billingClient = linkFiveBillingClient;
+      _billingClient = linkFiveBillingClient;
     }
   }
 
-  static LinkFivePurchasesMain _instance = LinkFivePurchasesMain._();
+  static final LinkFivePurchasesMain _instance = LinkFivePurchasesMain._();
 
   factory LinkFivePurchasesMain() => _instance;
 
