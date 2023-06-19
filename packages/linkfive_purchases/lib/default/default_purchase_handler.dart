@@ -28,13 +28,13 @@ class DefaultPurchaseHandler implements PurchaseStateStreamInterface {
   DefaultPurchaseHandler(
       {this.initialIsPurchaseInProgress = false,
       this.initialPurchaseState = PurchaseState.NOT_PURCHASED}) {
-    this._isPendingPurchase = this.initialIsPurchaseInProgress;
-    this._purchaseState = this.initialPurchaseState;
+    _isPendingPurchase = initialIsPurchaseInProgress;
+    _purchaseState = initialPurchaseState;
   }
 
   //#region Pending Purchase
   /// StreamController list of Pending Purchase Streams
-  List<StreamController<bool>> _streamControllerPendingPurchase = [];
+  final List<StreamController<bool>> _streamControllerPendingPurchase = [];
 
   /// Sets the value and updates all Stream listeners
   ///
@@ -46,18 +46,18 @@ class DefaultPurchaseHandler implements PurchaseStateStreamInterface {
     // Clean streams
     _cleanStreams(_streamControllerPendingPurchase);
     // send data to stream
-    _streamControllerPendingPurchase.forEach((element) {
+    for (var element in _streamControllerPendingPurchase) {
       if (element.hasListener) {
         element.add(_isPendingPurchase);
       }
-    });
+    }
   }
 
   //#endregion
 
   //#region PurchaseState
   /// StreamController list of Pending Purchase Streams
-  List<StreamController<PurchaseState>> _streamControllerPurchaseState = [];
+  final List<StreamController<PurchaseState>> _streamControllerPurchaseState = [];
 
   /// Sets the value and updates all Stream listeners
   ///
@@ -70,11 +70,11 @@ class DefaultPurchaseHandler implements PurchaseStateStreamInterface {
     _cleanStreams(_streamControllerPurchaseState);
 
     // send data to stream
-    _streamControllerPurchaseState.forEach((element) {
+    for (var element in _streamControllerPurchaseState) {
       if (element.hasListener) {
         element.add(_purchaseState);
       }
-    });
+    }
   }
 
   //#endregion
@@ -88,10 +88,10 @@ class DefaultPurchaseHandler implements PurchaseStateStreamInterface {
   /// NOT_PURCHASED
   ///
   updateStateFromActivePlanList(List<LinkFivePlan> linkFivePlanList) {
-    if (linkFivePlanList.length > 0) {
-      this.purchaseState = PurchaseState.PURCHASED;
+    if (linkFivePlanList.isNotEmpty) {
+      purchaseState = PurchaseState.PURCHASED;
     } else {
-      this.purchaseState = PurchaseState.NOT_PURCHASED;
+      purchaseState = PurchaseState.NOT_PURCHASED;
     }
   }
 
@@ -116,7 +116,7 @@ class DefaultPurchaseHandler implements PurchaseStateStreamInterface {
         // if the subscription loaded successful, make sure to not call
         // it again to avoid looping behaviour
         if (success) {
-          this._loadedSubscriptionsOnce = true;
+          _loadedSubscriptionsOnce = true;
         }
       }
     }
@@ -143,7 +143,7 @@ class DefaultPurchaseHandler implements PurchaseStateStreamInterface {
   /// This will be overwritten by LinkFivePurchasesMain
   @override
   Future<bool> loadSubscriptions() async {
-    print("You should load your store subscriptions now");
+    LinkFiveLogger.d("You should load your store subscriptions now");
     return false;
   }
 }

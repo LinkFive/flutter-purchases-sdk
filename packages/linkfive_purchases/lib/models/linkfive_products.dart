@@ -1,17 +1,16 @@
-import 'package:flutter/material.dart';
+
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
-import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
-import 'package:in_app_purchases_intl/in_app_purchases_intl.dart';
-import 'package:linkfive_purchases/util/subscription_duration_convert.dart';
+import 'package:linkfive_purchases/models/pricing_phase.dart';
 
 /// LinkFive Products to offer.
 ///
 /// Basically a subscription you want to offer to your user.
 ///
 /// it includes:
-/// [linkFiveSkuData] includes platform specific information
+/// [productDetailList] includes platform specific information
 /// [attributes] which are comming from the server
 /// [error] if something has an error.
 class LinkFiveProducts {
@@ -29,9 +28,9 @@ class LinkFiveProducts {
   /// error string
   final String? error;
 
-  LinkFiveProducts(
-      {this.productDetailList = const [], this.attributes, this.error});
+  LinkFiveProducts({this.productDetailList = const [], this.attributes, this.error});
 
+/* Deprecated due to change of Google subscriptions
   /// Only use this function in combination with your Paywall UI. This is a helper function
   ///
   /// Function to get the subscription Data automatically
@@ -39,8 +38,7 @@ class LinkFiveProducts {
   /// [calculateDeal] is default true. This will calculate the deal automatically
   ///
   /// The reference is always the subscription with the lowest duration
-  List<SubscriptionData> paywallUIHelperData(
-      {required BuildContext context, bool calculateDeal = true}) {
+  List<SubscriptionData> paywallUIHelperData({required BuildContext context, bool calculateDeal = true}) {
     // if no or just 1 subscription is shown
     // disable the deal
     if (productDetailList.length <= 1) {
@@ -60,8 +58,7 @@ class LinkFiveProducts {
 
     // Map through everything and calculate the deal if set to true
     return productDetailList.map((linkFiveProductDetails) {
-      final durationStrings =
-          linkFiveProductDetails.paywallUIHelperDurationData(context);
+      final durationStrings = linkFiveProductDetails.paywallUIHelperDurationData(context);
 
       /// Sub Data with Strings
       var subData = SubscriptionData(
@@ -71,18 +68,16 @@ class LinkFiveProducts {
           price: linkFiveProductDetails.productDetails.price,
           rawPrice: linkFiveProductDetails.productDetails.rawPrice,
           currencySymbol: linkFiveProductDetails.productDetails.currencySymbol,
-          duration: SubscriptionDurationConvert.getSubscriptionDurationAsText(
-              linkFiveProductDetails.duration),
+          duration: SubscriptionDurationConvert.getSubscriptionDurationAsText(linkFiveProductDetails.duration),
           monthText: PaywallL10NHelper.of(context).month,
           index: index);
       // calculate the deal
       if (lowestDurationProduct != null) {
         if (lowestDurationProduct != linkFiveProductDetails) {
-          int dealPercent = ((1 -
-                      lowestDurationProduct.productDetails.rawPrice /
-                          linkFiveProductDetails.productDetails.rawPrice) *
-                  100)
-              .round();
+          int dealPercent =
+              ((1 - lowestDurationProduct.productDetails.rawPrice / linkFiveProductDetails.productDetails.rawPrice) *
+                      100)
+                  .round();
           subData.dealPercentage = dealPercent;
         }
       }
@@ -90,7 +85,7 @@ class LinkFiveProducts {
       index += 1;
       return subData;
     }).toList();
-  }
+  }*/
 }
 
 /// LinkFive class with platform specific information
@@ -105,41 +100,50 @@ class LinkFiveProducts {
 ///   or
 ///   AppStoreProductDetails
 class LinkFiveProductDetails {
+
+  /// Product Details
   final ProductDetails productDetails;
 
-  LinkFiveProductDetails(this.productDetails);
+  /// Base64 encoded attributes you can send with your subscription
+  final String? attributes;
 
-  /// Duration of the product
+  /// Converts the new Google Play Model to a known list of pricing phases
   ///
-  /// Possible values:
-  ///
-  /// enum SubscriptionDuration {
-  ///   P1W,
-  ///   P1M,
-  ///   P3M,
-  ///   P6M,
-  ///   P1Y,
-  /// }
-  SubscriptionDuration get duration {
+  /// on apple it does the same.
+  List<PricingPhase> get pricingPhases {
     if (productDetails is GooglePlayProductDetails) {
-      GooglePlayProductDetails googleDetails =
-          productDetails as GooglePlayProductDetails;
-      return SubscriptionDurationConvert.fromGoogle(
-          googleDetails.skuDetails.subscriptionPeriod);
+      return [for (final phaseWrapper in googlePlayPricingPhases) PricingPhase.fromGooglePlay(phaseWrapper)];
     }
     if (productDetails is AppStoreProductDetails) {
-      AppStoreProductDetails iosDetails =
-          productDetails as AppStoreProductDetails;
-      return SubscriptionDurationConvert.fromAppStore(
-          iosDetails.skProduct.subscriptionPeriod);
+      return [PricingPhase.fromAppStore(appStoreProductDetails.skProduct)];
     }
-    throw UnsupportedError("Currently there is only android and iOS supported");
+    throw UnsupportedError("Store not supported");
   }
 
-  /// Helper to get the Strings from the intl package
-  ///
-  /// Use it only with a valid context.
-  DurationStrings paywallUIHelperDurationData(BuildContext context) {
-    return duration.toString().split(".").last.toDurationStrings(context);
+  LinkFiveProductDetails(this.productDetails, {this.attributes});
+
+  /// Make sure to check for the platform before calling this getter
+  GooglePlayProductDetails get googlePlayProductDetails {
+    assert(productDetails is GooglePlayProductDetails);
+    return productDetails as GooglePlayProductDetails;
+  }
+
+  /// Make sure to check for the platform before calling this getter
+  List<PricingPhaseWrapper> get googlePlayPricingPhases {
+    if (productDetails is! GooglePlayProductDetails) {}
+    final subIndex = (productDetails as GooglePlayProductDetails).subscriptionIndex;
+    if (subIndex == null) {
+      return [];
+    }
+    return (productDetails as GooglePlayProductDetails)
+        .productDetails
+        .subscriptionOfferDetails![subIndex]
+        .pricingPhases;
+  }
+
+  /// Make sure to check for the platform before calling this getter
+  AppStoreProductDetails get appStoreProductDetails {
+    assert(productDetails is AppStoreProductDetails);
+    return productDetails as AppStoreProductDetails;
   }
 }

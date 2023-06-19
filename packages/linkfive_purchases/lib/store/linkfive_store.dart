@@ -17,10 +17,8 @@ class LinkFiveStore {
   /// These are the latest valid and active Products we got from LinkFive
   LinkFiveActiveProducts? latestLinkFiveActiveProducts;
 
-  static List<StreamController<LinkFiveProducts>> _streamControllerProducts =
-      [];
-  static List<StreamController<LinkFiveActiveProducts>>
-      _streamControllerActiveProducts = [];
+  static final List<StreamController<LinkFiveProducts>> _streamControllerProducts = [];
+  static final List<StreamController<LinkFiveActiveProducts>> _streamControllerActiveProducts = [];
 
   /// Creates a new Stream and adds it to the stream controller
   ///
@@ -58,36 +56,33 @@ class LinkFiveStore {
   ///
   /// Whenever new subscriptions are loaded, we save it in a [LinkFiveSubscriptionData]
   ///
-  LinkFiveProducts onNewPlatformSubscriptions(
-      List<ProductDetails> productDetailList) {
+  LinkFiveProducts onNewPlatformSubscriptions(List<ProductDetails> productDetailList) {
     // store the details in the latest property
     latestProductDetailList = productDetailList;
 
     // Create the LinkFive Products
     final linkFiveProducts = LinkFiveProducts(
-        productDetailList:
-            productDetailList.map((pd) => LinkFiveProductDetails(pd)).toList(),
+        productDetailList: productDetailList.map((pd) => LinkFiveProductDetails(pd)).toList(),
         attributes: latestLinkFiveResponse?.attributes,
         error: null);
 
     // store it in the latestLinkFiveProducts
-    this.latestLinkFiveProducts = linkFiveProducts;
+    latestLinkFiveProducts = linkFiveProducts;
 
     _cleanAllStreams();
 
     LinkFiveLogger.d(
         "push sub data with ids ${latestLinkFiveProducts?.productDetailList.map((e) => e.productDetails.id)}");
 
-    _streamControllerProducts.forEach((streamController) {
+    for (var streamController in _streamControllerProducts) {
       streamController.add(linkFiveProducts);
-    });
+    }
     return linkFiveProducts;
   }
 
   /// This method is the first entry point to notify all listeners that there
   /// are new plans available.
-  LinkFiveActiveProducts onNewLinkFiveNewActivePlanList(
-      List<LinkFivePlan> planList) {
+  LinkFiveActiveProducts onNewLinkFiveNewActivePlanList(List<LinkFivePlan> planList) {
     // Wrap it in a ActiveProducts Object
     final activeProducts = LinkFiveActiveProducts(planList: planList);
 
@@ -96,10 +91,8 @@ class LinkFiveStore {
     _cleanAllStreams();
 
     // notify observer
-    for (StreamController<LinkFiveActiveProducts> streamController
-        in _streamControllerActiveProducts) {
-      LinkFiveLogger.d(
-          "push active sub data with size ${latestLinkFiveActiveProducts?.planList.length ?? 0}");
+    for (StreamController<LinkFiveActiveProducts> streamController in _streamControllerActiveProducts) {
+      LinkFiveLogger.d("push active sub data with size ${latestLinkFiveActiveProducts?.planList.length ?? 0}");
       streamController.add(activeProducts);
     }
     return activeProducts;

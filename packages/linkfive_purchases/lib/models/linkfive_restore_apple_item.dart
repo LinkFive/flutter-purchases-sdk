@@ -9,8 +9,8 @@ class LinkFiveRestoreAppleItem {
 
   Map<String, dynamic> get toMap {
     return {
-      "transactionId": this.transactionId,
-      "originalTransactionId": this.originalTransactionId ?? this.transactionId
+      "transactionId": transactionId,
+      "originalTransactionId": originalTransactionId ?? transactionId
     };
   }
 

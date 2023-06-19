@@ -8,7 +8,7 @@ import 'package:linkfive_purchases/store/linkfive_prefs.dart';
 class LinkFiveUserManagement {
   LinkFiveUserManagement._();
 
-  static LinkFiveUserManagement _instance = LinkFiveUserManagement._();
+  static final LinkFiveUserManagement _instance = LinkFiveUserManagement._();
 
   factory LinkFiveUserManagement() => _instance;
 

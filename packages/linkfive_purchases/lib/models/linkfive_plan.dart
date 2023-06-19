@@ -1,4 +1,4 @@
-import 'package:linkfive_purchases/linkfive_purchases.dart';
+import 'package:linkfive_purchases/models/period.dart';
 
 /// Verified Receipt from LinkFive including all data
 class LinkFivePlan {
@@ -62,17 +62,6 @@ class LinkFivePlan {
     return 'LinkFivePlan:\n $json}';
   }
 
-  /// Duration Period of the subscription
-  ///
-  /// Possible values:
-  ///
-  /// enum SubscriptionDuration {
-  ///   P1W,
-  ///   P1M,
-  ///   P3M,
-  ///   P6M,
-  ///   P1Y,
-  /// }
-  SubscriptionDuration? get planDuration =>
-      SubscriptionDurationConvert.fromLinkFive(duration);
+  /// Period of the subscription
+  Period get planDuration => Period.fromLinkFive(duration!);
 }

@@ -12,7 +12,7 @@ class LinkFiveAppDataStore {
   String? get userId => _userId;
 
   set userId(value) {
-    this._userId = value;
+    _userId = value;
     LinkFivePrefs().userId = value;
   }
 

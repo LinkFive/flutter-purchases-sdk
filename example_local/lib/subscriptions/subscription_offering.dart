@@ -3,12 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
 class SubscriptionOfferingStream extends StatelessWidget {
-  buildSubscriptionButtons(LinkFiveProducts linkFiveProducts) {
-    return linkFiveProducts.productDetailList
-        .map((data) => SubscriptionButton(linkFiveProductDetails: data))
-        .toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -19,14 +13,19 @@ class SubscriptionOfferingStream extends StatelessWidget {
             if (snapshot.hasData) {
               var subscriptionData = snapshot.data;
               if (subscriptionData != null) {
-                return Column(
-                  children: [
-                    Row(
-                      children: buildSubscriptionButtons(subscriptionData),
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    ),
-
-                  ],
+                return ListView.separated(
+                  primary: false,
+                  shrinkWrap: true,
+                  itemCount: subscriptionData.productDetailList.length,
+                  itemBuilder: (context, index) {
+                    final productDetails = subscriptionData.productDetailList[index];
+                    return SubscriptionButton(
+                      linkFiveProductDetails: productDetails,
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return SizedBox(height: 16);
+                  },
                 );
               }
             }

@@ -16,9 +16,9 @@ class LinkFiveRestoreGoogleItem {
 
   Map<String, dynamic> get toMap {
     return {
-      "sku": this.sku,
-      "purchaseId": this.purchaseId,
-      "purchaseToken": this.purchaseToken
+      "sku": sku,
+      "purchaseId": purchaseId,
+      "purchaseToken": purchaseToken
     };
   }
 

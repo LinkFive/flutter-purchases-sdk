@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
-extension LinkFiveInitilizeExtension on LinkFivePurchasesMain {
+extension LinkFiveInitilizeExtension on LinkFivePurchasesImpl {
   ///
   /// For some cases, we want to make sure that LinkFive is initialized
   ///

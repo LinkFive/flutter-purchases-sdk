@@ -9,8 +9,8 @@ import 'package:linkfive_purchases/linkfive_purchases.dart';
 /// Internal Billing Client. It holds the connection to the native billing sdk
 class LinkFiveBillingClientTest extends LinkFiveBillingClientInterface {
   /// TEST MODE
-  Future<List<ProductDetails>?> getPlatformSubscriptions(
-      LinkFiveResponseData linkFiveResponse) async {
+  @override
+  Future<List<ProductDetails>?> getPlatformSubscriptions(LinkFiveResponseData linkFiveResponse) async {
     return _loadProducts();
   }
 
@@ -18,26 +18,17 @@ class LinkFiveBillingClientTest extends LinkFiveBillingClientInterface {
   List<ProductDetails> _loadProducts() {
     LinkFiveLogger.d("TEST: load products from store");
     if (Platform.isAndroid) {
-      return [1, 2]
-          .map((number) => GooglePlayProductDetails.fromSkuDetails(
+      final productList = [1, 2]
+          .map((number) =>
               // ignore: invalid_use_of_visible_for_testing_member
-              SkuDetailsWrapper(
+              GooglePlayProductDetails.fromProductDetails(ProductDetailsWrapper(
                   description: "Test Descriptiption $number",
-                  freeTrialPeriod: "P7D",
-                  introductoryPrice: "$number.99",
-                  introductoryPriceCycles: 1,
-                  introductoryPricePeriod: "",
-                  price: "$number.99",
-                  priceAmountMicros: number * 1000000 + 990000,
-                  priceCurrencyCode: "EUR",
-                  priceCurrencySymbol: "€",
-                  sku: "test_$number",
-                  subscriptionPeriod: number == 1 ? "P1M" : "P1Y",
-                  title: "Test title $number",
-                  type: SkuType.subs,
-                  originalPrice: "$number.99",
-                  originalPriceAmountMicros: 1)))
+                  name: "Test title $number",
+                  productId: "test_$number",
+                  productType: ProductType.subs,
+                  title: "Test title $number")))
           .toList(growable: false);
+      return [for (final list in productList) ...list];
     } else if (Platform.isIOS) {
       return [1, 2]
           .map((number) => AppStoreProductDetails.fromSKProduct(
@@ -45,16 +36,11 @@ class LinkFiveBillingClientTest extends LinkFiveBillingClientInterface {
                     productIdentifier: "test_$number",
                     localizedTitle: "Test title $number",
                     localizedDescription: "Test Descriptiption $number",
-                    priceLocale: SKPriceLocaleWrapper(
-                        currencyCode: "EUR",
-                        currencySymbol: "€",
-                        countryCode: "DE"),
+                    priceLocale: SKPriceLocaleWrapper(currencyCode: "EUR", currencySymbol: "€", countryCode: "DE"),
                     price: "$number.99",
                     subscriptionPeriod: SKProductSubscriptionPeriodWrapper(
                         numberOfUnits: 1,
-                        unit: number == 1
-                            ? SKSubscriptionPeriodUnit.month
-                            : SKSubscriptionPeriodUnit.year)),
+                        unit: number == 1 ? SKSubscriptionPeriodUnit.month : SKSubscriptionPeriodUnit.year)),
               ))
           .toList(growable: false);
     }

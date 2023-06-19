@@ -9,43 +9,51 @@ import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 /// HTTP TEST client
 class LinkFiveClientTest extends LinkFiveClientInterface {
   /// Does Nothing
+  @override
   init(LinkFiveEnvironment env, LinkFiveAppDataStore appDataStore) {}
 
   /// TEST MODE
+  @override
   Future<LinkFiveResponseData> fetchLinkFiveResponse() async {
     return _testData;
   }
 
   /// TEST MODE
+  @override
   Future<List<LinkFivePlan>> purchaseIos(AppStoreProductDetails productDetails,
       AppStorePurchaseDetails purchaseDetails) async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
+  @override
   Future<List<LinkFivePlan>> purchaseGooglePlay(
       GooglePlayPurchaseDetails purchaseDetails) async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
+  @override
   Future<List<LinkFivePlan>> fetchUserPlanListFromLinkFive() async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
+  @override
   Future<List<LinkFivePlan>> restoreIos(
       List<LinkFiveRestoreAppleItem> restoreList) async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
+  @override
   Future<List<LinkFivePlan>> restoreGoogle(
       List<LinkFiveRestoreGoogleItem> restoreList) async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
+  @override
   Future<List<LinkFivePlan>> changeUserId(String? userId) async {
     return _parsePlanListResponse();
   }
@@ -59,7 +67,7 @@ class LinkFiveClientTest extends LinkFiveClientInterface {
           "planId": "linkfive-test-plan-id",
           "rootId": "linkfive-test-root-id",
           "purchaseDate": DateTime.now().toIso8601String(),
-          "endDate": DateTime.now().add(Duration(days: 90)).toIso8601String(),
+          "endDate": DateTime.now().add(const Duration(days: 90)).toIso8601String(),
           "storeType": "LINKFIVE_TEST_STORE",
           "duration": "P3M"
         }

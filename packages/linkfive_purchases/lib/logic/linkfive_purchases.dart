@@ -31,7 +31,7 @@ class LinkFivePurchases {
   /// [LinkFiveLogLevel] to see or hide internal logging
   static Future<LinkFiveActiveProducts> init(String apiKey,
       {LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN}) {
-    return LinkFivePurchasesMain()
+    return LinkFivePurchasesImpl()
         .init(apiKey, logLevel: logLevel, env: LinkFiveEnvironment.PRODUCTION);
   }
 
@@ -50,14 +50,14 @@ class LinkFivePurchases {
   ///
   /// @return [LinkFiveProducts] or null if no subscriptions found
   static Future<LinkFiveProducts?> fetchProducts() {
-    return LinkFivePurchasesMain().fetchProducts();
+    return LinkFivePurchasesImpl().fetchProducts();
   }
 
   /// This will restore the subscriptions a user previously purchased.
   ///
   /// All data will be refreshed and notified and delivered through the product stream
   static Future<bool> restore() {
-    return LinkFivePurchasesMain().restore();
+    return LinkFivePurchasesImpl().restore();
   }
 
   /// This will reload all active Plans for the current user
@@ -68,7 +68,7 @@ class LinkFivePurchases {
   /// you can manually reload the active Plans for the current user
   ///
   static Future<LinkFiveActiveProducts> reloadActivePlans() {
-    return LinkFivePurchasesMain().reloadActivePlans();
+    return LinkFivePurchasesImpl().reloadActivePlans();
   }
 
   /// This will trigger the purchase flow for the user.
@@ -78,7 +78,7 @@ class LinkFivePurchases {
   /// @return Future<bool>: if the "purchase screen" is visible.
   /// Please note: This is not a successful purchase.
   static Future<bool> purchase(ProductDetails productDetails) async {
-    return LinkFivePurchasesMain().purchase(productDetails);
+    return LinkFivePurchasesImpl().purchase(productDetails);
   }
 
   /// Handles the Switch Plan functionality.
@@ -95,7 +95,7 @@ class LinkFivePurchases {
   static Future<bool> switchPlan(
       LinkFivePlan oldPurchasePlan, LinkFiveProductDetails productDetails,
       {ProrationMode? prorationMode}) {
-    return LinkFivePurchasesMain().switchPlan(oldPurchasePlan, productDetails,
+    return LinkFivePurchasesImpl().switchPlan(oldPurchasePlan, productDetails,
         prorationMode: prorationMode);
   }
 
@@ -116,7 +116,7 @@ class LinkFivePurchases {
   ///     currencySymbol = ''
   ///     });
   static Stream<LinkFiveProducts> get products =>
-      LinkFivePurchasesMain().products;
+      LinkFivePurchasesImpl().products;
 
   /// If the user has an active verified purchase, the stream will contain all necessary information
   /// An active product is a verified active subscription the user purchased
@@ -126,14 +126,14 @@ class LinkFivePurchases {
   /// [LinkFiveActiveProducts.planList] is a List of [LinkFivePlan] verified plans
   ///
   static Stream<LinkFiveActiveProducts> get activeProducts =>
-      LinkFivePurchasesMain().activeProducts;
+      LinkFivePurchasesImpl().activeProducts;
 
   ///
   /// Set the UTM source of a user
   /// You can filter this value in your playout
   ///
   static setUTMSource(String? utmSource) {
-    LinkFivePurchasesMain().setUTMSource(utmSource);
+    LinkFivePurchasesImpl().setUTMSource(utmSource);
   }
 
   ///
@@ -142,7 +142,7 @@ class LinkFivePurchases {
   /// You can filter this value in your subscription playout
   ///
   static setEnvironment(String? environment) {
-    LinkFivePurchasesMain().setEnvironment(environment);
+    LinkFivePurchasesImpl().setEnvironment(environment);
   }
 
   ///
@@ -153,7 +153,7 @@ class LinkFivePurchases {
   /// You can also filter this value in your subscription Playout
   ///
   static Future<LinkFiveActiveProducts> setUserId(String? userId) {
-    return LinkFivePurchasesMain().setUserId(userId);
+    return LinkFivePurchasesImpl().setUserId(userId);
   }
 
   ///
@@ -161,5 +161,5 @@ class LinkFivePurchases {
   ///
   /// You can just add the callbackInterface as the UI Paywall callback interface
   ///
-  static LinkFivePurchasesMain get callbackInterface => LinkFivePurchasesMain();
+  static LinkFivePurchasesImpl get callbackInterface => LinkFivePurchasesImpl();
 }

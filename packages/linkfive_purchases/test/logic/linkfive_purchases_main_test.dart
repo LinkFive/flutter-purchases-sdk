@@ -26,7 +26,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
 
     // mock the purchaseStream
-    final purchaseStream = Stream<List<PurchaseDetails>>.empty();
+    const purchaseStream = Stream<List<PurchaseDetails>>.empty();
 
     when(inAppPurchaseInstance.purchaseStream)
         .thenAnswer((_) => purchaseStream);
@@ -38,7 +38,7 @@ void main() {
         .thenAnswer((realInvocation) async => null);
 
     test('Test FetchProducts to await until initialized', () async {
-      final linkFivePurchases = LinkFivePurchasesMain.testing(
+      final linkFivePurchases = LinkFivePurchasesImpl.testing(
           inAppPurchaseInstance: inAppPurchaseInstance,
           linkFiveClient: mockLinkFiveClient,
           linkFiveBillingClient: mockLinkFiveBillingClient);
@@ -64,7 +64,7 @@ void main() {
     });
 
     test('Test API key is using test client', () async {
-      final linkFivePurchases = LinkFivePurchasesMain.testing(
+      final linkFivePurchases = LinkFivePurchasesImpl.testing(
           inAppPurchaseInstance: inAppPurchaseInstance);
       await linkFivePurchases.init(LinkFiveAppDataStore.TEST_KEY);
       expect(linkFivePurchases.isTestClient, true);
@@ -72,7 +72,7 @@ void main() {
     });
 
     test('Test API key is NOT using test client', () async {
-      final linkFivePurchases = LinkFivePurchasesMain.testing(
+      final linkFivePurchases = LinkFivePurchasesImpl.testing(
           inAppPurchaseInstance: inAppPurchaseInstance);
       await linkFivePurchases.init("abcdef");
       expect(linkFivePurchases.isTestClient, false);

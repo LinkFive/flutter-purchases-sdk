@@ -14,7 +14,7 @@ import 'package:linkfive_purchases/client/linkfive_client.dart';
 import 'package:linkfive_purchases/client/linkfive_client_interface.dart';
 import 'package:linkfive_purchases/client/linkfive_client_test.dart';
 import 'package:linkfive_purchases/default/default_purchase_handler.dart';
-import 'package:linkfive_purchases/extensions/initialize_extension.dart';
+import 'package:linkfive_purchases/logic/extensions/initialize_extension.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
 import 'package:linkfive_purchases/logic/upgrade_downgrade_purchases.dart';
@@ -25,18 +25,22 @@ import 'package:linkfive_purchases/store/linkfive_prefs.dart';
 import 'package:linkfive_purchases/store/linkfive_store.dart';
 import 'package:linkfive_purchases/util/app_store_product_details_wrapper.dart';
 
-class LinkFivePurchasesMain extends DefaultPurchaseHandler implements CallbackInterface {
+class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackInterface {
   //#region Singleton
-  LinkFivePurchasesMain._() : this.inAppPurchaseInstance = InAppPurchase.instance;
+  LinkFivePurchasesImpl._() : inAppPurchaseInstance = InAppPurchase.instance;
+
+  static final LinkFivePurchasesImpl _instance = LinkFivePurchasesImpl._();
+
+  factory LinkFivePurchasesImpl() => _instance;
 
   ///
   /// TEST CONSTRUCTOR. Please do not use.
   ///
   @visibleForTesting
-  LinkFivePurchasesMain.testing(
+  LinkFivePurchasesImpl.testing(
       {required this.inAppPurchaseInstance,
-      LinkFiveClientInterface? linkFiveClient,
-      LinkFiveBillingClientInterface? linkFiveBillingClient}) {
+        LinkFiveClientInterface? linkFiveClient,
+        LinkFiveBillingClientInterface? linkFiveBillingClient}) {
     // switching linkFiveClient if exists
     if (linkFiveClient != null) {
       _client = linkFiveClient;
@@ -46,14 +50,11 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler implements CallbackIn
     }
   }
 
-  static final LinkFivePurchasesMain _instance = LinkFivePurchasesMain._();
-
-  factory LinkFivePurchasesMain() => _instance;
-
   /// InAppPurchase instance
   ///
   /// This will be mocked for testing
   ///
+  @visibleForTesting
   final InAppPurchase inAppPurchaseInstance;
 
   //#endregion Singleton
@@ -73,22 +74,28 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler implements CallbackIn
   /// Used for all interactions with the native billing client
   LinkFiveBillingClientInterface _billingClient = LinkFiveBillingClient();
 
+  ///
   /// Internal memory Storage for all products and responses
-  LinkFiveStore _store = LinkFiveStore();
+  ///
+  final LinkFiveStore _store = LinkFiveStore();
 
+  ///
   /// Settings data memory storage
   ///
   /// We store the api key etc only in memory
+  ///
   LinkFiveAppDataStore appDataStore = LinkFiveAppDataStore();
 
   /// All PurchaseDetails as a stream
   StreamSubscription<List<PurchaseDetails>>? _purchaseStream;
 
+  ///
   /// All available Products you can offer for purchase to your users
   ///
   /// @return a Stream of all available products.
   ///   null means that we do not have any data yet
   ///   empty array: we got data but didn't find any subscriptions
+  ///
   Stream<LinkFiveProducts> get products => _store.productsStream;
 
   /// All active Products the user purchased
@@ -139,7 +146,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler implements CallbackIn
     await appDataStore.init(apiKey);
 
     if (appDataStore.isTestKey) {
-      // The Test key is used to test the basic linkfive features.
+      // The Test key is used to test the basic LinkFive features.
       LinkFiveLogger.w("--------------------LinkFive-test--------------------");
       LinkFiveLogger.w(
           "TEST KEY DETECTED. Please use this only for TESTING and switch to a real API key. Go to https://www.linkfive.io and register");
@@ -171,11 +178,13 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler implements CallbackIn
     // }
   }
 
+  ///
   /// Fetches the subscriptions from LinkFive and retrieves the IAP from the platform
   ///
   /// It also submits the ProductDetails to the LinkFive Stream
   ///
   /// @return [LinkFiveSubscriptionData] or null if no subscriptions found
+  ///
   Future<LinkFiveProducts?> fetchProducts() async {
     LinkFiveLogger.d("fetch subscriptions");
     await waitForInit();
@@ -194,29 +203,29 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler implements CallbackIn
   /// If you want to know if the purchase is pending, listen to listenOnPendingPurchase
   ///
   /// @returns true if UI is shown, false otherwise
+  @override
   Future<bool> purchase(dynamic productDetails) async {
     makeSureIsInitialize();
-    ProductDetails? _productDetails;
+    ProductDetails? productDetailsProcessed;
     if (productDetails is ProductDetails) {
-      _productDetails = productDetails;
+      productDetailsProcessed = productDetails;
     }
     if (productDetails is SubscriptionData) {
       if (productDetails.productDetails != null && productDetails.productDetails is ProductDetails) {
-        _productDetails = productDetails.productDetails;
+        productDetailsProcessed = productDetails.productDetails;
       }
     }
-    if (_productDetails == null) {
+    if (productDetailsProcessed == null) {
       LinkFiveLogger.d("No ProductDetails to purchase found");
       return false;
     }
 
-    final purchaseParam = PurchaseParam(productDetails: _productDetails);
+    final purchaseParam = PurchaseParam(productDetails: productDetailsProcessed);
     var showBuySuccess = false;
 
-    // For LinkFive Analytics purposes
     if (Platform.isIOS == true) {
-      LinkFiveLogger.d("Save product details because of ios");
-      _productDetailsToPurchase = AppStoreProductDetailsWrapper().fromProductDetails(_productDetails);
+      // We're saving some product Details whenever the user purchases a product on iOS
+      _productDetailsToPurchase = AppStoreProductDetailsWrapper().fromProductDetails(productDetailsProcessed);
     }
 
     try {
@@ -409,15 +418,15 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler implements CallbackIn
           super.isPendingPurchase = false;
           break;
         case PurchaseStatus.purchased:
-          final _productDetails = _productDetailsToPurchase;
+          final productDetails = _productDetailsToPurchase;
           _productDetailsToPurchase = null;
 
           // handle ios Purchase
-          if (Platform.isIOS && _productDetails != null) {
+          if (Platform.isIOS && productDetails != null) {
             final appstorePurchaseDetails = purchaseDetails as AppStorePurchaseDetails;
 
             // handle the ios purchase request to LinkFive
-            await _handlePurchaseApple(appstorePurchaseDetails, _productDetails);
+            await _handlePurchaseApple(appstorePurchaseDetails, productDetails);
           }
           // Handle google play purchase
           if (purchaseDetails is GooglePlayPurchaseDetails) {
@@ -491,7 +500,7 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler implements CallbackIn
     }
 
     // if the list is > 0 do the LinkFive request
-    if (restoredTransactionList.length > 0) {
+    if (restoredTransactionList.isNotEmpty) {
       return await _client.restoreIos(restoredTransactionList);
     }
     return [];
@@ -510,16 +519,16 @@ class LinkFivePurchasesMain extends DefaultPurchaseHandler implements CallbackIn
     // check each item if it is not null and save the purchaseID
     for (PurchaseDetails pd in purchaseDetailsList) {
       if (pd is GooglePlayPurchaseDetails) {
-        final sku = pd.billingClientPurchase.skus;
+        final products = pd.billingClientPurchase.products;
         final purchaseId = pd.billingClientPurchase.orderId;
         final purchaseToken = pd.billingClientPurchase.purchaseToken;
         restoredList.add(LinkFiveRestoreGoogleItem(
-            sku: sku.isNotEmpty ? sku.first : '', purchaseId: purchaseId, purchaseToken: purchaseToken));
+            sku: products.isNotEmpty ? products.first : '', purchaseId: purchaseId, purchaseToken: purchaseToken));
       }
     }
 
     // if the list is > 0 do the LinkFive request
-    if (restoredList.length > 0) {
+    if (restoredList.isNotEmpty) {
       return await _client.restoreGoogle(restoredList);
     }
     return [];
