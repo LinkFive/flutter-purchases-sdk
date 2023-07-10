@@ -461,7 +461,7 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
   ///
   /// we will send all transactions to LinkFive and connect them to the
   /// current user
-  _handleRestore(List<PurchaseDetails> purchaseDetailsList) async {
+  Future<void> _handleRestore(List<PurchaseDetails> purchaseDetailsList) async {
     List<LinkFivePlan> restoredPlans = [];
 
     // handle each platform separately
@@ -485,7 +485,7 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
     final List<LinkFiveRestoreAppleItem> restoredTransactionList = [];
 
     // check each item if it is not null and save the transactionId
-    for (PurchaseDetails pd in purchaseDetailsList) {
+    for (final PurchaseDetails pd in purchaseDetailsList) {
       final String? transactionId = pd.purchaseID;
       // just add to request if there is an actual transactionId
       if (transactionId != null && transactionId.isNotEmpty) {

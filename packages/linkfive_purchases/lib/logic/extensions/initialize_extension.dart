@@ -30,7 +30,7 @@ extension LinkFiveInitilizeExtension on LinkFivePurchasesImpl {
   ///
   /// This will complete the Initialization process
   ///
-  finishInitialize() {
+  void finishInitialize() {
     isInitialized.complete(true);
   }
 }

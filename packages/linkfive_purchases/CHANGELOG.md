@@ -1,3 +1,13 @@
+## 3.0.0-1.beta
+Breaking Change Update.
+
+* Flutter ^3.10 Update
+* Dart ^3.0.0 Update
+* We now support Google Play Base-Plans
+* We updated the in_app_purchase flutter lib to latest
+* There is a new `Period` class that holds a `PeriodUnit` and `amount` of units.
+* We added the `PricingPhase` to Google Play Store and Apple App Store
+
 ## 2.1.3
 * Update dependencies
 * This will also fix the restore-bug on Android
