@@ -20,15 +20,15 @@ class LinkFiveClientTest extends LinkFiveClientInterface {
 
   /// TEST MODE
   @override
-  Future<List<LinkFivePlan>> purchaseIos(AppStoreProductDetails productDetails,
-      AppStorePurchaseDetails purchaseDetails) async {
+  Future<List<LinkFivePlan>> purchaseIos(
+      AppStoreProductDetails productDetails, AppStorePurchaseDetails purchaseDetails) async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
   @override
   Future<List<LinkFivePlan>> purchaseGooglePlay(
-      GooglePlayPurchaseDetails purchaseDetails) async {
+      GooglePlayPurchaseDetails purchaseDetails, GooglePlayProductDetails productDetails) async {
     return _parsePlanListResponse();
   }
 
@@ -40,15 +40,13 @@ class LinkFiveClientTest extends LinkFiveClientInterface {
 
   /// TEST MODE
   @override
-  Future<List<LinkFivePlan>> restoreIos(
-      List<LinkFiveRestoreAppleItem> restoreList) async {
+  Future<List<LinkFivePlan>> restoreIos(List<LinkFiveRestoreAppleItem> restoreList) async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
   @override
-  Future<List<LinkFivePlan>> restoreGoogle(
-      List<LinkFiveRestoreGoogleItem> restoreList) async {
+  Future<List<LinkFivePlan>> restoreGoogle(List<LinkFiveRestoreGoogleItem> restoreList) async {
     return _parsePlanListResponse();
   }
 
@@ -78,10 +76,6 @@ class LinkFiveClientTest extends LinkFiveClientInterface {
   /// TEST MODE
   LinkFiveResponseData get _testData {
     return LinkFiveResponseData(
-        "TEST",
-        null,
-        [1, 2]
-            .map((e) => LinkFiveResponseDataSubscription("test_$e"))
-            .toList(growable: false));
+        "TEST", null, [1, 2].map((e) => LinkFiveResponseDataSubscription("test_$e")).toList(growable: false));
   }
 }

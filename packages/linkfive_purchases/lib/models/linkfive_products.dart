@@ -130,7 +130,7 @@ class LinkFiveProductDetails {
 
   /// Make sure to check for the platform before calling this getter
   List<PricingPhaseWrapper> get googlePlayPricingPhases {
-    if (productDetails is! GooglePlayProductDetails) {}
+    assert(productDetails is GooglePlayProductDetails);
     final subIndex = (productDetails as GooglePlayProductDetails).subscriptionIndex;
     if (subIndex == null) {
       return [];

@@ -10,6 +10,8 @@ import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
 import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
 import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart';
+import 'package:linkfive_purchases/models/requests/purchase_request_google.dart';
+import 'package:linkfive_purchases/models/requests/purchase_request_pricing_phase.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -121,17 +123,34 @@ class LinkFiveClient extends LinkFiveClientInterface {
   /// after a purchase on Google we call the purchases/google
   /// We don't need to do this on Android
   @override
-  Future<List<LinkFivePlan>> purchaseGooglePlay(GooglePlayPurchaseDetails purchaseDetails) async {
+  Future<List<LinkFivePlan>> purchaseGooglePlay(
+      GooglePlayPurchaseDetails purchaseDetails, GooglePlayProductDetails productDetails) async {
     final uri = _makeUri("api/v1/purchases/user/google");
 
-    final purchaseId = purchaseDetails.billingClientPurchase.orderId;
-    final productId = purchaseDetails.productID;
-    final purchaseToken = purchaseDetails.billingClientPurchase.purchaseToken;
+    String? basePlanId;
+    List<PricingPhase> pricingPhaseList = [];
+    final subscriptionIndex = productDetails.subscriptionIndex;
+    final offerDetailList = productDetails.productDetails.subscriptionOfferDetails;
+    if (subscriptionIndex != null && offerDetailList != null && offerDetailList.isNotEmpty) {
+      final offerDetail = offerDetailList[subscriptionIndex];
+      basePlanId = offerDetail.basePlanId;
+      for (final pricingPhase in offerDetail.pricingPhases) {
+        pricingPhaseList.add(PricingPhase.fromGooglePlay(pricingPhase));
+      }
+    }
 
-    final body = {"sku": productId, "purchaseId": purchaseId, "purchaseToken": purchaseToken};
-    LinkFiveLogger.d("purchase: $body");
+    final purchaseBody = PurchaseRequestGoogle(
+        sku: purchaseDetails.productID,
+        purchaseId: purchaseDetails.billingClientPurchase.orderId,
+        purchaseToken: purchaseDetails.billingClientPurchase.purchaseToken,
+        basePlanId: basePlanId,
+        purchaseRequestPricingPhaseList: [
+          for (final phase in pricingPhaseList) PurchaseRequestPricingPhase.fromPricingPhase(phase)
+        ]);
 
-    final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
+    LinkFiveLogger.d("purchase: $purchaseBody");
+
+    final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
 
     return _parsePlanListResponse(response);
   }

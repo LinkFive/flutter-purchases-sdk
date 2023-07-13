@@ -39,8 +39,8 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
   @visibleForTesting
   LinkFivePurchasesImpl.testing(
       {required this.inAppPurchaseInstance,
-        LinkFiveClientInterface? linkFiveClient,
-        LinkFiveBillingClientInterface? linkFiveBillingClient}) {
+      LinkFiveClientInterface? linkFiveClient,
+      LinkFiveBillingClientInterface? linkFiveBillingClient}) {
     // switching linkFiveClient if exists
     if (linkFiveClient != null) {
       _client = linkFiveClient;
@@ -62,7 +62,7 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
   //#region Members
 
   /// Cache of AppStoreProductDetail
-  AppStoreProductDetails? _productDetailsToPurchase;
+  ProductDetails? _productDetailsToPurchase;
 
   /// LinkFive HTTP Client
   ///
@@ -223,10 +223,9 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
     final purchaseParam = PurchaseParam(productDetails: productDetailsProcessed);
     var showBuySuccess = false;
 
-    if (Platform.isIOS == true) {
-      // We're saving some product Details whenever the user purchases a product on iOS
-      _productDetailsToPurchase = AppStoreProductDetailsWrapper().fromProductDetails(productDetailsProcessed);
-    }
+    // We're saving the product Details whenever the user purchases a product to send it to the server
+    // after a purchase
+    _productDetailsToPurchase = productDetailsProcessed;
 
     try {
       // try to buy it
@@ -426,11 +425,11 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
             final appstorePurchaseDetails = purchaseDetails as AppStorePurchaseDetails;
 
             // handle the ios purchase request to LinkFive
-            await _handlePurchaseApple(appstorePurchaseDetails, productDetails);
+            await _handlePurchaseApple(appstorePurchaseDetails, productDetails as AppStoreProductDetails);
           }
           // Handle google play purchase
           if (purchaseDetails is GooglePlayPurchaseDetails) {
-            await _handlePurchaseGoogle(purchaseDetails);
+            await _handlePurchaseGoogle(purchaseDetails, productDetails as GooglePlayProductDetails);
           }
 
           super.isPendingPurchase = false;
@@ -551,8 +550,8 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
   ///
   /// This will handle the Google Play purchase process and update all listeners
   ///
-  _handlePurchaseGoogle(GooglePlayPurchaseDetails purchaseDetails) async {
-    List<LinkFivePlan> linkFivePlanList = await _client.purchaseGooglePlay(purchaseDetails);
+  _handlePurchaseGoogle(GooglePlayPurchaseDetails purchaseDetails, GooglePlayProductDetails productDetails) async {
+    List<LinkFivePlan> linkFivePlanList = await _client.purchaseGooglePlay(purchaseDetails, productDetails);
 
     // update purchase State
     super.updateStateFromActivePlanList(linkFivePlanList);

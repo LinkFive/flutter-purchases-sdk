@@ -9,6 +9,8 @@ enum Recurrence {
   /// one time charge
   nonRecurring;
 
+  String get jsonValue => name;
+
   @override
   String toString(){
     return name;

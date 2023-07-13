@@ -20,7 +20,7 @@ abstract class LinkFiveClientInterface {
   /// after a purchase on Google we call the purchases/google
   /// We don't need to do this on Android
   Future<List<LinkFivePlan>> purchaseGooglePlay(
-      GooglePlayPurchaseDetails purchaseDetails);
+      GooglePlayPurchaseDetails purchaseDetails, GooglePlayProductDetails productDetails);
 
   /// Fetches the receipts for a user
   ///
