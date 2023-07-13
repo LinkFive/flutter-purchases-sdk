@@ -1,4 +1,4 @@
-## 3.0.0-1.beta
+## 3.0.0-2.beta
 Breaking Change Update.
 
 * Flutter ^3.10 Update
@@ -7,6 +7,7 @@ Breaking Change Update.
 * We updated the in_app_purchase flutter lib to latest
 * There is a new `Period` class that holds a `PeriodUnit` and `amount` of units.
 * We added the `PricingPhase` to Google Play Store and Apple App Store
+* We added a new Recurrence class that holds the subscription recurrence type 
 
 ## 2.1.3
 * Update dependencies
