@@ -1,4 +1,4 @@
-## 3.0.0-2.beta
+## 3.0.0
 Breaking Change Update.
 
 * Flutter ^3.10 Update
@@ -8,6 +8,93 @@ Breaking Change Update.
 * There is a new `Period` class that holds a `PeriodUnit` and `amount` of units.
 * We added the `PricingPhase` to Google Play Store and Apple App Store
 * We added a new Recurrence class that holds the subscription recurrence type 
+
+### ProductDetails, Pricing Phase & Google‘s new Base Plans approach
+Google changed how they handle subscriptions and added Base Plans & PricingPhases to it's new data model. Unfortunately, the in_app_purchase library exposes different models depending on the platform.
+
+We decided to combine the ProductDetails class into a simple to use class called `LinkFiveProductDetails` which holds `pricingPhases` for both platforms, Android & iOS.
+
+```dart
+class LinkFiveProductDetails {
+
+  /// Platform dependent Product Details such as GooglePlayProductDetails or AppStoreProductDetails
+  final ProductDetails productDetails;
+
+  /// Base64 encoded attributes which you can define on LinkFive
+  final String? attributes;
+
+  /// Converts the new Google Play & AppStore Model to a known list of pricing phases
+  List<PricingPhase> get pricingPhases;
+}
+```
+
+#### Pricing Phase
+The PricingPhase class now holds all information about the product and it's phases. An example would be a FreeTrial phase and a yearly subscription as 2 elements in the PricingPhase list.
+
+Here are all interesting parts of the class:
+
+```dart
+class PricingPhase {
+  
+  /// Represents a pricing phase, describing how a user pays at a point in time.
+  int get billingCycleCount;
+
+  /// Billing period for which the given price applies, specified in ISO 8601 format.
+  Period get billingPeriod;
+
+  /// Returns formatted price for the payment cycle, including its currency sign.
+  String get formattedPrice;
+
+  /// Returns the price for the payment cycle in micro-units, where 1,000,000
+  /// micro-units equal one unit of the currency.
+  int get priceAmountMicros;
+
+  /// ISO 4217 e.g. EUR, USD
+  String get priceCurrencyCode;
+
+  /// Recurrence of the phase
+  Recurrence get recurrence;
+}
+```
+
+#### Period & PeriodUnit class
+
+The Period class now holds the length of a subscription.
+
+```dart
+class Period {
+  final int amount;
+  final PeriodUnit periodUnit;
+}
+
+enum PeriodUnit {
+  DAYS('D'),
+  WEEKS('W'),
+  MONTH('M'),
+  YEARS('Y');
+}
+```
+
+A Period of 3 months would be Period(amount: 3, periodUnit: MONTH) and a year would be Period(amount: 1, periodUnit: YEAR),
+
+##### From the Period class to a readable user-friendly text
+We added a [intl-localization-package](https://pub.dev/packages/in_app_purchases_intl) which uses the `intl` package that can help you translate the Period into a readable text.
+
+Here is the package on [pub.dev](https://pub.dev/packages/in_app_purchases_intl)
+
+You can use the isoCode from the billingPeriod to get a readable String:
+```dart
+final translationClass = pricingPhase.billingPeriod.iso8601.fromIso8601(PaywallL10NHelper.of(context));
+```
+
+The translation class will output:
+
+* `7 days` from `P7D`
+* `1 month` from `P1M`
+* `3 months` from `P3M` (or also `quarterly`)
+* `1 year` from `P1Y` (or also `yearly`)
+
+You can submit your own translation to it's github Repository.
 
 ## 2.1.3
 * Update dependencies

@@ -101,11 +101,13 @@ class LinkFiveProducts {
 ///   AppStoreProductDetails
 class LinkFiveProductDetails {
 
-  /// Product Details
+  /// Platform dependent Product Details such as GooglePlayProductDetails or AppStoreProductDetails
   final ProductDetails productDetails;
 
   /// Base64 encoded attributes you can send with your subscription
   final String? attributes;
+
+  LinkFiveProductDetails(this.productDetails, {this.attributes});
 
   /// Converts the new Google Play Model to a known list of pricing phases
   ///
@@ -119,8 +121,6 @@ class LinkFiveProductDetails {
     }
     throw UnsupportedError("Store not supported");
   }
-
-  LinkFiveProductDetails(this.productDetails, {this.attributes});
 
   /// Make sure to check for the platform before calling this getter
   GooglePlayProductDetails get googlePlayProductDetails {
