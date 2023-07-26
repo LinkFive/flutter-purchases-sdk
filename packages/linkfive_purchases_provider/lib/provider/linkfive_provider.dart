@@ -12,7 +12,7 @@ import 'package:linkfive_purchases/linkfive_purchases.dart';
 ///
 class LinkFiveProvider extends ChangeNotifier {
   /// LinkFive client as factory
-  final LinkFivePurchasesMain linkFivePurchases = LinkFivePurchasesMain();
+  final LinkFivePurchasesImpl linkFivePurchases = LinkFivePurchasesImpl();
 
   ///
   /// LinkFive subscriptions that you can offer to your user
@@ -122,10 +122,4 @@ class LinkFiveProvider extends ChangeNotifier {
     _streams = [];
     super.dispose();
   }
-
-  /// helper function for the paywall to make it easier.
-  ///
-  /// returns the subscriptionDataList or if null, an empty list
-  List<SubscriptionData> paywallUIHelperData(BuildContext context) =>
-      products?.paywallUIHelperData(context: context) ?? [];
 }
