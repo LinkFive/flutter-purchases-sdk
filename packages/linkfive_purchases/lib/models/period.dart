@@ -61,12 +61,10 @@ class Period {
 
   factory Period.fromLinkFive(String period) => Period.fromGooglePlay(period);
 
-  String get jsonValue{
-    return 'P$amount${periodUnit.isoCode}';
-  }
+  String get iso8601 => 'P$amount${periodUnit.isoCode}';
+
+  String get jsonValue => iso8601;
 
   @override
-  String toString() {
-    return 'P$amount${periodUnit.isoCode}';
-  }
+  String toString() => iso8601;
 }

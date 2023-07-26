@@ -31,18 +31,18 @@ LinkFiveProducts? products = await LinkFivePurchases.fetchProducts();
 LinkFive mainly uses streams to send data to your application. [Active Subscriptions Docs](https://www.linkfive.io/docs/flutter/get-all-active-subscriptions/)
 
 ```dart
-// Stream of subscriptions to offer to the user
+// Stream of Products to offer to the user
 LinkFivePurchases.products
 
-// Stream of purchased subscriptions
+// Stream of purchased/active Products
 LinkFivePurchases.activeProducts
 
-// to listen to a stream do the following:
+// to get all offerings, do the following:
 LinkFivePurchases.products.listen((LinkFiveProducts products) {
   print(products);
 });
 
-// or for all active Products
+// or for all active Products, listen on .activeProducts
 LinkFivePurchases.activeProducts.listen((LinkFiveActiveProducts activeProducts) {
   print(activeProducts);
 });
@@ -51,7 +51,7 @@ LinkFivePurchases.activeProducts.listen((LinkFiveActiveProducts activeProducts) 
 
 ### Purchase a Subscription
 
-Simply call purchase with the productDetails from the retrieved subscriptions. [Purchase Docs](https://www.linkfive.io/docs/flutter/make-a-purchase/)
+Simply call purchase and an object of ProductDetails which you got from the products stream. [Purchase Docs](https://www.linkfive.io/docs/flutter/make-a-purchase/)
 
 ```dart
 await LinkFivePurchases.purchase( productDetails );
@@ -81,48 +81,42 @@ LinkFivePurchases.switchPlan(
 );
 ```
 
-## Provider usage
-We offer a Provider Plugin which you can implement and use out of the box or you can create your own provider.
-
-### LinkFive Provider Package
-Check out [linkfive_purchases_provider](https://pub.dev/packages/linkfive_purchases_provider)
-
-You just have to register the Provider with our API key and you're all set to use it
-```dart
-MultiProvider(
-  providers: [
-    // ...
-    ChangeNotifierProvider(
-      create: (context) => LinkFiveProvider("API_KEY"),
-      lazy: false,
-    ),
-  ]
-)
-```
-
 ### Provider example
+Here is an example of a Provider Plugin which you can implement as a ChangeNotifier
 
 ```dart
 class LinkFiveProvider extends ChangeNotifier {
-  LinkFivePurchasesMain linkFivePurchases = LinkFivePurchasesMain();
-
   LinkFiveProducts? products;
   LinkFiveActiveProducts? activeProducts;
 
+  /// Streams that will be cleaned on dispose
   List<StreamSubscription> _streams = [];
 
-  LinkFiveProvider() {
-    linkFivePurchases.init("keys.linkFiveApiKey");
-    linkFivePurchases.fetchProducts();
-    _streams.add(linkFivePurchases.products.listen(_productsUpdate));
-    _streams.add(linkFivePurchases.activeProducts.listen(_activeProductsUpdate));
+  /// All verified Plans as List or emptyList
+  List<LinkFivePlan> get activePlanList => activeProducts?.planList ?? [];
+
+  /// LinkFive as CallbackInterface for your Paywall
+  CallbackInterface get callbackInterface => LinkFivePurchases.callbackInterface;
+
+  /// conveniently check if the user has any activeProducts
+  bool get hasActiveProduct => activeProducts != null && activeProducts!.planList.isNotEmpty;
+
+  /// Initialize LinkFive with your Api Key
+  ///
+  /// Please register on our website: https://www.linkfive.io to get an api key
+  LinkFiveProvider(String apiKey, {LinkFiveLogLevel logLevel = LinkFiveLogLevel.DEBUG}) {
+    LinkFivePurchases.init(apiKey, logLevel: logLevel);
+    _streams.add(LinkFivePurchases.products.listen(_productsUpdate));
+    _streams.add(LinkFivePurchases.activeProducts.listen(_activeProductsUpdate));
   }
 
+  /// Saves available Products and notifies all listeners
   void _productsUpdate(LinkFiveProducts data) async {
     products = data;
     notifyListeners();
   }
 
+  /// Saves active Products and notifies all listeners
   void _activeProductsUpdate(LinkFiveActiveProducts data) {
     activeProducts = data;
     notifyListeners();
@@ -132,7 +126,7 @@ class LinkFiveProvider extends ChangeNotifier {
     return LinkFivePurchases.fetchProducts();
   }
 
-  restoreSubscriptions() {
+  Future<bool> restoreSubscriptions() {
     return LinkFivePurchases.restore();
   }
 
@@ -140,17 +134,15 @@ class LinkFiveProvider extends ChangeNotifier {
     return LinkFivePurchases.purchase(productDetail);
   }
 
-  switchPlan(LinkFivePlan oldPurchasePlan, LinkFiveProductDetails productDetails,
-      {ProrationMode? prorationMode}) {
-    return LinkFivePurchases.switchPlan(oldPurchasePlan, productDetails,
-        prorationMode: prorationMode);
+  switchPlan(LinkFivePlan oldPurchasePlan, LinkFiveProductDetails productDetails, {ProrationMode? prorationMode}) {
+    return LinkFivePurchases.switchPlan(oldPurchasePlan, productDetails, prorationMode: prorationMode);
   }
 
   @override
-  void dispose() {
-    _streams.forEach((element) async {
+  void dispose() async {
+    for (final element in _streams) {
       await element.cancel();
-    });
+    }
     _streams = [];
     super.dispose();
   }
@@ -159,7 +151,7 @@ class LinkFiveProvider extends ChangeNotifier {
 
 ## StreamBuilder Example
 
-If you're mainly using a StreamBuilder. You can implement LinkFive in the following way:
+If you're mainly using a StreamBuilder, here is how it works with LinkFive:
 
 Show all available Products:
 
@@ -231,9 +223,30 @@ SimplePaywall(
   callbackInterface: LinkFivePurchases.callbackInterface,
 
   // you can use your own strings or use the intl package to automatically generate the subscription strings
-  subscriptionListData: products?.paywallUIHelperData(context: context) ?? [],
+  subscriptionListData: _buildPaywallData(context, provider.products),
   // ...
 );
+
+List<SubscriptionData>? _buildPaywallData(BuildContext context, LinkFiveProducts? products) {
+  if (products == null) {
+    return null;
+  }
+  final subList = <SubscriptionData>[];
+
+  for (final product in products.productDetailList) {
+    final pricingPhase = product.pricingPhases.first;
+    final durationStrings = pricingPhase.billingPeriod.jsonValue.fromIso8601(PaywallL10NHelper.of(context));
+    final data = SubscriptionData(
+      durationTitle: durationStrings.durationTextNumber,
+      durationShort: durationStrings.durationText,
+      price: pricingPhase.formattedPrice,
+      productDetails: product.productDetails,
+    );
+    subList.add(data);
+  }
+
+  return subList;
+}
 ```
 
 That‘s it. Now the page will automatically offer the subscriptions to the user or if the user already bought the subscription, the paywall will show the success page.

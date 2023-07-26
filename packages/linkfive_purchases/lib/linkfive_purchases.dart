@@ -14,4 +14,5 @@ export 'models/linkfive_plan.dart';
 export 'models/linkfive_products.dart';
 export 'models/linkfive_response.dart';
 export 'models/pricing_phase.dart';
+export 'models/period.dart';
 export 'models/recurrence.dart';

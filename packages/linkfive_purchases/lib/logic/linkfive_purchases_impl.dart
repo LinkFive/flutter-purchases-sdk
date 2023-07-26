@@ -212,6 +212,9 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
     if (productDetails is SubscriptionData) {
       if (productDetails.productDetails != null && productDetails.productDetails is ProductDetails) {
         productDetailsProcessed = productDetails.productDetails;
+      } else {
+        LinkFiveLogger.e(
+            "SubscriptionData.productDetails is null. Make sure to set `productDetails` when initializing the SubscriptionData.");
       }
     }
     if (productDetailsProcessed == null) {
