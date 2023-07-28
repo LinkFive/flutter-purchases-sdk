@@ -1,11 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:in_app_purchases_intl/extensions/duration_extension.dart';
+import 'package:in_app_purchases_intl/helper/paywall_helper.dart';
 import 'package:in_app_purchases_paywall_ui/in_app_purchases_paywall_ui.dart';
 import 'package:linkfive_purchases_example/bloc/linkfive_products_cubit.dart';
 import 'package:linkfive_purchases_example/bloc/linkfive_products_state.dart';
 import 'package:linkfive_purchases_provider/linkfive_purchases_provider.dart';
 
 class BlocPaywall extends StatelessWidget {
+
+  List<SubscriptionData>? _buildPaywallData(BuildContext context, LinkFiveProducts? products) {
+    if (products == null) {
+      return null;
+    }
+    final subList = <SubscriptionData>[];
+
+    for (final product in products.productDetailList) {
+      final pricingPhase = product.pricingPhases.first;
+      final durationStrings = pricingPhase.billingPeriod.jsonValue.fromIso8601(PaywallL10NHelper.of(context));
+      final data = SubscriptionData(
+        durationTitle: durationStrings.durationTextNumber,
+        durationShort: durationStrings.durationText,
+        price: pricingPhase.formattedPrice,
+        productDetails: product.productDetails,
+      );
+      subList.add(data);
+    }
+
+    return subList;
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -16,7 +40,7 @@ class BlocPaywall extends StatelessWidget {
 
       // check for the loaded state and set the data
       if (state is LinkFiveProductsLoadedState) {
-        subscriptionData = state.products.paywallUIHelperData(context: context);
+        subscriptionData = _buildPaywallData(context, state.products) ?? [];
       }
 
       return PaywallScaffold(

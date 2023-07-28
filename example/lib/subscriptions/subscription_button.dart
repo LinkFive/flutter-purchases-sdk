@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_purchases_intl/extensions/duration_extension.dart';
+import 'package:in_app_purchases_intl/helper/paywall_helper.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
 class SubscriptionButton extends StatelessWidget {
@@ -11,21 +13,6 @@ class SubscriptionButton extends StatelessWidget {
     LinkFivePurchases.purchase(linkFiveProductDetails.productDetails);
   }
 
-  String get getDuration {
-    switch (linkFiveProductDetails.duration) {
-      case SubscriptionDuration.P1W:
-        return "1 Week";
-      case SubscriptionDuration.P1M:
-        return "1 Month";
-      case SubscriptionDuration.P3M:
-        return "3 Months";
-      case SubscriptionDuration.P6M:
-        return "6 Months";
-      case SubscriptionDuration.P1Y:
-        return "1 Year";
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -35,7 +22,9 @@ class SubscriptionButton extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(getDuration),
+            Text(linkFiveProductDetails.pricingPhases.first.billingPeriod.iso8601
+                .fromIso8601(PaywallL10NHelper.of(context))
+                .durationText),
             Text(linkFiveProductDetails.productDetails.price)
           ],
         ),

@@ -6,7 +6,7 @@ import 'package:linkfive_purchases_example/bloc/linkfive_active_products_state.d
 
 class LinkFiveActiveProductsCubit extends Cubit<LinkFiveActiveProductsState> {
   /// LinkFive client
-  final LinkFivePurchasesMain linkFivePurchases = LinkFivePurchasesMain();
+  final LinkFivePurchasesImpl linkFivePurchases = LinkFivePurchasesImpl();
 
   /// Stream that will be cleaned on close
   StreamSubscription? _stream;

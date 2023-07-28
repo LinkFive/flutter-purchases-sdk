@@ -23,7 +23,7 @@ class RootWidget extends StatefulWidget {
 class _RootWidgetState extends State<RootWidget> {
   @override
   void initState() {
-    LinkFivePurchasesMain().init(MyApp.linkFiveApiKey,
+    LinkFivePurchasesImpl().init(MyApp.linkFiveApiKey,
         logLevel: LinkFiveLogLevel.TRACE, env: LinkFiveEnvironment.STAGING);
     super.initState();
   }

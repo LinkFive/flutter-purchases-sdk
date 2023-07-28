@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:in_app_purchases_intl/delegate/paywall_localizations.dart';
 import 'package:linkfive_purchases_example/key/keyLoader.dart';
 import 'package:linkfive_purchases_example/routing/delegate.dart';
 import 'package:linkfive_purchases_example/routing/parser.dart';
@@ -40,7 +41,6 @@ class MyAppState extends State<MyApp> {
         future: _keysFuture,
         builder: (BuildContext context, AsyncSnapshot<Keys> snapshot) {
           if (snapshot.hasData) {
-
             // for convenient save to static prop
             MyApp.linkFiveApiKey = snapshot.data!.linkFiveApiKey;
             print(snapshot.data!.linkFiveApiKey);
@@ -50,22 +50,24 @@ class MyAppState extends State<MyApp> {
               theme: ThemeData(
                 primarySwatch: Colors.green,
               ),
+              localizationsDelegates: [
+                PaywallLocalizations.delegate,
+              ],
               home: MaterialApp.router(
                 routeInformationParser: _parser,
                 routerDelegate: _delegate,
-                theme: ThemeData(
-                    primarySwatch: Colors.green,
-                    iconTheme: IconThemeData(color: Colors.green)),
+                theme: ThemeData(primarySwatch: Colors.green, iconTheme: IconThemeData(color: Colors.green)),
               ),
             );
           }
           // loading
-          return Container(
+          return MaterialApp(
+              home: Container(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [CircularProgressIndicator()],
             ),
-          );
+          ));
         });
   }
 }
