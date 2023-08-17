@@ -45,16 +45,16 @@ class LinkFiveBillingClient extends LinkFiveBillingClientInterface {
   /// Load products from the native store
   Future<List<ProductDetails>> _loadProducts(List<LinkFiveResponseDataSubscription> subscriptionList) async {
     LinkFiveLogger.d("load products from store");
-    Set<String> kIds = subscriptionList.map((e) => e.sku).toSet();
+    final Set<String> kIds = subscriptionList.map((e) => e.sku).toSet();
     final ProductDetailsResponse response = await InAppPurchase.instance.queryProductDetails(kIds);
 
     if (response.notFoundIDs.isNotEmpty) {
       // Handle the error.
       LinkFiveLogger.e("LinkFive tried to load the product Ids from the store but it "
-          "seems some were not found: ${response.notFoundIDs.join(",")}."
-          "are you using the correct package name or Id? If you created "
-          "the subscriptions just now, it will take sometimes some time "
-          "to appear through the official google or apple sdk");
+          "seems some were not found: ${response.notFoundIDs.join(",")}. "
+          "Are you using the correct package name or Id? If you created the subscriptions just now, it will take "
+          "sometimes some time to appear through the official google or apple sdk. "
+          "On Android, register your account as a licence tester: https://developer.android.com/google/play/billing/test .");
     }
     if (response.error != null) {
       LinkFiveLogger.e("Purchase Error ${response.error?.code}, ${response.error?.message}");
