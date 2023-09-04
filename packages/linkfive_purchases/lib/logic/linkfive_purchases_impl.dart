@@ -247,9 +247,6 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
           await SKPaymentQueueWrapper().finishTransaction(transactionWrapper);
         }
 
-        // try to restore
-        await restore();
-
         LinkFiveLogger.d("try to purchase item 2/2");
         // try buy again
         showBuySuccess = await inAppPurchaseInstance.buyNonConsumable(purchaseParam: purchaseParam);
