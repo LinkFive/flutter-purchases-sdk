@@ -241,9 +241,10 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
 
     try {
       // try to buy it
-      LinkFiveLogger.d("try to purchase item 1/2");
+      LinkFiveLogger.d("Starting purchase process");
       showBuySuccess = await inAppPurchaseInstance.buyNonConsumable(purchaseParam: purchaseParam);
     } on PlatformException catch (e) {
+      LinkFiveLogger.e("PlatformException when trying to Purchase");
       LinkFiveLogger.e(e);
       if (Platform.isIOS) {
         /// Exception could be:
