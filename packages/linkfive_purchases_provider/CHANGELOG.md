@@ -1,3 +1,9 @@
+## 3.0.1
+Update to linkfive_purchases 3.0.1
+
+## 3.0.0
+Update to linkfive_purchases 3.0.0
+
 ## 2.1.3
 Update to linkfive_purchases 2.1.3
 
