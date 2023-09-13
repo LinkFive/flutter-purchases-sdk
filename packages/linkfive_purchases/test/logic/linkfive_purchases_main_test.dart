@@ -12,8 +12,8 @@ import './linkfive_purchases_main_test.mocks.dart';
 
 @GenerateMocks([], customMocks: [
   MockSpec<InAppPurchase>(unsupportedMembers: {#getPlatformAddition}),
-  MockSpec<LinkFiveClientInterface>(returnNullOnMissingStub: true),
-  MockSpec<LinkFiveBillingClientInterface>(returnNullOnMissingStub: true)
+  MockSpec<LinkFiveClientInterface>(onMissingStub: OnMissingStub.returnDefault),
+  MockSpec<LinkFiveBillingClientInterface>(onMissingStub: OnMissingStub.returnDefault)
 ])
 void main() {
   group("General Test Purchases Main", () {
