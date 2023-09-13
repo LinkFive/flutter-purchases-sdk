@@ -1,3 +1,7 @@
+## 3.0.1
+* improved purchase process to prevent a PlatformException with message: `There is a pending transaction ...` for ongoing purchases.
+* Updated dependencies to latest
+
 ## 3.0.0
 Breaking Change Update.
 
