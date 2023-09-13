@@ -53,6 +53,8 @@ class DefaultPurchaseHandler implements PurchaseStateStreamInterface {
     }
   }
 
+  bool get isPendingPurchase => _isPendingPurchase;
+
   //#endregion
 
   //#region PurchaseState

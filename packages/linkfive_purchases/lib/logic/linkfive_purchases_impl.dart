@@ -32,6 +32,9 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
 
   factory LinkFivePurchasesImpl() => _instance;
 
+  /// Used to only call the purchase once at a time
+  bool _purchaseMethodOngoing = false;
+
   ///
   /// TEST CONSTRUCTOR. Please do not use.
   ///
@@ -205,6 +208,13 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
   @override
   Future<bool> purchase(dynamic productDetails) async {
     makeSureIsInitialize();
+    if (_purchaseMethodOngoing || super.isPendingPurchase) {
+      LinkFiveLogger.e(
+          "Purchase was trigger but there is already a purchase in progress. Please make sure to only trigger it once");
+      return false;
+    }
+    // make sure this method is only triggered once.
+    _purchaseMethodOngoing = true;
     ProductDetails? productDetailsProcessed;
     if (productDetails is ProductDetails) {
       productDetailsProcessed = productDetails;
@@ -244,13 +254,23 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
         LinkFiveLogger.d("Finish previous transactions");
         var transactions = await SKPaymentQueueWrapper().transactions();
         for (SKPaymentTransactionWrapper transactionWrapper in transactions) {
-          await SKPaymentQueueWrapper().finishTransaction(transactionWrapper);
+          LinkFiveLogger.d("Pending transaction: state=${transactionWrapper.transactionState}");
+          if (transactionWrapper.transactionState != SKPaymentTransactionStateWrapper.purchasing) {
+            LinkFiveLogger.d("Pending transaction: finishTransaction");
+            try {
+              await SKPaymentQueueWrapper().finishTransaction(transactionWrapper);
+            } catch (e) {
+              LinkFiveLogger.e("Tried to finish transaction, but got an unexpected error");
+              LinkFiveLogger.e(e);
+            }
+          }
         }
-
-        LinkFiveLogger.d("try to purchase item 2/2");
-        // try buy again
-        showBuySuccess = await inAppPurchaseInstance.buyNonConsumable(purchaseParam: purchaseParam);
       }
+      showBuySuccess = false;
+    } catch (e) {
+      LinkFiveLogger.e("Tried to buy a product, but got an unexpected error.");
+      LinkFiveLogger.e(e);
+      showBuySuccess = false;
     }
 
     LinkFiveLogger.d("Show Buy Intent success: $showBuySuccess");
@@ -258,6 +278,7 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
     if (showBuySuccess) {
       super.isPendingPurchase = true;
     }
+    _purchaseMethodOngoing = false;
     return showBuySuccess;
   }
 
