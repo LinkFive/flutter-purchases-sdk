@@ -59,7 +59,7 @@ class LinkFivePlan {
 
   @override
   String toString() {
-    return 'LinkFivePlan:\n $json}';
+    return 'LinkFivePlan: $json}';
   }
 
   /// Period of the subscription

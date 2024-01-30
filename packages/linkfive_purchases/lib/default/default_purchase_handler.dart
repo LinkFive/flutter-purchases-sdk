@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
-import 'package:linkfive_purchases/models/linkfive_plan.dart';
+import 'package:linkfive_purchases/linkfive_purchases.dart';
 
 ///
 /// Default Purchase Handler
@@ -82,15 +82,15 @@ class DefaultPurchaseHandler implements PurchaseStateStreamInterface {
   //#endregion
 
   ///
-  /// Whenever the plugin receives a new Plan List we will update the state
+  /// Whenever the plugin receives a new active Products we will update the state
   /// to either
   ///
   /// PURCHASED
   ///   or
   /// NOT_PURCHASED
   ///
-  updateStateFromActivePlanList(List<LinkFivePlan> linkFivePlanList) {
-    if (linkFivePlanList.isNotEmpty) {
+  updateStateFromActiveProducts(LinkFiveActiveProducts activeProducts) {
+    if (activeProducts.isNotEmpty) {
       purchaseState = PurchaseState.PURCHASED;
     } else {
       purchaseState = PurchaseState.NOT_PURCHASED;

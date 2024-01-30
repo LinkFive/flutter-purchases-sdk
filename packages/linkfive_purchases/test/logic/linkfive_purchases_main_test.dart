@@ -32,9 +32,9 @@ void main() {
         .thenAnswer((_) => purchaseStream);
 
     when(mockLinkFiveClient.fetchLinkFiveResponse()).thenAnswer(
-        (realInvocation) async => LinkFiveResponseData("", "", List.empty()));
+        (realInvocation) async => LinkFiveResponseData("", "", [], []));
 
-    when(mockLinkFiveBillingClient.getPlatformSubscriptions(any))
+    when(mockLinkFiveBillingClient.getPlatformProducts(any))
         .thenAnswer((realInvocation) async => null);
 
     test('Test FetchProducts to await until initialized', () async {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:linkfive_purchases/linkfive_purchases.dart';
+import 'package:linkfive_purchases/models/linkfive_one_time_purchase.dart';
 
 /// Data holder for API related calls
 /// includes all Streams for the sdk
@@ -49,14 +50,14 @@ class LinkFiveStore {
   }
 
   /// Just saves the response from LinkFive
-  onNewResponseData(LinkFiveResponseData data) {
+  void onNewResponseData(LinkFiveResponseData data) {
     latestLinkFiveResponse = data;
   }
 
   ///
-  /// Whenever new subscriptions are loaded, we save it in a [LinkFiveSubscriptionData]
+  /// Whenever new product is loaded, we save it in a [LinkFiveSubscriptionData]
   ///
-  LinkFiveProducts onNewPlatformSubscriptions(List<ProductDetails> productDetailList) {
+  LinkFiveProducts onNewPlatformProduct(List<ProductDetails> productDetailList) {
     // store the details in the latest property
     latestProductDetailList = productDetailList;
 
@@ -82,17 +83,14 @@ class LinkFiveStore {
 
   /// This method is the first entry point to notify all listeners that there
   /// are new plans available.
-  LinkFiveActiveProducts onNewLinkFiveNewActivePlanList(List<LinkFivePlan> planList) {
-    // Wrap it in a ActiveProducts Object
-    final activeProducts = LinkFiveActiveProducts(planList: planList);
-
+  LinkFiveActiveProducts onNewLinkFiveNewActiveProducts(LinkFiveActiveProducts activeProducts) {
     latestLinkFiveActiveProducts = activeProducts;
 
     _cleanAllStreams();
 
     // notify observer
     for (StreamController<LinkFiveActiveProducts> streamController in _streamControllerActiveProducts) {
-      LinkFiveLogger.d("push active sub data with size ${latestLinkFiveActiveProducts?.planList.length ?? 0}");
+      LinkFiveLogger.d("push active sub data with size ${activeProducts.planList.length}, otp size: ${activeProducts.oneTimePurchaseList.length}");
       streamController.add(activeProducts);
     }
     return activeProducts;

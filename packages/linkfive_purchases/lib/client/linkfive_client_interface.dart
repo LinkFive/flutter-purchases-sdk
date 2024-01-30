@@ -14,26 +14,30 @@ abstract class LinkFiveClientInterface {
 
   /// after a purchase on ios we call the purchases/apple
   /// We don't need to do this on Android
-  Future<List<LinkFivePlan>> purchaseIos(AppStoreProductDetails productDetails,
+  Future<LinkFiveActiveProducts> purchaseIos(AppStoreProductDetails productDetails,
       AppStorePurchaseDetails purchaseDetails);
 
   /// after a purchase on Google we call the purchases/google
   /// We don't need to do this on Android
-  Future<List<LinkFivePlan>> purchaseGooglePlay(
+  Future<LinkFiveActiveProducts> purchaseGooglePlay(
       GooglePlayPurchaseDetails purchaseDetails, GooglePlayProductDetails productDetails);
+
+  /// after a one time purchase purchase on Google we post the data to LinkFIve
+  Future<LinkFiveActiveProducts> purchaseGooglePlayOneTimePurchase(
+      GooglePlayPurchaseDetails purchaseDetails, OneTimePurchaseOfferDetailsWrapper otpDetails);
 
   /// Fetches the receipts for a user
   ///
   /// if no LinkFive UUID is provided, LinkFive will generate a new user ID
   ///
-  Future<List<LinkFivePlan>> fetchUserPlanListFromLinkFive();
+  Future<LinkFiveActiveProducts> fetchUserPlanListFromLinkFive();
 
   /// RESTORE APPLE APP STORE
   ///
   /// This will send all restored transactionIds to LinkFive
   /// We will check against apple if those transaction are valid and
   /// enable or disable a product
-  Future<List<LinkFivePlan>> restoreIos(
+  Future<LinkFiveActiveProducts> restoreIos(
       List<LinkFiveRestoreAppleItem> restoreList);
 
   /// RESTORE GOOGLE PLAY STORE
@@ -41,9 +45,9 @@ abstract class LinkFiveClientInterface {
   /// This will send all restored transactionIds to LinkFive
   /// We will check against apple if those transaction are valid and
   /// enable or disable a product
-  Future<List<LinkFivePlan>> restoreGoogle(
+  Future<LinkFiveActiveProducts> restoreGoogle(
       List<LinkFiveRestoreGoogleItem> restoreList);
 
   /// Should change the USER ID.
-  Future<List<LinkFivePlan>> changeUserId(String? userId);
+  Future<LinkFiveActiveProducts> changeUserId(String? userId);
 }

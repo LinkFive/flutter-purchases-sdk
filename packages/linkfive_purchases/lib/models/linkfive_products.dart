@@ -1,9 +1,10 @@
-
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:linkfive_purchases/models/one_time_purchase_price.dart';
 import 'package:linkfive_purchases/models/pricing_phase.dart';
+import 'package:linkfive_purchases/models/product_type.dart';
 
 /// LinkFive Products to offer.
 ///
@@ -100,7 +101,6 @@ class LinkFiveProducts {
 ///   or
 ///   AppStoreProductDetails
 class LinkFiveProductDetails {
-
   /// Platform dependent Product Details such as GooglePlayProductDetails or AppStoreProductDetails
   final ProductDetails productDetails;
 
@@ -108,6 +108,19 @@ class LinkFiveProductDetails {
   final String? attributes;
 
   LinkFiveProductDetails(this.productDetails, {this.attributes});
+
+  /// Returns either a [LinkFiveProductType.Subscription] or [LinkFiveProductType.OneTimePurchase]
+  /// for the current product Details
+  LinkFiveProductType get productType {
+    if (productDetails is GooglePlayProductDetails) {
+      if (googlePlayProductDetails.productDetails.oneTimePurchaseOfferDetails != null) {
+        return LinkFiveProductType.OneTimePurchase;
+      } else if (googlePlayProductDetails.productDetails.subscriptionOfferDetails != null) {
+        return LinkFiveProductType.Subscription;
+      }
+    }
+    throw UnsupportedError("Store not supported");
+  }
 
   /// Converts the new Google Play Model to a known list of pricing phases
   ///
@@ -118,6 +131,13 @@ class LinkFiveProductDetails {
     }
     if (productDetails is AppStoreProductDetails) {
       return [PricingPhase.fromAppStore(appStoreProductDetails.skProduct)];
+    }
+    throw UnsupportedError("Store not supported");
+  }
+
+  OneTimePurchasePrice get oneTimePurchasePrice {
+    if (productDetails is GooglePlayProductDetails) {
+      return OneTimePurchasePrice.fromGooglePlay(googlePlayProductDetails);
     }
     throw UnsupportedError("Store not supported");
   }

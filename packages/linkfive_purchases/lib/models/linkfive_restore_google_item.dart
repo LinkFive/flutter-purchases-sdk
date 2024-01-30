@@ -9,17 +9,14 @@ class LinkFiveRestoreGoogleItem {
   /// Purchase token we can use to communicate with Google
   final String purchaseToken;
 
-  LinkFiveRestoreGoogleItem(
-      {required this.sku,
-      required this.purchaseId,
-      required this.purchaseToken});
+  LinkFiveRestoreGoogleItem({
+    required this.sku,
+    required this.purchaseId,
+    required this.purchaseToken,
+  });
 
   Map<String, dynamic> get toMap {
-    return {
-      "sku": sku,
-      "purchaseId": purchaseId,
-      "purchaseToken": purchaseToken
-    };
+    return {"sku": sku, "purchaseId": purchaseId, "purchaseToken": purchaseToken};
   }
 
   @override

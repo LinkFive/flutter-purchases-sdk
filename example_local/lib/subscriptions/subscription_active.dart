@@ -2,20 +2,29 @@ import 'package:example_local/subscriptions/upgrade_downgrade_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
-class SubscriptionActiveStream extends StatelessWidget {
-  buildSubscriptions(LinkFiveActiveProducts activeProducts) {
+class ProductActiveStream extends StatelessWidget {
+  buildPlans(LinkFiveActiveProducts activeProducts) {
     return activeProducts.planList
         .map((activePlan) => Card(
               child: Container(
-                margin: EdgeInsets.all(8),
+                  margin: EdgeInsets.all(8),
                   child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Product: ${activePlan.toString()}"),
-                  UpgradeDowngradeButtons(activePlan)
-                ],
-              )),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [Text("Product: ${activePlan.toString()}"), UpgradeDowngradeButtons(activePlan)],
+                  )),
             ))
+        .toList();
+  }
+  buildOneTimePurchases(LinkFiveActiveProducts activeProducts) {
+    return activeProducts.oneTimePurchaseList
+        .map((activePlan) => Card(
+      child: Container(
+          margin: EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [Text("Product: ${activePlan.toString()}")],
+          )),
+    ))
         .toList();
   }
 
@@ -27,16 +36,17 @@ class SubscriptionActiveStream extends StatelessWidget {
           stream: LinkFivePurchases.activeProducts,
           builder: (BuildContext context, snapshot) {
             if (snapshot.hasData) {
-              var subscriptionData = snapshot.data;
-              if (subscriptionData != null) {
+              var activeProducts = snapshot.data;
+              if (activeProducts != null) {
                 return Container(
                   padding: EdgeInsets.all(16),
                   alignment: Alignment.topLeft,
                   child: Column(
                     children: [
-                      Text("Active Subscriptions:",
-                          style: Theme.of(context).textTheme.headline6),
-                      ...buildSubscriptions(subscriptionData)
+                      Text("Active Plans:", style: Theme.of(context).textTheme.bodyMedium),
+                      ...buildPlans(activeProducts),
+                      Text("Active OneTimePurchases:", style: Theme.of(context).textTheme.bodyMedium),
+                      ...buildOneTimePurchases(activeProducts)
                     ],
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,

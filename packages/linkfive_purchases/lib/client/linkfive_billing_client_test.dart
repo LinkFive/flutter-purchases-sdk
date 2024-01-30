@@ -10,7 +10,7 @@ import 'package:linkfive_purchases/linkfive_purchases.dart';
 class LinkFiveBillingClientTest extends LinkFiveBillingClientInterface {
   /// TEST MODE
   @override
-  Future<List<ProductDetails>?> getPlatformSubscriptions(LinkFiveResponseData linkFiveResponse) async {
+  Future<List<ProductDetails>?> getPlatformProducts(LinkFiveResponseData linkFiveResponse) async {
     return _loadProducts();
   }
 
