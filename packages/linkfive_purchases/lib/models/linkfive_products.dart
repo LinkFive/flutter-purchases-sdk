@@ -139,6 +139,9 @@ class LinkFiveProductDetails {
     if (productDetails is GooglePlayProductDetails) {
       return OneTimePurchasePrice.fromGooglePlay(googlePlayProductDetails);
     }
+    if(productDetails is AppStoreProductDetails){
+      return OneTimePurchasePrice.fromAppStore(appStoreProductDetails);
+    }
     throw UnsupportedError("Store not supported");
   }
 

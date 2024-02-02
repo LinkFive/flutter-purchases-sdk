@@ -1,11 +1,11 @@
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:linkfive_purchases/util/currency_symbol.dart';
 
 /// The Price of a one time purchase.
 class OneTimePurchasePrice {
   final GooglePlayProductDetails? googlePlayObj;
-  final SKProductWrapper? appStoreObj;
+  final AppStoreProductDetails? appStoreObj;
 
   OneTimePurchasePrice._({this.googlePlayObj, this.appStoreObj});
 
@@ -28,7 +28,7 @@ class OneTimePurchasePrice {
       return googlePlayObj!.productDetails.oneTimePurchaseOfferDetails!.priceAmountMicros;
     }
     if (appStoreObj != null) {
-      return (double.parse(appStoreObj!.price) * 1000000).toInt();
+      return (appStoreObj!.rawPrice * 1000000).toInt();
     }
     throw UnsupportedError("Store not supported");
   }
@@ -41,7 +41,7 @@ class OneTimePurchasePrice {
       return googlePlayObj!.productDetails.oneTimePurchaseOfferDetails!.priceCurrencyCode;
     }
     if (appStoreObj != null) {
-      return appStoreObj!.priceLocale.currencyCode;
+      return appStoreObj!.skProduct.priceLocale.currencyCode;
     }
     throw UnsupportedError("Store not supported");
   }
@@ -55,10 +55,10 @@ class OneTimePurchasePrice {
       return googlePlayObj!.currencySymbol;
     }
     if (appStoreObj != null) {
-      if(appStoreObj!.priceLocale.currencySymbol.isEmpty){
-        return getCurrencySymbol(appStoreObj!.priceLocale.currencyCode);
+      if(appStoreObj!.skProduct.priceLocale.currencySymbol.isEmpty){
+        return getCurrencySymbol(appStoreObj!.skProduct.priceLocale.currencyCode);
       }
-      return appStoreObj!.priceLocale.currencySymbol;
+      return appStoreObj!.skProduct.priceLocale.currencySymbol;
     }
     throw UnsupportedError("Store not supported");
   }
@@ -66,6 +66,6 @@ class OneTimePurchasePrice {
   factory OneTimePurchasePrice.fromGooglePlay(GooglePlayProductDetails googlePlayProductDetails) =>
       OneTimePurchasePrice._(googlePlayObj: googlePlayProductDetails);
 
-  factory OneTimePurchasePrice.fromAppStore(SKProductWrapper skProductWrapper) =>
-      OneTimePurchasePrice._(appStoreObj: skProductWrapper);
+  factory OneTimePurchasePrice.fromAppStore(AppStoreProductDetails appStoreProductDetails) =>
+      OneTimePurchasePrice._(appStoreObj: appStoreProductDetails);
 }
