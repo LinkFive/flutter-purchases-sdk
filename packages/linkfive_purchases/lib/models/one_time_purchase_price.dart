@@ -1,8 +1,6 @@
-import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
-import 'package:linkfive_purchases/models/period.dart';
-import 'package:linkfive_purchases/models/recurrence.dart';
+import 'package:linkfive_purchases/util/currency_symbol.dart';
 
 /// The Price of a one time purchase.
 class OneTimePurchasePrice {
@@ -48,8 +46,26 @@ class OneTimePurchasePrice {
     throw UnsupportedError("Store not supported");
   }
 
+  /// Currency symbol such as $ or €
+  String get priceCurrencySymbol {
+    if (googlePlayObj != null) {
+      if (googlePlayObj!.currencySymbol.isEmpty) {
+        return getCurrencySymbol(googlePlayObj!.currencyCode);
+      }
+      return googlePlayObj!.currencySymbol;
+    }
+    if (appStoreObj != null) {
+      if(appStoreObj!.priceLocale.currencySymbol.isEmpty){
+        return getCurrencySymbol(appStoreObj!.priceLocale.currencyCode);
+      }
+      return appStoreObj!.priceLocale.currencySymbol;
+    }
+    throw UnsupportedError("Store not supported");
+  }
 
-  factory OneTimePurchasePrice.fromGooglePlay(GooglePlayProductDetails googlePlayProductDetails) => OneTimePurchasePrice._(googlePlayObj: googlePlayProductDetails);
+  factory OneTimePurchasePrice.fromGooglePlay(GooglePlayProductDetails googlePlayProductDetails) =>
+      OneTimePurchasePrice._(googlePlayObj: googlePlayProductDetails);
 
-  factory OneTimePurchasePrice.fromAppStore(SKProductWrapper skProductWrapper) => OneTimePurchasePrice._(appStoreObj: skProductWrapper);
+  factory OneTimePurchasePrice.fromAppStore(SKProductWrapper skProductWrapper) =>
+      OneTimePurchasePrice._(appStoreObj: skProductWrapper);
 }

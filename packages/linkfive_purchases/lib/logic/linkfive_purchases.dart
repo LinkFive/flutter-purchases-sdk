@@ -8,6 +8,10 @@ import 'package:linkfive_purchases/linkfive_purchases.dart';
 ///
 /// The docs can be found here https://www.linkfive.io/docs/
 class LinkFivePurchases {
+
+  /// You should make no instance of this class
+  LinkFivePurchases._();
+
   /// Plugin Version
   static const VERSION = "3.0.0";
 
@@ -29,10 +33,8 @@ class LinkFivePurchases {
   /// LinkFivePurchases.fetchProducts());
   ///
   /// [LinkFiveLogLevel] to see or hide internal logging
-  static Future<LinkFiveActiveProducts> init(String apiKey,
-      {LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN}) {
-    return LinkFivePurchasesImpl()
-        .init(apiKey, logLevel: logLevel, env: LinkFiveEnvironment.PRODUCTION);
+  static Future<LinkFiveActiveProducts> init(String apiKey, {LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN}) {
+    return LinkFivePurchasesImpl().init(apiKey, logLevel: logLevel, env: LinkFiveEnvironment.PRODUCTION);
   }
 
   /// By Default, the plugin does not fetch any Products to offer.
@@ -92,11 +94,9 @@ class LinkFivePurchases {
   ///
   /// [prorationMode] Google Only: default replaces immediately the subscription, and the remaining time will be prorated and credited to the user.
   ///   Check https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode for more information
-  static Future<bool> switchPlan(
-      LinkFivePlan oldPurchasePlan, LinkFiveProductDetails productDetails,
+  static Future<bool> switchPlan(LinkFivePlan oldPurchasePlan, LinkFiveProductDetails productDetails,
       {ProrationMode? prorationMode}) {
-    return LinkFivePurchasesImpl().switchPlan(oldPurchasePlan, productDetails,
-        prorationMode: prorationMode);
+    return LinkFivePurchasesImpl().switchPlan(oldPurchasePlan, productDetails, prorationMode: prorationMode);
   }
 
   /// This Stream contains all available Products you can offer to your user.
@@ -115,8 +115,7 @@ class LinkFivePurchases {
   ///     currencyCode,
   ///     currencySymbol = ''
   ///     });
-  static Stream<LinkFiveProducts> get products =>
-      LinkFivePurchasesImpl().products;
+  static Stream<LinkFiveProducts> get products => LinkFivePurchasesImpl().products;
 
   /// If the user has an active verified purchase, the stream will contain all necessary information
   /// An active product is a verified active subscription the user purchased
@@ -125,8 +124,7 @@ class LinkFivePurchases {
   ///
   /// [LinkFiveActiveProducts.planList] is a List of [LinkFivePlan] verified plans
   ///
-  static Stream<LinkFiveActiveProducts> get activeProducts =>
-      LinkFivePurchasesImpl().activeProducts;
+  static Stream<LinkFiveActiveProducts> get activeProducts => LinkFivePurchasesImpl().activeProducts;
 
   ///
   /// Set the UTM source of a user
@@ -162,4 +160,12 @@ class LinkFivePurchases {
   /// You can just add the callbackInterface as the UI Paywall callback interface
   ///
   static LinkFivePurchasesImpl get callbackInterface => LinkFivePurchasesImpl();
+
+  ///
+  /// This Stream returns true => if the purchase is currently in Progress. This means you should show a loading
+  /// indicator or block the purchase button while processing
+  ///
+  /// returns false => if there is no purchase in Progress.
+  ///
+  static Stream<bool> get purchaseInProgressStream => LinkFivePurchasesImpl().purchaseInProgressStream();
 }
