@@ -119,6 +119,13 @@ class LinkFiveProductDetails {
         return LinkFiveProductType.Subscription;
       }
     }
+    if (productDetails is AppStoreProductDetails) {
+      if (appStoreProductDetails.skProduct.subscriptionPeriod == null) {
+        return LinkFiveProductType.OneTimePurchase;
+      } else {
+        return LinkFiveProductType.Subscription;
+      }
+    }
     throw UnsupportedError("Store not supported");
   }
 
@@ -139,7 +146,7 @@ class LinkFiveProductDetails {
     if (productDetails is GooglePlayProductDetails) {
       return OneTimePurchasePrice.fromGooglePlay(googlePlayProductDetails);
     }
-    if(productDetails is AppStoreProductDetails){
+    if (productDetails is AppStoreProductDetails) {
       return OneTimePurchasePrice.fromAppStore(appStoreProductDetails);
     }
     throw UnsupportedError("Store not supported");
