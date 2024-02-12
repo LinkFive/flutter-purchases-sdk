@@ -13,7 +13,7 @@ class LinkFivePurchases {
   LinkFivePurchases._();
 
   /// Plugin Version
-  static const VERSION = "3.0.0";
+  static const VERSION = "4.0.0";
 
   /// Initialize LinkFive with your Api Key
   ///
