@@ -1,5 +1,5 @@
+import 'package:example_local/subscriptions/product_offering.dart';
 import 'package:example_local/subscriptions/subscription_active.dart';
-import 'package:example_local/subscriptions/subscription_offering.dart';
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
@@ -44,8 +44,8 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                 },
                 child: Text("Set User Id"))
           ]),
-          SubscriptionOfferingStream(),
-          SubscriptionActiveStream(),
+          ProductOfferingStream(),
+          ProductActiveStream(),
           ElevatedButton(
               onPressed: () async {
                 await LinkFivePurchases.restore();

@@ -1,8 +1,9 @@
+import 'package:example_local/subscriptions/otp_button.dart';
 import 'package:example_local/subscriptions/subscription_button.dart';
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
-class SubscriptionOfferingStream extends StatelessWidget {
+class ProductOfferingStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -19,9 +20,10 @@ class SubscriptionOfferingStream extends StatelessWidget {
                   itemCount: subscriptionData.productDetailList.length,
                   itemBuilder: (context, index) {
                     final productDetails = subscriptionData.productDetailList[index];
-                    return SubscriptionButton(
-                      linkFiveProductDetails: productDetails,
-                    );
+                    return switch (productDetails.productType) {
+                      LinkFiveProductType.OneTimePurchase => OTPButton(linkFiveProductDetails: productDetails),
+                      LinkFiveProductType.Subscription => SubscriptionButton(linkFiveProductDetails: productDetails),
+                    };
                   },
                   separatorBuilder: (context, index) {
                     return SizedBox(height: 16);

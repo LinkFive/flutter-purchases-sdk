@@ -2,8 +2,6 @@ import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:linkfive_purchases/client/linkfive_client_interface.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
-import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
-import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 
 /// HTTP TEST client
@@ -20,45 +18,47 @@ class LinkFiveClientTest extends LinkFiveClientInterface {
 
   /// TEST MODE
   @override
-  Future<List<LinkFivePlan>> purchaseIos(
-      AppStoreProductDetails productDetails, AppStorePurchaseDetails purchaseDetails) async {
+  Future<LinkFiveActiveProducts> purchaseIos({
+    required AppStoreProductDetails? productDetails,
+    required AppStorePurchaseDetails purchaseDetails,
+  }) async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
   @override
-  Future<List<LinkFivePlan>> purchaseGooglePlay(
+  Future<LinkFiveActiveProducts> purchaseGooglePlay(
       GooglePlayPurchaseDetails purchaseDetails, GooglePlayProductDetails productDetails) async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
   @override
-  Future<List<LinkFivePlan>> fetchUserPlanListFromLinkFive() async {
+  Future<LinkFiveActiveProducts> fetchUserPlanListFromLinkFive() async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
   @override
-  Future<List<LinkFivePlan>> restoreIos(List<LinkFiveRestoreAppleItem> restoreList) async {
+  Future<LinkFiveActiveProducts> restoreIos(List<LinkFiveRestoreAppleItem> restoreList) async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
   @override
-  Future<List<LinkFivePlan>> restoreGoogle(List<LinkFiveRestoreGoogleItem> restoreList) async {
+  Future<LinkFiveActiveProducts> restoreGoogle(List<LinkFiveRestoreGoogleItem> restoreList) async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
   @override
-  Future<List<LinkFivePlan>> changeUserId(String? userId) async {
+  Future<LinkFiveActiveProducts> changeUserId(String? userId) async {
     return _parsePlanListResponse();
   }
 
   /// TEST MODE
-  List<LinkFivePlan> _parsePlanListResponse() {
-    return LinkFivePlan.fromJsonList({
+  LinkFiveActiveProducts _parsePlanListResponse() {
+    return LinkFiveActiveProducts.fromJson({
       "planList": [
         {
           "productId": "test_1",
@@ -69,13 +69,20 @@ class LinkFiveClientTest extends LinkFiveClientInterface {
           "storeType": "LINKFIVE_TEST_STORE",
           "duration": "P3M"
         }
-      ]
+      ],
+      "oneTimePurchaseList": []
     });
   }
 
   /// TEST MODE
   LinkFiveResponseData get _testData {
-    return LinkFiveResponseData(
-        "TEST", null, [1, 2].map((e) => LinkFiveResponseDataSubscription("test_$e")).toList(growable: false));
+    return LinkFiveResponseData("TEST", null, [1, 2].map((e) => LinkFiveResponseDataSubscription("test_$e")).toList(),
+        [LinkFiveResponseDataOneTimePurchase("test_otp_1")]);
+  }
+
+  @override
+  Future<LinkFiveActiveProducts> purchaseGooglePlayOneTimePurchase(
+      GooglePlayPurchaseDetails purchaseDetails, OneTimePurchaseOfferDetailsWrapper otpDetails) async {
+    return LinkFiveActiveProducts.empty();
   }
 }

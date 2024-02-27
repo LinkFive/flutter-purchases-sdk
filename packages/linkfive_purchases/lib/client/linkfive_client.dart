@@ -8,9 +8,8 @@ import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:linkfive_purchases/client/linkfive_client_interface.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
-import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
-import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart';
 import 'package:linkfive_purchases/models/requests/purchase_request_google.dart';
+import 'package:linkfive_purchases/models/requests/purchase_request_google_otp.dart';
 import 'package:linkfive_purchases/models/requests/purchase_request_pricing_phase.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -92,38 +91,40 @@ class LinkFiveClient extends LinkFiveClientInterface {
   /// after a purchase on ios we call the purchases/apple
   /// We don't need to do this on Android
   @override
-  Future<List<LinkFivePlan>> purchaseIos(
-      AppStoreProductDetails productDetails, AppStorePurchaseDetails purchaseDetails) async {
+  Future<LinkFiveActiveProducts> purchaseIos({
+    required AppStoreProductDetails? productDetails,
+    required AppStorePurchaseDetails purchaseDetails,
+  }) async {
     final uri = _makeUri("api/v1/purchases/user/apple");
 
     final transaction = purchaseDetails.skPaymentTransaction;
-
-    var transactionDate = DateTime.now();
-    if (purchaseDetails.transactionDate != null) {
-      transactionDate = DateTime.fromMillisecondsSinceEpoch(int.parse(purchaseDetails.transactionDate!));
-    }
     final transactionId = transaction.transactionIdentifier ?? "";
     final body = {
-      "sku": productDetails.id,
-      "currency": productDetails.currencyCode,
-      "country": productDetails.skProduct.priceLocale.countryCode,
-      "price": productDetails.rawPrice,
-      "purchaseDate": transactionDate.toIso8601String(),
+      "currency": productDetails?.currencyCode,
+      "price": productDetails?.rawPrice,
       "transactionId": transactionId,
       "originalTransactionId": transaction.originalTransaction?.transactionIdentifier ?? transactionId
     };
 
     LinkFiveLogger.d("purchase. $body");
+    try {
+      final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
 
-    final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
+      return _parseOneTimePurchaseListResponse(response);
+    } catch (e) {
+      LinkFiveLogger.e("Purchase Request Error: ${e.toString()}");
+      LinkFiveLogger.e("Try Again with same request");
 
-    return _parsePlanListResponse(response);
+      final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
+
+      return _parseOneTimePurchaseListResponse(response);
+    }
   }
 
   /// after a purchase on Google we call the purchases/google
   /// We don't need to do this on Android
   @override
-  Future<List<LinkFivePlan>> purchaseGooglePlay(
+  Future<LinkFiveActiveProducts> purchaseGooglePlay(
       GooglePlayPurchaseDetails purchaseDetails, GooglePlayProductDetails productDetails) async {
     final uri = _makeUri("api/v1/purchases/user/google");
 
@@ -150,9 +151,45 @@ class LinkFiveClient extends LinkFiveClientInterface {
 
     LinkFiveLogger.d("purchase: $purchaseBody");
 
-    final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
+    try {
+      final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
 
-    return _parsePlanListResponse(response);
+      return _parseOneTimePurchaseListResponse(response);
+    } catch (e) {
+      LinkFiveLogger.e("Purchase Request Error: ${e.toString()}");
+      LinkFiveLogger.e("Try Again with same request");
+
+      final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
+
+      return _parseOneTimePurchaseListResponse(response);
+    }
+  }
+
+  @override
+  Future<LinkFiveActiveProducts> purchaseGooglePlayOneTimePurchase(
+      GooglePlayPurchaseDetails purchaseDetails, OneTimePurchaseOfferDetailsWrapper otpDetails) async {
+    final uri = _makeUri("api/v1/purchases/user/google/one-time-purchase");
+    final purchaseBody = PurchaseRequestOneTimePurchaseGoogle(
+      productId: purchaseDetails.productID,
+      purchaseToken: purchaseDetails.billingClientPurchase.purchaseToken,
+      orderId: purchaseDetails.billingClientPurchase.orderId,
+      priceAmountMicros: otpDetails.priceAmountMicros,
+      priceCurrencyCode: otpDetails.priceCurrencyCode,
+    );
+
+    LinkFiveLogger.d("purchase: $purchaseBody");
+    try {
+      final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
+
+      return _parseOneTimePurchaseListResponse(response);
+    } catch (e) {
+      LinkFiveLogger.e("Purchase Request Error: ${e.toString()}");
+      LinkFiveLogger.e("Try Again with same request");
+
+      final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
+
+      return _parseOneTimePurchaseListResponse(response);
+    }
   }
 
   /// Fetches the receipts for a user
@@ -160,11 +197,11 @@ class LinkFiveClient extends LinkFiveClientInterface {
   /// if no LinkFive UUID is provided, LinkFive will generate a new user ID
   ///
   @override
-  Future<List<LinkFivePlan>> fetchUserPlanListFromLinkFive() async {
+  Future<LinkFiveActiveProducts> fetchUserPlanListFromLinkFive() async {
     final uri = _makeUri("api/v1/purchases/user");
 
     final response = await http.get(uri, headers: await _headers);
-    return _parsePlanListResponse(response);
+    return _parseOneTimePurchaseListResponse(response);
   }
 
   /// RESTORE APPLE APP STORE
@@ -173,7 +210,7 @@ class LinkFiveClient extends LinkFiveClientInterface {
   /// We will check against apple if those transaction are valid and
   /// enable or disable a product
   @override
-  Future<List<LinkFivePlan>> restoreIos(List<LinkFiveRestoreAppleItem> restoreList) async {
+  Future<LinkFiveActiveProducts> restoreIos(List<LinkFiveRestoreAppleItem> restoreList) async {
     final uri = _makeUri("api/v1/purchases/user/apple/restore");
 
     final body = {
@@ -185,7 +222,7 @@ class LinkFiveClient extends LinkFiveClientInterface {
     LinkFiveLogger.d("Restore body: $body");
 
     final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
-    return _parsePlanListResponse(response);
+    return _parseOneTimePurchaseListResponse(response);
   }
 
   /// RESTORE GOOGLE PLAY STORE
@@ -194,7 +231,7 @@ class LinkFiveClient extends LinkFiveClientInterface {
   /// We will check against apple if those transaction are valid and
   /// enable or disable a product
   @override
-  Future<List<LinkFivePlan>> restoreGoogle(List<LinkFiveRestoreGoogleItem> restoreList) async {
+  Future<LinkFiveActiveProducts> restoreGoogle(List<LinkFiveRestoreGoogleItem> restoreList) async {
     final uri = _makeUri("api/v1/purchases/user/google/restore");
 
     final body = {
@@ -206,15 +243,15 @@ class LinkFiveClient extends LinkFiveClientInterface {
     LinkFiveLogger.d("Restore body: $body");
 
     final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
-    return _parsePlanListResponse(response);
+    return _parseOneTimePurchaseListResponse(response);
   }
 
   @override
-  Future<List<LinkFivePlan>> changeUserId(String? userId) async {
+  Future<LinkFiveActiveProducts> changeUserId(String? userId) async {
     final uri = _makeUri("api/v1/purchases/user/customer-user-id");
 
     final response = await http.put(uri, headers: await _headers);
-    return _parsePlanListResponse(response);
+    return _parseOneTimePurchaseListResponse(response);
   }
 
   /// Get LinkFive URI with path Parameters
@@ -226,14 +263,14 @@ class LinkFiveClient extends LinkFiveClientInterface {
     return Uri.https(hostUrl, path, queryParams);
   }
 
-  List<LinkFivePlan> _parsePlanListResponse(http.Response response) {
-    LinkFiveLogger.d("Parse plan with body ${response.body}");
+  LinkFiveActiveProducts _parseOneTimePurchaseListResponse(http.Response response) {
+    LinkFiveLogger.d("Parse with body ${response.body}");
 
     Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
     // Save the LinkFive userID if any exists
     LinkFiveUserManagement().onResponse(jsonResponse);
 
-    return LinkFivePlan.fromJsonList(jsonResponse["data"]);
+    return LinkFiveActiveProducts.fromJson(jsonResponse["data"]);
   }
 }

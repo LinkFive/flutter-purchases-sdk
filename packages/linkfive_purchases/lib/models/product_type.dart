@@ -1,0 +1,3 @@
+enum LinkFiveProductType {
+  Subscription, OneTimePurchase;
+}

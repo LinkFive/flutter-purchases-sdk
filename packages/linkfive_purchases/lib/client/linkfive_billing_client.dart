@@ -10,9 +10,12 @@ import 'package:linkfive_purchases/models/linkfive_response.dart';
 class LinkFiveBillingClient extends LinkFiveBillingClientInterface {
   /// load the products from the native billing sdk
   @override
-  Future<List<ProductDetails>?> getPlatformSubscriptions(LinkFiveResponseData linkFiveResponse) async {
+  Future<List<ProductDetails>?> getPlatformProducts(LinkFiveResponseData linkFiveResponse) async {
     if (await _isStoreReachable) {
-      return await _loadProducts(linkFiveResponse.subscriptionList);
+      return await _loadProducts(
+        subscriptionList: linkFiveResponse.subscriptionList,
+        oneTimePurchaseList: linkFiveResponse.oneTimePurchaseList,
+      );
     }
     LinkFiveLogger.d("No Products to return Store is probably not reachable");
     return null;
@@ -43,9 +46,16 @@ class LinkFiveBillingClient extends LinkFiveBillingClientInterface {
   }
 
   /// Load products from the native store
-  Future<List<ProductDetails>> _loadProducts(List<LinkFiveResponseDataSubscription> subscriptionList) async {
+  Future<List<ProductDetails>> _loadProducts({
+    required List<LinkFiveResponseDataSubscription> subscriptionList,
+    required List<LinkFiveResponseDataOneTimePurchase> oneTimePurchaseList,
+  }) async {
     LinkFiveLogger.d("load products from store");
-    final Set<String> kIds = subscriptionList.map((e) => e.sku).toSet();
+    final allProductIds = [
+      for (final sub in subscriptionList) sub.sku,
+      for (final otp in oneTimePurchaseList) otp.productId,
+    ];
+    final Set<String> kIds = allProductIds.toSet();
     final ProductDetailsResponse response = await InAppPurchase.instance.queryProductDetails(kIds);
 
     if (response.notFoundIDs.isNotEmpty) {

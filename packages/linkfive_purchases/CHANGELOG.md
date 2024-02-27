@@ -1,3 +1,9 @@
+## 4.0.0-2.beta
+* Beta Release of new One Time Purchase API
+
+### New Purchase Methods
+* `purchaseFuture` and `restoreFuture` returns a future and completes whenever the async update stream completes with the active Products
+
 ## 3.0.1
 * improved purchase process to prevent a PlatformException with message: `There is a pending transaction ...` for ongoing purchases.
 * Updated dependencies to latest
