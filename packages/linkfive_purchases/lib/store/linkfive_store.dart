@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:linkfive_purchases/linkfive_purchases.dart';
-import 'package:linkfive_purchases/models/linkfive_one_time_purchase.dart';
 
 /// Data holder for API related calls
 /// includes all Streams for the sdk

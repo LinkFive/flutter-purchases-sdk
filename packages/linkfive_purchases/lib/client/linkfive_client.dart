@@ -8,8 +8,6 @@ import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:linkfive_purchases/client/linkfive_client_interface.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
-import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
-import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart';
 import 'package:linkfive_purchases/models/requests/purchase_request_google.dart';
 import 'package:linkfive_purchases/models/requests/purchase_request_google_otp.dart';
 import 'package:linkfive_purchases/models/requests/purchase_request_pricing_phase.dart';
@@ -93,32 +91,34 @@ class LinkFiveClient extends LinkFiveClientInterface {
   /// after a purchase on ios we call the purchases/apple
   /// We don't need to do this on Android
   @override
-  Future<LinkFiveActiveProducts> purchaseIos(
-      AppStoreProductDetails productDetails, AppStorePurchaseDetails purchaseDetails) async {
+  Future<LinkFiveActiveProducts> purchaseIos({
+    required AppStoreProductDetails? productDetails,
+    required AppStorePurchaseDetails purchaseDetails,
+  }) async {
     final uri = _makeUri("api/v1/purchases/user/apple");
 
     final transaction = purchaseDetails.skPaymentTransaction;
-
-    var transactionDate = DateTime.now();
-    if (purchaseDetails.transactionDate != null) {
-      transactionDate = DateTime.fromMillisecondsSinceEpoch(int.parse(purchaseDetails.transactionDate!));
-    }
     final transactionId = transaction.transactionIdentifier ?? "";
     final body = {
-      "sku": productDetails.id,
-      "currency": productDetails.currencyCode,
-      "country": productDetails.skProduct.priceLocale.countryCode,
-      "price": productDetails.rawPrice,
-      "purchaseDate": transactionDate.toIso8601String(),
+      "currency": productDetails?.currencyCode,
+      "price": productDetails?.rawPrice,
       "transactionId": transactionId,
       "originalTransactionId": transaction.originalTransaction?.transactionIdentifier ?? transactionId
     };
 
     LinkFiveLogger.d("purchase. $body");
+    try {
+      final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
 
-    final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
+      return _parseOneTimePurchaseListResponse(response);
+    } catch (e) {
+      LinkFiveLogger.e("Purchase Request Error: ${e.toString()}");
+      LinkFiveLogger.e("Try Again with same request");
 
-    return _parseOneTimePurchaseListResponse(response);
+      final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
+
+      return _parseOneTimePurchaseListResponse(response);
+    }
   }
 
   /// after a purchase on Google we call the purchases/google
@@ -151,9 +151,18 @@ class LinkFiveClient extends LinkFiveClientInterface {
 
     LinkFiveLogger.d("purchase: $purchaseBody");
 
-    final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
+    try {
+      final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
 
-    return _parseOneTimePurchaseListResponse(response);
+      return _parseOneTimePurchaseListResponse(response);
+    } catch (e) {
+      LinkFiveLogger.e("Purchase Request Error: ${e.toString()}");
+      LinkFiveLogger.e("Try Again with same request");
+
+      final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
+
+      return _parseOneTimePurchaseListResponse(response);
+    }
   }
 
   @override
@@ -169,10 +178,18 @@ class LinkFiveClient extends LinkFiveClientInterface {
     );
 
     LinkFiveLogger.d("purchase: $purchaseBody");
+    try {
+      final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
 
-    final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
+      return _parseOneTimePurchaseListResponse(response);
+    } catch (e) {
+      LinkFiveLogger.e("Purchase Request Error: ${e.toString()}");
+      LinkFiveLogger.e("Try Again with same request");
 
-    return _parseOneTimePurchaseListResponse(response);
+      final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
+
+      return _parseOneTimePurchaseListResponse(response);
+    }
   }
 
   /// Fetches the receipts for a user

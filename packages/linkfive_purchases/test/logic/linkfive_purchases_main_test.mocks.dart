@@ -11,14 +11,10 @@ import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_inte
     as _i2;
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart' as _i9;
 import 'package:linkfive_purchases/client/linkfive_billing_client_interface.dart'
-    as _i13;
+    as _i11;
 import 'package:linkfive_purchases/client/linkfive_client_interface.dart'
     as _i7;
 import 'package:linkfive_purchases/linkfive_purchases.dart' as _i3;
-import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart'
-    as _i11;
-import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart'
-    as _i12;
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart' as _i8;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i6;
@@ -218,27 +214,29 @@ class MockLinkFiveClientInterface extends _i1.Mock
         )),
       ) as _i5.Future<_i3.LinkFiveResponseData>);
   @override
-  _i5.Future<_i3.LinkFiveActiveProducts> purchaseIos(
-    _i9.AppStoreProductDetails? productDetails,
-    _i9.AppStorePurchaseDetails? purchaseDetails,
-  ) =>
+  _i5.Future<_i3.LinkFiveActiveProducts> purchaseIos({
+    required _i9.AppStoreProductDetails? productDetails,
+    required _i9.AppStorePurchaseDetails? purchaseDetails,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #purchaseIos,
-          [
-            productDetails,
-            purchaseDetails,
-          ],
+          [],
+          {
+            #productDetails: productDetails,
+            #purchaseDetails: purchaseDetails,
+          },
         ),
         returnValue: _i5.Future<_i3.LinkFiveActiveProducts>.value(
             _FakeLinkFiveActiveProducts_2(
           this,
           Invocation.method(
             #purchaseIos,
-            [
-              productDetails,
-              purchaseDetails,
-            ],
+            [],
+            {
+              #productDetails: productDetails,
+              #purchaseDetails: purchaseDetails,
+            },
           ),
         )),
         returnValueForMissingStub: _i5.Future<_i3.LinkFiveActiveProducts>.value(
@@ -246,10 +244,11 @@ class MockLinkFiveClientInterface extends _i1.Mock
           this,
           Invocation.method(
             #purchaseIos,
-            [
-              productDetails,
-              purchaseDetails,
-            ],
+            [],
+            {
+              #productDetails: productDetails,
+              #purchaseDetails: purchaseDetails,
+            },
           ),
         )),
       ) as _i5.Future<_i3.LinkFiveActiveProducts>);
@@ -351,7 +350,7 @@ class MockLinkFiveClientInterface extends _i1.Mock
       ) as _i5.Future<_i3.LinkFiveActiveProducts>);
   @override
   _i5.Future<_i3.LinkFiveActiveProducts> restoreIos(
-          List<_i11.LinkFiveRestoreAppleItem>? restoreList) =>
+          List<_i3.LinkFiveRestoreAppleItem>? restoreList) =>
       (super.noSuchMethod(
         Invocation.method(
           #restoreIos,
@@ -376,7 +375,7 @@ class MockLinkFiveClientInterface extends _i1.Mock
       ) as _i5.Future<_i3.LinkFiveActiveProducts>);
   @override
   _i5.Future<_i3.LinkFiveActiveProducts> restoreGoogle(
-          List<_i12.LinkFiveRestoreGoogleItem>? restoreList) =>
+          List<_i3.LinkFiveRestoreGoogleItem>? restoreList) =>
       (super.noSuchMethod(
         Invocation.method(
           #restoreGoogle,
@@ -429,7 +428,7 @@ class MockLinkFiveClientInterface extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockLinkFiveBillingClientInterface extends _i1.Mock
-    implements _i13.LinkFiveBillingClientInterface {
+    implements _i11.LinkFiveBillingClientInterface {
   @override
   _i5.Future<List<_i2.ProductDetails>?> getPlatformProducts(
           _i3.LinkFiveResponseData? linkFiveResponse) =>

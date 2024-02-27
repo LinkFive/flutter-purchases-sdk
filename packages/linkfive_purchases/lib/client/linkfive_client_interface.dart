@@ -1,8 +1,6 @@
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
-import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
-import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 
 /// HTTP client to LinkFive
@@ -14,8 +12,10 @@ abstract class LinkFiveClientInterface {
 
   /// after a purchase on ios we call the purchases/apple
   /// We don't need to do this on Android
-  Future<LinkFiveActiveProducts> purchaseIos(AppStoreProductDetails productDetails,
-      AppStorePurchaseDetails purchaseDetails);
+  Future<LinkFiveActiveProducts> purchaseIos({
+    required AppStoreProductDetails? productDetails,
+    required AppStorePurchaseDetails purchaseDetails,
+  });
 
   /// after a purchase on Google we call the purchases/google
   /// We don't need to do this on Android

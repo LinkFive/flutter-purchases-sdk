@@ -2,7 +2,6 @@ import 'package:example_local/subscriptions/otp_button.dart';
 import 'package:example_local/subscriptions/subscription_button.dart';
 import 'package:flutter/material.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
-import 'package:linkfive_purchases/models/product_type.dart';
 
 class ProductOfferingStream extends StatelessWidget {
   @override

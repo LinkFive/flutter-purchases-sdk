@@ -62,6 +62,15 @@ class LinkFivePurchases {
     return LinkFivePurchasesImpl().restore();
   }
 
+  /// USE WITH CARE. We're currently testing the new restore method
+  ///
+  /// All In App purchases are handled async, it's difficult to wait for something, that happens in a different thread.
+  ///
+  /// This will restore the products a user previously purchased.
+  static Future<LinkFiveActiveProducts> restoreFuture() {
+    return LinkFivePurchasesImpl().restoreWithFuture();
+  }
+
   /// This will reload all active Plans for the current user
   ///
   /// This method will also be called on LinkFive INIT
@@ -81,6 +90,15 @@ class LinkFivePurchases {
   /// Please note: This is not a successful purchase.
   static Future<bool> purchase(ProductDetails productDetails) async {
     return LinkFivePurchasesImpl().purchase(productDetails);
+  }
+
+  /// USE WITH CARE. We're currently testing the new purchase method
+  ///
+  /// All In App purchases are handled async, it's difficult to wait for something, that happens in a different thread.
+  ///
+  /// This will trigger the purchase flow for the user and returns a LinkFiveActiveProducts object.
+  static Future<LinkFiveActiveProducts> purchaseFuture(dynamic productDetails) {
+    return LinkFivePurchasesImpl().purchaseFuture(productDetails);
   }
 
   /// Handles the Switch Plan functionality.

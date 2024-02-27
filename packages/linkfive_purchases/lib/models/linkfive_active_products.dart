@@ -23,7 +23,7 @@ class LinkFiveActiveProducts {
 
   @override
   String toString() {
-    return "$oneTimePurchaseList,\n$planList";
+    return "OTP: $oneTimePurchaseList, Subs: $planList";
   }
 }
 

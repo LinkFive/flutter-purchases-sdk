@@ -6,8 +6,10 @@ class SubscriptionButton extends StatelessWidget {
 
   const SubscriptionButton({required this.linkFiveProductDetails});
 
-  onSubscriptionPressed() {
-    LinkFivePurchases.purchase(linkFiveProductDetails.productDetails);
+  onSubscriptionPressed() async {
+    print("Purchase started");
+    final product = await LinkFivePurchases.purchaseFuture(linkFiveProductDetails.productDetails);
+    print(product);
   }
 
   @override

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:in_app_purchases_interface/in_app_purchases_interface.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 
 ///

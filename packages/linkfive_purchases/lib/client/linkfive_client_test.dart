@@ -2,9 +2,6 @@ import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:linkfive_purchases/client/linkfive_client_interface.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
-import 'package:linkfive_purchases/models/linkfive_one_time_purchase.dart';
-import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
-import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 
 /// HTTP TEST client
@@ -21,8 +18,10 @@ class LinkFiveClientTest extends LinkFiveClientInterface {
 
   /// TEST MODE
   @override
-  Future<LinkFiveActiveProducts> purchaseIos(
-      AppStoreProductDetails productDetails, AppStorePurchaseDetails purchaseDetails) async {
+  Future<LinkFiveActiveProducts> purchaseIos({
+    required AppStoreProductDetails? productDetails,
+    required AppStorePurchaseDetails purchaseDetails,
+  }) async {
     return _parsePlanListResponse();
   }
 

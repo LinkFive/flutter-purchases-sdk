@@ -182,7 +182,7 @@ packages:
       path: "../packages/linkfive_purchases"
       relative: true
     source: path
-    version: "3.0.1"
+    version: "4.0.0-1.beta"
   matcher:
     dependency: transitive
     description:

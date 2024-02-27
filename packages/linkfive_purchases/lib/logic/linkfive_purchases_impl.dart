@@ -18,8 +18,6 @@ import 'package:linkfive_purchases/logic/extensions/initialize_extension.dart';
 import 'package:linkfive_purchases/linkfive_purchases.dart';
 import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
 import 'package:linkfive_purchases/logic/upgrade_downgrade_purchases.dart';
-import 'package:linkfive_purchases/models/linkfive_restore_apple_item.dart';
-import 'package:linkfive_purchases/models/linkfive_restore_google_item.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 import 'package:linkfive_purchases/store/linkfive_prefs.dart';
 import 'package:linkfive_purchases/store/linkfive_store.dart';
@@ -65,6 +63,9 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
 
   /// Cache of AppStoreProductDetail
   ProductDetails? _productDetailsToPurchase;
+
+  /// the v2 of purchases waits for the async purchase response and completes the future
+  final List<Completer<LinkFiveActiveProducts>> registeredPurchaseCompleterList = [];
 
   /// LinkFive HTTP Client
   ///
@@ -283,6 +284,19 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
     return showBuySuccess;
   }
 
+  /// USE WITH CARE. We're currently testing the new purchase method
+  ///
+  /// All In App purchases are handled async, it's difficult to work with futures.
+  ///
+  /// We're waiting for the next purchase update and complete the future.
+  Future<LinkFiveActiveProducts> purchaseFuture(dynamic productDetails) async {
+    makeSureIsInitialize();
+    final completer = Completer<LinkFiveActiveProducts>();
+    registeredPurchaseCompleterList.add(completer);
+    await purchase(productDetails);
+    return completer.future;
+  }
+
   Future<LinkFiveActiveProducts> reloadActivePlans() async {
     await waitForInit();
     return await _updateActivePlansFromLinkFive();
@@ -297,6 +311,19 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
     super.isPendingPurchase = true;
     await inAppPurchaseInstance.restorePurchases();
     return false;
+  }
+
+  /// USE WITH CARE. We're currently testing the new restore method
+  ///
+  /// All In App purchases are handled async, it's difficult to work with futures.
+  ///
+  /// We're waiting for the next purchase update and complete the future.
+  Future<LinkFiveActiveProducts> restoreWithFuture() async {
+    makeSureIsInitialize();
+    final completer = Completer<LinkFiveActiveProducts>();
+    registeredPurchaseCompleterList.add(completer);
+    await restore();
+    return completer.future;
   }
 
   /// Handles the Up and Downgrade of a Subscription plans
@@ -442,15 +469,19 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
           _productDetailsToPurchase = null;
 
           // handle ios Purchase
-          if (Platform.isIOS && productDetails != null) {
-            final appstorePurchaseDetails = purchaseDetails as AppStorePurchaseDetails;
-
+          if (Platform.isIOS) {
             // handle the ios purchase request to LinkFive
-            await _handlePurchaseApple(appstorePurchaseDetails, productDetails as AppStoreProductDetails);
+            await _handlePurchaseApple(
+              appstorePurchaseDetails: purchaseDetails as AppStorePurchaseDetails,
+              productDetailsToPurchase: productDetails,
+            );
           }
           // Handle google play purchase
           if (purchaseDetails is GooglePlayPurchaseDetails) {
-            await _handlePurchaseGoogle(purchaseDetails, productDetails as GooglePlayProductDetails);
+            await _handlePurchaseGoogle(
+              purchaseDetails: purchaseDetails,
+              productDetails: productDetails as GooglePlayProductDetails,
+            );
           }
 
           super.isPendingPurchase = false;
@@ -475,6 +506,12 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
       await _handleRestore(purchaseDetailsList);
       super.isPendingPurchase = false;
     }
+
+    // complete the purchase future
+    for (final completer in registeredPurchaseCompleterList) {
+      completer.complete(_store.latestLinkFiveActiveProducts);
+    }
+    registeredPurchaseCompleterList.clear();
   }
 
   /// This will handle the restore functionality
@@ -482,7 +519,7 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
   /// we will send all transactions to LinkFive and connect them to the
   /// current user
   Future<void> _handleRestore(List<PurchaseDetails> purchaseDetailsList) async {
-    LinkFiveActiveProducts? activeProducts = null;
+    LinkFiveActiveProducts? activeProducts;
 
     // handle each platform separately
     if (Platform.isIOS) {
@@ -559,9 +596,17 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
   ///
   /// This will handle the apple purchase process and update all listeners
   ///
-  _handlePurchaseApple(
-      AppStorePurchaseDetails appstorePurchaseDetails, AppStoreProductDetails productDetailsToPurchase) async {
-    final linkFiveActiveProducts = await _client.purchaseIos(productDetailsToPurchase, appstorePurchaseDetails);
+  _handlePurchaseApple({
+    required AppStorePurchaseDetails appstorePurchaseDetails,
+    required ProductDetails? productDetailsToPurchase,
+  }) async {
+    final linkFiveActiveProducts = await _client.purchaseIos(
+      productDetails: switch (productDetailsToPurchase) {
+        null => null,
+        _ => productDetailsToPurchase as AppStoreProductDetails
+      },
+      purchaseDetails: appstorePurchaseDetails,
+    );
 
     // update purchase State
     super.updateStateFromActiveProducts(linkFiveActiveProducts);
@@ -573,9 +618,13 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
   ///
   /// This will handle the Google Play purchase process and update all listeners
   ///
-  _handlePurchaseGoogle(GooglePlayPurchaseDetails purchaseDetails, GooglePlayProductDetails productDetails) async {
+  _handlePurchaseGoogle({
+    required GooglePlayPurchaseDetails purchaseDetails,
+    required GooglePlayProductDetails productDetails,
+  }) async {
     if (productDetails.productDetails.oneTimePurchaseOfferDetails != null) {
-      final activeProducts = await _client.purchaseGooglePlayOneTimePurchase(purchaseDetails, productDetails.productDetails.oneTimePurchaseOfferDetails!);
+      final activeProducts = await _client.purchaseGooglePlayOneTimePurchase(
+          purchaseDetails, productDetails.productDetails.oneTimePurchaseOfferDetails!);
 
       super.updateStateFromActiveProducts(activeProducts);
 
