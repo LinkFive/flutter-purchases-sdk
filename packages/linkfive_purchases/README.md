@@ -12,25 +12,25 @@ LinkFive Purchases empowers developers to seamlessly implement and manage in-app
 
 ## Core Functionalities
 
-*Supported Purchase Types:*
+**Supported Purchase Types:**
 * Subscriptions: Offer recurring billing plans that provide users with ongoing access to premium features or content within your app.
 * One-Time Purchases: Enable users to purchase a product or service permanently with a single payment.
 
-*Initialization:*
+**Initialization:**
 * Employ the `init` method to initialize the LinkFive Purchases plugin, providing your API key as an argument. You can optionally set the logging level using the `logLevel` parameter.
 
 ```dart
 await LinkFivePurchases.init("API_KEY");
 ```
 
-*Fetching Products:*
+**Fetching Products:**
 * Utilize the `fetchProducts` method to retrieve a list of available products from LinkFive. This method is crucial for populating your paywall or displaying relevant subscription options to users.
 
 ```dart
 await LinkFivePurchases.fetchProducts();
 ```
 
-*Purchasing Products:*
+**Purchasing Products:**
 * Trigger the purchase flow for a specific product using the `purchase` method. This method takes a `ProductDetails` object as input, representing the product the user intends to purchase.
 
 ```dart
@@ -43,7 +43,7 @@ await LinkFivePurchases.purchase(productDetails);
 await LinkFivePurchases.purchaseFuture(productDetails);
 ```
 
-*Restoring Purchases:*
+**Restoring Purchases:**
 * The `restore` method enables users to restore previously purchased products. This ensures continued access to subscribed features upon app reinstallation or device change.
 
 ```dart
@@ -56,7 +56,7 @@ await LinkFivePurchases.restore();
 await LinkFivePurchases.restoreFuture();
 ```
 
-*Products Stream:*
+**Products Stream:**
 * The `products` stream continuously delivers information about the user's offering. Whenever the user opens the paywall, you want to show the data that is included in this stream.
 ```dart
 stream = LinkFivePurchases.products.listen((products) {
@@ -64,7 +64,7 @@ stream = LinkFivePurchases.products.listen((products) {
 });
 ```
 
-*Active Products Stream:*
+**Active Products Stream:**
 * The `activeProducts` stream continuously delivers information about the user's active and verified products. This stream proves valuable for managing access to subscription-based features or One-time purchases within your application.
 ```dart
 stream = LinkFivePurchases.activeProducts.listen((activeProducts) {
