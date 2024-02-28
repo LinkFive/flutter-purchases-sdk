@@ -21,16 +21,16 @@ class LinkFivePurchases {
   ///
   /// Possible usage:
   ///
-  /// LinkFivePurchases.init(linkFiveApiKey)
+  /// await LinkFivePurchases.init(linkFiveApiKey)
   ///
   /// and then later while or before you show your paywall ui:
   ///
-  /// LinkFivePurchases.fetchProducts()
+  /// await LinkFivePurchases.fetchProducts()
   ///
-  /// Also Possible but not recommended:
+  /// It's not recommended to do:
   ///
-  /// LinkFivePurchases.init(linkFiveApiKey)
-  /// LinkFivePurchases.fetchProducts());
+  /// await LinkFivePurchases.init(linkFiveApiKey)
+  /// await LinkFivePurchases.fetchProducts());
   ///
   /// [LinkFiveLogLevel] to see or hide internal logging
   static Future<LinkFiveActiveProducts> init(String apiKey, {LinkFiveLogLevel logLevel = LinkFiveLogLevel.WARN}) {
@@ -40,15 +40,76 @@ class LinkFivePurchases {
   /// By Default, the plugin does not fetch any Products to offer.
   ///
   /// You have to call this method at least once. The best case would be to call
-  /// fetchProducts whenever you want to show your offer
+  /// fetchProducts whenever you want to show your offer to the user e.g. on the paywall page
   ///
-  /// Whenever you want to offer subscriptions to your users.
+  /// This method will call LinkFive to get all available products for the user
+  /// and then uses the native platform to fetch the product information
   ///
-  /// This method will call LinkFive to get all available subscriptions for the user
-  /// and then uses the native methods for either ios or android to fetch the subscription
-  /// details like duration, price, name, id etc.
+  /// This method will return the Products but will also send the products to the [LinkFivePurchases.products] stream
   ///
-  /// All Data will be send to the stream
+  /// riverpod example:
+  ///
+  /// class PremiumOfferNotifier extends Notifier<LinkFiveProducts?> {
+  ///   /// fetched once whenever the user enters the paywall
+  ///   Future<void> fetchOffering() async {
+  ///     state = LinkFivePurchases.fetchProducts();
+  ///   }
+  ///
+  ///   void purchase(LinkFiveProductDetails productDetails) {
+  ///     LinkFivePurchases.purchase(productDetails.productDetails);
+  ///   }
+  ///
+  ///   void restore() {
+  ///     LinkFivePurchases.restore();
+  ///   }
+  ///
+  ///   @override
+  ///   LinkFiveProducts? build() {
+  ///     return null;
+  ///   }
+  /// }
+  ///
+  /// widget example:
+  ///
+  /// class _PurchasePaywall extends ConsumerWidget {
+  ///   @override
+  ///   Widget build(BuildContext context, WidgetRef ref) {
+  ///     final premiumOffer = ref.watch(premiumOfferProvider);
+  ///     if (premiumOffer == null) {
+  ///       // return Page Loading Widget
+  ///     }
+  ///
+  ///     return ListView(children: [
+  ///         for (final offer in premiumOffer.productDetailList)
+  ///           switch (offer.productType) {
+  ///               LinkFiveProductType.OneTimePurchase => LayoutBuilder(builder: (_, _) {
+  ///                 // build your One Time Purchase Widget
+  ///                 // e.g:
+  ///                 // Text(offer.oneTimePurchasePrice.formattedPrice)
+  ///
+  ///                 // and later when pressed:
+  ///                 // onPressed: () {
+  ///                 //   ref.read(premiumOfferProvider.notifier).purchase(offer);
+  ///                 // }
+  ///               }),
+  ///               LinkFiveProductType.Subscription => LayoutBuilder(builder: (_, _) {
+  ///                 // build your Subscription Purchase Widget
+  ///                 // use the pricing Phases:
+  ///                 // for (var pricingPhase in offer.pricingPhases) {
+  ///                 //   Text(pricingPhase.formattedPrice);
+  ///                 //   Text(pricingPhase.billingPeriod.iso8601); // e.g.: P6M
+  ///                 // }
+  ///
+  ///                 // and later when pressed:
+  ///                 // onPressed: () {
+  ///                 //   ref.read(premiumOfferProvider.notifier).purchase(offer);
+  ///                 // }
+  ///               }),
+  ///           }
+  ///         ]
+  ///     );
+  ///   }
+  /// }
   ///
   /// @return [LinkFiveProducts] or null if no subscriptions found
   static Future<LinkFiveProducts?> fetchProducts() {
@@ -119,7 +180,7 @@ class LinkFivePurchases {
 
   /// This Stream contains all available Products you can offer to your user.
   ///
-  /// productDetailList is NEVER NULL. If the value is null, you probably never
+  /// productDetailList is not NULL. If the value is null, you probably never
   /// called [LinkFivePurchases.fetchProducts]
   ///
   /// [LinkFiveProducts.productDetailList] is a List and contains all Subscriptions
@@ -179,11 +240,25 @@ class LinkFivePurchases {
   ///
   static LinkFivePurchasesImpl get callbackInterface => LinkFivePurchasesImpl();
 
-  ///
   /// This Stream returns true => if the purchase is currently in Progress. This means you should show a loading
   /// indicator or block the purchase button while processing
   ///
   /// returns false => if there is no purchase in Progress.
+  ///
+  /// Example riverpod notifier:
+  ///
+  /// class PremiumPurchaseInProgressNotifier extends Notifier<bool> {
+  ///   init() {
+  ///     LinkFivePurchases.purchaseInProgressStream.listen((bool isPurchaseInProgress) {
+  ///       state = isPurchaseInProgress;
+  ///     });
+  ///   }
+  ///
+  ///   @override
+  ///   bool build() {
+  ///     return false;
+  ///   }
+  /// }
   ///
   static Stream<bool> get purchaseInProgressStream => LinkFivePurchasesImpl().purchaseInProgressStream();
 }

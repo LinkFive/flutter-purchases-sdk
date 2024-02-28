@@ -8,7 +8,7 @@ import 'package:linkfive_purchases/models/product_type.dart';
 
 /// LinkFive Products to offer.
 ///
-/// Basically a subscription you want to offer to your user.
+/// Basically a product you want to offer to your user.
 ///
 /// it includes:
 /// [productDetailList] includes platform specific information

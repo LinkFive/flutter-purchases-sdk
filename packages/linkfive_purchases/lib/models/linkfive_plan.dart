@@ -2,18 +2,19 @@ import 'package:linkfive_purchases/models/period.dart';
 
 /// Verified Receipt from LinkFive including all data
 class LinkFivePlan {
-  LinkFivePlan(
-      {required this.productId,
-      required this.planId,
-      required this.rootId,
-      required this.purchaseDate,
-      required this.endDate,
-      required this.storeType,
-      this.customerUserId,
-      this.isTrial,
-      this.familyName,
-      this.attributes,
-      this.duration});
+  LinkFivePlan({
+    required this.productId,
+    required this.planId,
+    required this.rootId,
+    required this.purchaseDate,
+    required this.endDate,
+    required this.storeType,
+    this.customerUserId,
+    this.isTrial,
+    this.familyName,
+    this.attributes,
+    this.duration,
+  });
 
   /// Also called productID
   String productId;
