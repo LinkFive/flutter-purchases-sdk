@@ -31,62 +31,6 @@ class LinkFiveProducts {
 
   LinkFiveProducts({this.productDetailList = const [], this.attributes, this.error});
 
-/* Deprecated due to change of Google subscriptions
-  /// Only use this function in combination with your Paywall UI. This is a helper function
-  ///
-  /// Function to get the subscription Data automatically
-  ///
-  /// [calculateDeal] is default true. This will calculate the deal automatically
-  ///
-  /// The reference is always the subscription with the lowest duration
-  List<SubscriptionData> paywallUIHelperData({required BuildContext context, bool calculateDeal = true}) {
-    // if no or just 1 subscription is shown
-    // disable the deal
-    if (productDetailList.length <= 1) {
-      calculateDeal = false;
-    }
-    LinkFiveProductDetails? lowestDurationProduct;
-    if (calculateDeal) {
-      // get the lowest duration
-      lowestDurationProduct = productDetailList.reduce((curr, next) {
-        final currDuration = curr.duration;
-        final nextDuration = next.duration;
-        return currDuration.index < nextDuration.index ? curr : next;
-      });
-    }
-    // index used to place the items
-    int index = 0;
-
-    // Map through everything and calculate the deal if set to true
-    return productDetailList.map((linkFiveProductDetails) {
-      final durationStrings = linkFiveProductDetails.paywallUIHelperDurationData(context);
-
-      /// Sub Data with Strings
-      var subData = SubscriptionData(
-          durationTitle: durationStrings.durationText.toTitleCase(),
-          durationShort: durationStrings.durationTextNumber.toTitleCase(),
-          productDetails: linkFiveProductDetails.productDetails,
-          price: linkFiveProductDetails.productDetails.price,
-          rawPrice: linkFiveProductDetails.productDetails.rawPrice,
-          currencySymbol: linkFiveProductDetails.productDetails.currencySymbol,
-          duration: SubscriptionDurationConvert.getSubscriptionDurationAsText(linkFiveProductDetails.duration),
-          monthText: PaywallL10NHelper.of(context).month,
-          index: index);
-      // calculate the deal
-      if (lowestDurationProduct != null) {
-        if (lowestDurationProduct != linkFiveProductDetails) {
-          int dealPercent =
-              ((1 - lowestDurationProduct.productDetails.rawPrice / linkFiveProductDetails.productDetails.rawPrice) *
-                      100)
-                  .round();
-          subData.dealPercentage = dealPercent;
-        }
-      }
-      // increase index
-      index += 1;
-      return subData;
-    }).toList();
-  }*/
 }
 
 /// LinkFive class with platform specific information

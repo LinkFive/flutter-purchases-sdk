@@ -81,14 +81,15 @@ An example riverpod Notifier would be:
 /// true -> show loading indicator / disable purchase button
 /// false -> disable loading indicator / enable purchase Button  
 class PremiumPurchaseInProgressNotifier extends Notifier<bool> {
-  init() {
+  @override
+  bool build() {
+    final streamSub =
     ref.read(billingRepositoryProvider).purchaseInProgressStream().listen((bool isPurchaseInProgress) {
       state = isPurchaseInProgress;
     });
-  }
-
-  @override
-  bool build() {
+    ref.onDispose(() {
+      streamSub.cancel();
+    });
     return false;
   }
 }
@@ -167,19 +168,24 @@ class _PurchasePaywall extends ConsumerWidget {
 A typical riverpod notifier implementation would look like this:
 
 ```dart
-class PremiumPurchaseNotifier extends Notifier<LinkFiveActiveProducts?> {
-  Future<void> initBilling() async {
-    // initialize LinkFive and wait for the active Products
-    state = await ref.read(billingRepositoryProvider).load();
-    
-    // listen to all purchases and update the state
-    ref.read(billingRepositoryProvider).purchaseStream().listen((LinkFiveActiveProducts activeProducts) {
-      state = activeProducts;
-    });
+class PremiumPurchaseNotifier extends Notifier<bool?> {
+  Future<void> _initBilling() async {
+    final activeProducts = await ref.read(billingRepositoryProvider).load();
+    state = activeProducts.isNotEmpty;
+    print("Billing initialized $state");
   }
 
   @override
-  LinkFiveActiveProducts? build() {
+  bool? build() {
+    _initBilling();
+
+    final purchaseStream = ref.read(billingRepositoryProvider).purchaseStream().listen((LinkFiveActiveProducts event) {
+      print("Purchase Update $event");
+      state = event.isNotEmpty;
+    });
+    ref.onDispose(() {
+      purchaseStream.cancel();
+    });
     return null;
   }
 }

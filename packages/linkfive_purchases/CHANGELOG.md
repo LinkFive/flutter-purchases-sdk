@@ -1,8 +1,77 @@
-## 4.0.0-2.beta
-* Beta Release of new One Time Purchase API
+## 4.0.0
+Release of new One Time Purchase API
 
-### New Purchase Methods
-* `purchaseFuture` and `restoreFuture` returns a future and completes whenever the async update stream completes with the active Products
+### New Purchase Methods.
+* `purchaseFuture` and `restoreFuture` returns a future and completes whenever the async update stream completes with the active Products.
+
+### One Time Purchase
+* `LinkFiveActiveProducts` now also have a list of active One Time Purchases `final List<LinkFiveOneTimePurchase> oneTimePurchaseList;`
+
+#### New methods for `LinkFiveProductDetails`.  
+* You can use the `productType` to check for the product Type, `Subscription`, `OneTimePurchase`.
+```dart
+for (final offer in premiumOffer.productDetailList)
+    switch (offer.productType) {
+        LinkFiveProductType.OneTimePurchase => LayoutBuilder(builder: (_, _) {
+          // build your One Time Purchase Widget
+          // e.g:
+          // Text(offer.oneTimePurchasePrice.formattedPrice)
+          
+          // and later when pressed:
+          // onPressed: () {
+          //   ref.read(premiumOfferProvider.notifier).purchase(offer);
+          // }
+        }), 
+        LinkFiveProductType.Subscription => LayoutBuilder(builder: (_, _) {
+          // build your Subscription Purchase Widget
+          // use the pricing Phases:
+          // for (var pricingPhase in offer.pricingPhases) {
+          //   Text(pricingPhase.formattedPrice);
+          //   Text(pricingPhase.billingPeriod.iso8601); // e.g.: P6M
+          // }
+  
+          // and later when pressed:
+          // onPressed: () {
+          //   ref.read(premiumOfferProvider.notifier).purchase(offer);
+          // }
+        }), 
+    }
+```
+
+* New `oneTimePurchasePrice` which returns a new entity `OneTimePurchasePrice` with new getter:
+
+```dart
+String get formattedPrice
+int get priceAmountMicros
+String get priceCurrencyCode
+String get priceCurrencySymbol
+```
+
+### New Purchase In Progress Stream
+You can now use the `purchaseInProgressStream` to show a loadingIndicator on your paywall.
+
+```dart
+/// true -> show loading indicator / disable purchase button
+/// false -> disable loading indicator / enable purchase Button  
+class PremiumPurchaseInProgressNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    final streamSub =
+        LinkFivePurchases.purchaseInProgressStream.listen((bool isPurchaseInProgress) {
+      state = isPurchaseInProgress;
+    });
+    ref.onDispose(() {
+      streamSub.cancel();
+    });
+    return false;
+  }
+}
+```
+
+### Others
+
+* paywallUIHelper is currently not supported in this version. Please build the connection yourself.
+
 
 ## 3.0.1
 * improved purchase process to prevent a PlatformException with message: `There is a pending transaction ...` for ongoing purchases.
