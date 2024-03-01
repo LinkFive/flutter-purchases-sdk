@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:linkfive_purchases/client/linkfive_client_interface.dart';
@@ -11,11 +11,15 @@ import 'package:linkfive_purchases/logic/linkfive_user_management.dart';
 import 'package:linkfive_purchases/models/requests/purchase_request_google.dart';
 import 'package:linkfive_purchases/models/requests/purchase_request_google_otp.dart';
 import 'package:linkfive_purchases/models/requests/purchase_request_pricing_phase.dart';
+import 'package:linkfive_purchases/src/client/http/http_client.dart';
+import 'package:linkfive_purchases/src/client/http/retry_http_client.dart';
 import 'package:linkfive_purchases/store/linkfive_app_data_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 /// HTTP client to LinkFive
 class LinkFiveClient extends LinkFiveClientInterface {
+  late final httpClient = RetryHttpClient(HttpClientFactory.basic());
+
   final String stagingUrl = "api.staging.linkfive.io";
   final String prodUrl = "api.linkfive.io";
 
@@ -79,7 +83,7 @@ class LinkFiveClient extends LinkFiveClientInterface {
   Future<LinkFiveResponseData> fetchLinkFiveResponse() async {
     final uri = _makeUri("api/v1/subscriptions");
 
-    final response = await http.get(uri, headers: await _headers);
+    final response = await httpClient.get(uri, headers: await _headers);
     LinkFiveLogger.d('Response status: ${response.statusCode}');
     LinkFiveLogger.d('Response body: ${response.body}');
     final mapBody = jsonDecode(response.body);
@@ -107,18 +111,9 @@ class LinkFiveClient extends LinkFiveClientInterface {
     };
 
     LinkFiveLogger.d("purchase. $body");
-    try {
-      final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
+    final response = await httpClient.post(uri, body: body, headers: await _headers);
 
-      return _parseOneTimePurchaseListResponse(response);
-    } catch (e) {
-      LinkFiveLogger.e("Purchase Request Error: ${e.toString()}");
-      LinkFiveLogger.e("Try Again with same request");
-
-      final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
-
-      return _parseOneTimePurchaseListResponse(response);
-    }
+    return _parseOneTimePurchaseListResponse(response);
   }
 
   /// after a purchase on Google we call the purchases/google
@@ -151,18 +146,10 @@ class LinkFiveClient extends LinkFiveClientInterface {
 
     LinkFiveLogger.d("purchase: $purchaseBody");
 
-    try {
-      final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
+    final response =
+        await httpClient.post(uri, body: purchaseBody.toJson(), headers: await _headers);
 
-      return _parseOneTimePurchaseListResponse(response);
-    } catch (e) {
-      LinkFiveLogger.e("Purchase Request Error: ${e.toString()}");
-      LinkFiveLogger.e("Try Again with same request");
-
-      final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
-
-      return _parseOneTimePurchaseListResponse(response);
-    }
+    return _parseOneTimePurchaseListResponse(response);
   }
 
   @override
@@ -178,18 +165,10 @@ class LinkFiveClient extends LinkFiveClientInterface {
     );
 
     LinkFiveLogger.d("purchase: $purchaseBody");
-    try {
-      final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
+    final response =
+        await httpClient.post(uri, body: purchaseBody.toJson(), headers: await _headers);
 
-      return _parseOneTimePurchaseListResponse(response);
-    } catch (e) {
-      LinkFiveLogger.e("Purchase Request Error: ${e.toString()}");
-      LinkFiveLogger.e("Try Again with same request");
-
-      final response = await http.post(uri, body: jsonEncode(purchaseBody.toJson()), headers: await _headers);
-
-      return _parseOneTimePurchaseListResponse(response);
-    }
+    return _parseOneTimePurchaseListResponse(response);
   }
 
   /// Fetches the receipts for a user
@@ -200,7 +179,7 @@ class LinkFiveClient extends LinkFiveClientInterface {
   Future<LinkFiveActiveProducts> fetchUserPlanListFromLinkFive() async {
     final uri = _makeUri("api/v1/purchases/user");
 
-    final response = await http.get(uri, headers: await _headers);
+    final response = await httpClient.get(uri, headers: await _headers);
     return _parseOneTimePurchaseListResponse(response);
   }
 
@@ -221,7 +200,7 @@ class LinkFiveClient extends LinkFiveClientInterface {
 
     LinkFiveLogger.d("Restore body: $body");
 
-    final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
+    final response = await httpClient.post(uri, body: body, headers: await _headers);
     return _parseOneTimePurchaseListResponse(response);
   }
 
@@ -242,7 +221,7 @@ class LinkFiveClient extends LinkFiveClientInterface {
 
     LinkFiveLogger.d("Restore body: $body");
 
-    final response = await http.post(uri, body: jsonEncode(body), headers: await _headers);
+    final response = await httpClient.post(uri, body: body, headers: await _headers);
     return _parseOneTimePurchaseListResponse(response);
   }
 
@@ -250,7 +229,7 @@ class LinkFiveClient extends LinkFiveClientInterface {
   Future<LinkFiveActiveProducts> changeUserId(String? userId) async {
     final uri = _makeUri("api/v1/purchases/user/customer-user-id");
 
-    final response = await http.put(uri, headers: await _headers);
+    final response = await httpClient.put(uri, headers: await _headers);
     return _parseOneTimePurchaseListResponse(response);
   }
 
@@ -263,7 +242,7 @@ class LinkFiveClient extends LinkFiveClientInterface {
     return Uri.https(hostUrl, path, queryParams);
   }
 
-  LinkFiveActiveProducts _parseOneTimePurchaseListResponse(http.Response response) {
+  LinkFiveActiveProducts _parseOneTimePurchaseListResponse(Response response) {
     LinkFiveLogger.d("Parse with body ${response.body}");
 
     Map<String, dynamic> jsonResponse = jsonDecode(response.body);

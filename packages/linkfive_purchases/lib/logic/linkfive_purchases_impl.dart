@@ -61,8 +61,8 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
 
   //#region Members
 
-  /// Cache of AppStoreProductDetail
-  ProductDetails? _productDetailsToPurchase;
+  /// Saving productDetails for the purchase
+  ProductDetails? _lastProductDetailsToPurchase;
 
   /// the v2 of purchases waits for the async purchase response and completes the future
   final List<Completer<LinkFiveActiveProducts>> registeredPurchaseCompleterList = [];
@@ -238,7 +238,7 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
 
     // We're saving the product Details whenever the user purchases a product to send it to the server
     // after a purchase
-    _productDetailsToPurchase = productDetailsProcessed;
+    _lastProductDetailsToPurchase = productDetailsProcessed;
 
     try {
       // try to buy it
@@ -465,22 +465,19 @@ class LinkFivePurchasesImpl extends DefaultPurchaseHandler implements CallbackIn
           super.isPendingPurchase = false;
           break;
         case PurchaseStatus.purchased:
-          final productDetails = _productDetailsToPurchase;
-          _productDetailsToPurchase = null;
-
           // handle ios Purchase
           if (Platform.isIOS) {
             // handle the ios purchase request to LinkFive
             await _handlePurchaseApple(
               appstorePurchaseDetails: purchaseDetails as AppStorePurchaseDetails,
-              productDetailsToPurchase: productDetails,
+              productDetailsToPurchase: _lastProductDetailsToPurchase,
             );
           }
           // Handle google play purchase
           if (purchaseDetails is GooglePlayPurchaseDetails) {
             await _handlePurchaseGoogle(
               purchaseDetails: purchaseDetails,
-              productDetails: productDetails as GooglePlayProductDetails,
+              productDetails: _lastProductDetailsToPurchase as GooglePlayProductDetails,
             );
           }
 
