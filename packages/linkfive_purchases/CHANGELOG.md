@@ -1,3 +1,8 @@
+## 4.0.1
+
+* We added a new http Client with retry functions and timeouts to properly handle mobile connectivity
+* We fixed a bug where the product details can be null.
+
 ## 4.0.0
 Release of new One Time Purchase API
 
